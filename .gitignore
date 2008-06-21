@@ -1,0 +1,7 @@
+.svn
+.DS_Store
+*.pyc
+entries
+.entries.pickle
+config.yml
+

@@ -1,0 +1,27 @@
+## edit this file and save it as config.yml
+
+# google reader settings
+user: "username@gmail.com"
+password: "your_password"
+
+# the set of tags / labels you want to download
+tag_list:
+ - "Feeds-for-my-iPhone"
+ - "as-many-tags-as-you-like"
+
+# settings for your iPhone / iPod Touch
+iphone_hostname: "iPod.local"
+iphone_user: "mobile"
+iphone_destination_path: "~mobile/Media/PDF/RSS/"
+
+# these aren't necessary to provide if you have set
+# up authorized ssh-keys for both your mac and iPhone:
+iphone_password: "alpine"
+mac_password: "your_login_password"
+
+
+# --- optional settings ----
+
+# maximum number of unread feed items to download
+num_items: 300
+#output_path: entries
