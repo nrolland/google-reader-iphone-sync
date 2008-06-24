@@ -131,7 +131,7 @@ class Item:
 			f.write(tag('br'))
 		
 			try:
-				url = ' via ' + re.sub('.*://', '', self.item['sources'].keys()[0]).replace('/',' / ')
+				url = ' via ' + re.sub('.*://', '', self.item['sources'].keys()[0]).replace('/',' / ').replace('=',' = ')
 				f.write(tag('em', url))
 				f.write(tag('br'))
 				f.write(tag('br'))

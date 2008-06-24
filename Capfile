@@ -47,9 +47,15 @@ task :fake do $dry = true; $rsync_opts += " --dry-run" end
 # -----------------------------------------
 
 desc "Copy files to iPod"
-task :push do check_folder($ipod_path, true); run "rsync #{$rsync_opts} #{$remote_mac_path} #{$ipod_path}" end
+task :push do
+	check_folder($ipod_path, true)
+	run "rsync #{$rsync_opts} #{$remote_mac_path} #{$ipod_path}"
+end
 
-task :pull_without_web do check_folder($mac_path); run "rsync #{$rsync_opts} #{$ipod_path} #{$remote_mac_path}" end
+task :pull_without_web do
+	check_folder($mac_path)
+	run "rsync #{$rsync_opts} #{$ipod_path} #{$remote_mac_path}"
+end
 
 desc "Copy files from iPod"
 task :pull do pull_without_web ; sync_web end
