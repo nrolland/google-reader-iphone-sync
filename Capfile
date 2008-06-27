@@ -73,7 +73,7 @@ desc "Do a full sync"
 task :all do pull_without_web; sync; push end
 
 desc "Test things out..."
-task :t do do_sync('--test') end
+task :t do do_sync('--test --num-items=1') end
 
 # make sure that folder is empty, aside from files matching allowed_patterns
 # (when it's a remote directory, it only ensures the directory exists)

@@ -47,8 +47,6 @@ def parse_options(argv = None):
 		app_globals.OPTIONS['output_path'] = app_globals.CONFIG['test_output_dir']
 		try_shell('rm -rf \'%s\'' % app_globals.CONFIG['test_output_dir'])
 		try_shell('mkdir -p \'%s\'' % app_globals.CONFIG['test_output_dir'])
-		app_globals.OPTIONS['num_items'] = 1
-
 
 
 """
