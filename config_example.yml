@@ -24,4 +24,7 @@ mac_password: "your_login_password"
 
 # maximum number of unread feed items to download
 num_items: 300
-#output_path: entries
+
+# rendering settings - what screen size (in pixels) to format for:
+screen_width:  480
+screen_height: 640

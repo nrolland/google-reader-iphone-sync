@@ -117,7 +117,10 @@ class Item:
 			debug("converting to pdf")
 		
 			# convert to pdf:
-			cmd = 'python src/html2pdf.py "%s" "%s"' % (base + '.html', base + '.pdf')
+			cmd = 'python src/html2pdf.py ' + \
+				'-w ' + str(int(app_globals.OPTIONS['screen_width'])) + \
+				' -h '+ str(int(app_globals.OPTIONS['screen_height'])) + \
+				' "' + base + '.html" "'+ base +'.pdf"'
 			debug("command: " + cmd)
 			# i like to shell out for this, because sometimes it segfaults. I guess pyObjC isn't 100% stable...
 			ret = os.system(cmd)

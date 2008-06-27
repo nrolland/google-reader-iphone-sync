@@ -7,12 +7,14 @@ CONFIG = {
 }
 
 OPTIONS = {
-	'output_path': 'entries',
-	'num_items':    300,
-	'no_download':  False,
-	'verbose':      False,
-	'cautious':     False,
-	'test':         False
+	'output_path':   'entries',
+	'num_items':     300,
+	'no_download':   False,
+	'verbose':       False,
+	'cautious':      False,
+	'test':          False,
+	'screen_width':  320,
+	'screen_height': 480.
 }
 
 STATS = {
