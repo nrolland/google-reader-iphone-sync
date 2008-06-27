@@ -16,6 +16,7 @@ from BeautifulSoup import BeautifulSoup, Tag
 CONFIG = {
 	'pickle_file': '.entries.pickle',
 	'user_config_file': 'config.yml',
+	'test_output_dir': 'test_entries',
 }
 
 OPTIONS = {
@@ -24,6 +25,7 @@ OPTIONS = {
 	'no_download':  False,
 	'verbose':      False,
 	'cautious':     False,
+	'test':         False
 }
 
 STATS = {
@@ -40,7 +42,7 @@ def danger(desc):
 	global OPTIONS
 	if not OPTIONS['cautious']: return
 	response = raw_input("%s. Continue? " % desc)
-	if not re.match('[yY]', response):
+	if not re.match('[yY]|(^$)', response):
 		print "Aborted."
 		sys.exit(2)
 		raise Exception("We should never get here!")
@@ -71,30 +73,6 @@ def try_remove(elem, lst):
 		lst.remove(elem)
 	except:
 		pass
-
-	
-
-def test():
-	items = [
-		{'author': u'pizzaburger',
-		 'categories': {u'user/-/label/03-comics---imagery': u'03-comics---imagery',
-		                u'user/-/state/com.google/fresh': u'fresh',
-		                u'user/-/state/com.google/reading-list': u'reading-list'},
-		 'content': u'<div><br><p>Thx Penntastic</p>\n<p><img src="http://failblog.files.wordpress.com/2008/06/assembly-fail.jpg" alt="fail owned pwned pictures"></p>\n<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/failblog.wordpress.com/1234/"> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/failblog.wordpress.com/1234/"> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/failblog.wordpress.com/1234/"></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=failblog.org&amp;blog=2441444&amp;post=1234&amp;subd=failblog&amp;ref=&amp;feed=1"></div><img src="http://feeds.feedburner.com/~r/failblog/~4/318806514" height="1" width="1">',
-		 'crawled': 1214307453013L,
-		 'google_id': u'tag:google.com,2005:reader/item/dcb79527f18794d0',
-		 'link': u'http://feeds.feedburner.com/~r/failblog/~3/318806514/',
-		 'original_id': u'http://failblog.wordpress.com/?p=1234',
-		 'published': 1214269209.0,
-		 'sources': {u'feed/http://feeds.feedburner.com/failblog': u'tag:google.com,2005:reader/feed/http://feeds.feedburner.com/failblog'},
-		 'summary': u'',
-		 'title': u'Assembly Fail',
-		 'updated': 1214269209.0}
-	]
-	
-	for i in items:
-		theItem  = Item(i)
-		print theItem.basename()
 
 ## processing modules:
 def insert_alt_text(item):
@@ -185,7 +163,7 @@ class Item:
 	def is_read(self):
 		return 'read' in self.item['categories']
 	
-	def mark_as_read(self):
+	def delete(self):
 		global READER, OPTIONS
 		for f in glob.glob(OPTIONS['output_path'] + '/*.' + self.key() + '.*'):
 			print "Removing file: " + f
@@ -194,6 +172,9 @@ class Item:
 
 def mark_id_as_read(google_id):
 	global READER
+	if OPTIONS['test']:
+		print "Not telling google about anything - we're testing!"
+		return
 	res = READER.set_read(google_id)
 	if not res:
 		print "Failed to mark item as read"
@@ -286,6 +267,7 @@ def tag(name, content = None, attrs=None):
 	s += '>' + e(content) + '</' + name + '>'
 	return s
 
+
 def download_new_items():
 	global READER, OPTIONS, CONFIG, STATS, db
 		
@@ -331,8 +313,8 @@ def download_new_items():
 					# item has been read either online or offline
 					print "READ: " + name
 					STATS['read'] += 1
-					danger("About to mark item as read")
-					item.mark_as_read()
+					danger("About to delete item")
+					item.delete()
 		
 		line()
 	
@@ -342,35 +324,58 @@ def download_new_items():
 		print "(%s items failed to parse)" % STATS['failed']
 		
 	
+"""
+Parse options from the command-line (sys.argv) or from the passed-in options array
+"""
 def parse_options(argv = None):
-	global OPTIONS
+	global OPTIONS, CONFIG
 
 	if argv is None:
 		argv = sys.argv[1:]
 		
-	(opts, argv) = getopt(argv, "c:vCn:d", ['conf', 'verbose', 'cautious', 'num-entries','no-download'])
+	(opts, argv) = getopt(argv, "n:vCdt", ['num-items=','verbose','cautious','no-download','test'])
 	for (key,val) in opts:
 		if key == '-v' or key == '--verbose':
 			OPTIONS['verbose'] = True
 			debug("Verbose mode enabled...")
-		elif key == '-c' or key == '--config-file':
-			OPTIONS['user_config_file'] = val
 		elif key == '-C' or key == '--cautious':
 			OPTIONS['cautious'] = True
 			OPTIONS['verbose']  = True
 			print "Cautious mode enabled..."
-		elif key == '-n' or key == '--num-feeds':
+		elif key == '-n' or key == '--num-items':
 			OPTIONS['num_items'] = int(val)
 			print "Number of items set to %s" % OPTIONS['num_items']
 		elif key == '-d' or key == '--no-download':
 			OPTIONS['no_download'] = True
 			print "Downloading turned off.."
+		elif key == '-t' or key == '--test':
+			OPTIONS['test'] = True
+			print "Test mode enabled - using %s" % CONFIG['test_output_dir']
 
-	
 	if len(argv) > 0:
 		OPTIONS['num_items'] = argv[0]
 		print "Number of items set to %s" % OPTIONS['num_items']
 
+	if OPTIONS['test']:
+		OPTIONS['output_path'] = CONFIG['test_output_dir']
+		try_shell('mkdir -p \'%s\'' % CONFIG['test_output_dir'])
+		try_shell('rm -rf \'%s/*\'' % CONFIG['test_output_dir'])
+		OPTIONS['num_items'] = 1
+
+
+"""
+Execute a shell command. if it returns a non-zero (error) status, raise an exception
+"""
+def try_shell(cmd):
+	debug("running command: " + cmd)
+	if os.system(cmd) != 0:
+		raise Exception("shell command failed:\n%s" % cmd)
+
+"""
+Login to google-reader with credentials in OPTIONS.
+Stores the logged-in reader in the global READER variable
+Raises exception if authentication fails
+"""
 def reader_login():
 	global READER, OPTIONS
 	READER = GoogleReader()
@@ -380,6 +385,9 @@ def reader_login():
 		raise Exception("Login failed")
 
 
+"""
+Logs in, syncs and downloads new items
+"""
 def execute():
 	global READER, OPTIONS, db
 	
@@ -395,6 +403,9 @@ def execute():
 		download_new_items()
 	db.save()
 
+"""
+Loads config.yml (or CONFIG['user_config_file']) and merges ith with the global OPTIONS hash
+"""
 def load_config(filename = None):
 	global OPTIONS
 	if filename is None:
@@ -416,9 +427,12 @@ def load_config(filename = None):
 		if not k in OPTIONS:
 			raise "Required setting \"%s\" is not set (in %s)." % (k, filename)
 
+"""
+Main program entry point - loads config, parses otions and kicks off the sync process
+"""
 def main():
-	parse_options()
 	load_config()
+	parse_options()
 	execute()
 
 if __name__ == '__main__':
