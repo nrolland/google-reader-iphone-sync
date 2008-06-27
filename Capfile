@@ -73,7 +73,7 @@ desc "Do a full sync"
 task :all do pull_without_web; sync; push end
 
 desc "Test things out..."
-task :testit do do_sync('--test') end
+task :t do do_sync('--test') end
 
 # make sure that folder is empty, aside from files matching allowed_patterns
 # (when it's a remote directory, it only ensures the directory exists)
@@ -103,7 +103,7 @@ end
 
 def do_sync(*opts)
 	return if $dry
-	synced = system "./src/googlesync.py #{opts.join(' ')} #{$app_opts.join(' ')}"
+	synced = system "./src/main.py #{opts.join(' ')} #{$app_opts.join(' ')}"
 	puts "Sync failed :(" unless synced
 end
 
