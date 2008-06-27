@@ -63,7 +63,6 @@ def load_config(filename = None):
 	f = file(filename,'r')
 	conf = yaml.load(f)
 	
-	# whitelist of keys we accept
 	required_keys = ['user','password', 'tag_list']
 	for key,val in conf.items():
 		app_globals.OPTIONS[key] = val
