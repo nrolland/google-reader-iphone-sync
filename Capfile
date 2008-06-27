@@ -100,7 +100,7 @@ end
 
 def do_sync(*opts)
 	return if $dry
-	synced = system "./src/google-sync.py #{opts.join(' ')} #{$app_opts.join(' ')}"
+	synced = system "./src/googlesync.py #{opts.join(' ')} #{$app_opts.join(' ')}"
 	puts "Sync failed :(" unless synced
 end
 

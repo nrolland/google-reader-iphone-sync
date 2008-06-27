@@ -11,6 +11,7 @@ import urllib
 import pickle
 import yaml
 from getopt import getopt
+from BeautifulSoup import BeautifulSoup, Tag
 
 CONFIG = {
 	'pickle_file': '.entries.pickle',
@@ -75,19 +76,34 @@ def try_remove(elem, lst):
 
 def test():
 	items = [
-		{
-			'google_id':'google_id',
-			'categories': ['ipod-images', 'unread'],
-			'updated': time.time(),
-			'title': u'Protec&#39;in pants!!',
-		}
+		{'author': u'pizzaburger',
+		 'categories': {u'user/-/label/03-comics---imagery': u'03-comics---imagery',
+		                u'user/-/state/com.google/fresh': u'fresh',
+		                u'user/-/state/com.google/reading-list': u'reading-list'},
+		 'content': u'<div><br><p>Thx Penntastic</p>\n<p><img src="http://failblog.files.wordpress.com/2008/06/assembly-fail.jpg" alt="fail owned pwned pictures"></p>\n<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/failblog.wordpress.com/1234/"> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/failblog.wordpress.com/1234/"> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/failblog.wordpress.com/1234/"></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/failblog.wordpress.com/1234/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/failblog.wordpress.com/1234/"></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=failblog.org&amp;blog=2441444&amp;post=1234&amp;subd=failblog&amp;ref=&amp;feed=1"></div><img src="http://feeds.feedburner.com/~r/failblog/~4/318806514" height="1" width="1">',
+		 'crawled': 1214307453013L,
+		 'google_id': u'tag:google.com,2005:reader/item/dcb79527f18794d0',
+		 'link': u'http://feeds.feedburner.com/~r/failblog/~3/318806514/',
+		 'original_id': u'http://failblog.wordpress.com/?p=1234',
+		 'published': 1214269209.0,
+		 'sources': {u'feed/http://feeds.feedburner.com/failblog': u'tag:google.com,2005:reader/feed/http://feeds.feedburner.com/failblog'},
+		 'summary': u'',
+		 'title': u'Assembly Fail',
+		 'updated': 1214269209.0}
 	]
 	
 	for i in items:
 		theItem  = Item(i)
 		print theItem.basename()
-		
-	
+
+## processing modules:
+def insert_alt_text(item):
+	soup = item['soup']
+	images = soup.findAll('img',{'title':True})
+	for img in images:
+		desc = BeautifulSoup('<p><b>( %s )</b></p>' % img['title'])
+		img.append(desc)
+	return item
 
 class Item:
 	def __init__(self, feedItem):
@@ -105,6 +121,12 @@ class Item:
 		time.strftime('%Y-%m-%d', time.localtime(self.item['updated'])) + ' ' + tag_str +
 			filter(lambda x: x not in '"\':+/$\\?*', ascii(remove_the_damn_html_entities(self.item['title'])))[:120] + ' .||' +
 			self.key() + '||' )
+	
+	def process(self):
+		return ## TODO: why doesn't this work? :'(
+		self.item['soup'] = BeautifulSoup(self.item['content'])
+		self.item = insert_alt_text(self.item)
+		self.item['content'] = self.item['soup'].prettify()
 	
 	def output(self):
 		global OPTIONS, db
@@ -149,6 +171,7 @@ class Item:
 		
 			# convert to pdf:
 			cmd = 'python src/html2pdf.py "%s" "%s"' % (base + '.html', base + '.pdf')
+			
 			debug("command: " + cmd)
 			ret = os.system(cmd)
 			debug("command returned: " + str(ret))
@@ -295,10 +318,13 @@ def download_new_items():
 					try:
 						print "NEW: " + name
 						danger("About to output item")
+						item.process()
 						item.output()
 						STATS['new'] += 1
 					except Exception,e:
 						print " ** FAILED **: " + str(e)
+						if OPTIONS['verbose']:
+							raise e
 						STATS['failed'] += 1
 			else:
 				if state == True or item.is_read():
@@ -344,15 +370,20 @@ def parse_options(argv = None):
 	if len(argv) > 0:
 		OPTIONS['num_items'] = argv[0]
 		print "Number of items set to %s" % OPTIONS['num_items']
-	
 
-def execute():
-	global READER, OPTIONS, db
+def reader_login():
+	global READER, OPTIONS
 	READER = GoogleReader()
 	READER.identify(OPTIONS['user'], OPTIONS['password'])
 	
 	if not READER.login():
 		raise Exception("Login failed")
+
+
+def execute():
+	global READER, OPTIONS, db
+	
+	reader_login()
 
 	line()
 	db = DB()
