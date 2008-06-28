@@ -11,13 +11,12 @@ from lib.GoogleReader import GoogleReader, CONST
 import app_globals
 
 
-
-"""
-Login to google-reader with credentials in OPTIONS.
-Stores the logged-in reader in the global READER variable
-Raises exception if authentication fails
-"""
 def reader_login():
+	"""
+	Login to google-reader with credentials in OPTIONS.
+	Stores the logged-in reader in the global READER variable
+	Raises exception if authentication fails
+	"""
 	app_globals.READER = GoogleReader()
 	app_globals.READER.identify(
 		app_globals.OPTIONS['user'],
@@ -27,10 +26,11 @@ def reader_login():
 		raise Exception("Login failed")
 
 
-"""
-Logs in, syncs and downloads new items
-"""
+
 def execute():
+	"""
+	Logs in, syncs and downloads new items
+	"""
 	reader_login()
 
 	line()
@@ -44,10 +44,10 @@ def execute():
 	app_globals.DATABASE.save()
 
 
-"""
-Downloads new items from google reader
-"""
 def download_new_items():
+	"""
+	Downloads new items from google reader
+	"""
 	for feed_tag in app_globals.OPTIONS['tag_list']:
 		print "Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], feed_tag)
 		feed = app_globals.READER.get_feed(None,
@@ -101,10 +101,10 @@ def download_new_items():
 		print "(%s items failed to parse)" % app_globals.STATS['failed']
 
 
-"""
-Main program entry point - loads config, parses otions and kicks off the sync process
-"""
 def main():
+	"""
+	Main program entry point - loads config, parses otions and kicks off the sync process
+	"""
 	load_config()
 	parse_options()
 	execute()

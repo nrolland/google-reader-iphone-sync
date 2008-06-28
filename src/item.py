@@ -1,12 +1,9 @@
-"""
-Exports:
-Item class
-"""
 import glob, time, os, re, urllib
 
 # local imports
 import app_globals
 from misc import *
+import template
 
 # processing modules
 from lib.BeautifulSoup import BeautifulSoup
@@ -14,47 +11,20 @@ from process import insert_alt_text
 
 
 def remove_the_damn_html_entities(s):
+	# surely there should be a library method somewhere to decode these. But for our purposes we can just ditch them.
 	return re.sub('&.{2,4};','',s)
 
 def esc(s):   return urllib.quote(string)
 def unesc(s): return urllib.unquote(s)
 
-"""
-Encode string in ASCII
-"""	
-def ascii(s):
-	return s.encode('ascii','ignore')
-
-"""
-encode string in utf-8
-"""
-def e(s):
-	return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
-
-"""
-make an HTML tag
-eg:
-
->>> tag("br")
-"<br />"
->>> tag("p", content="blah", attrs={"class": "highlight"}
-"<p class="highlight">blah</p>"
-"""
-def tag(name, content = None, attrs=None):
-	s = "<" + name
-	
-	if attrs is not None:
-		for key,val in attrs.items():
-			s += ' %s="%s"' % (key,val)
-		
-	if content is None:
-		s += " />"
-		return s
-	s += '>' + e(content) + '</' + name + '>'
-	return s
+def ascii(s): return s.encode('ascii','ignore') if isinstance(s, unicode) else s
+def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
 
 
 class Item:
+	"""
+	A wrapper around a GoogleReader item
+	"""
 	def __init__(self, feedItem):
 		self.item = feedItem
 
@@ -66,7 +36,7 @@ class Item:
 		for cat in self.item['categories']:
 			if re.search('ipod$', cat, re.I) is not None:
 				tag_str = '[txt] '
-		return e(
+		return utf8(
 		time.strftime('%Y-%m-%d', time.localtime(self.item['updated'])) + ' ' + tag_str +
 			filter(lambda x: x not in '"\':+/$\\?*', ascii(remove_the_damn_html_entities(self.item['title'])))[:120] + ' .||' +
 			self.key() + '||' )
@@ -78,44 +48,24 @@ class Item:
 	
 	def output(self):
 		base = app_globals.OPTIONS['output_path'] + '/' + self.basename()
-		f = open(base + '.html', 'w')
-		if f is None:
-			raise Exception("File open failed: " + base + '.html')
-		
-		try:
-			f.writelines([
-				'<html>',
-				'	<head>',
-				'		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />',
-				'		<title>' + e(self.item['title']) + '</title>',
-				'		<link rel="stylesheet" href="../src/style.css" type="text/css" />',
-				'	</head>',
-				'	<body>'])
 
-			f.writelines([
-				'<a href="' + e(self.item['link']) + '">',
-					tag('h3',self.item['title']),
-				'</a>'])
-			
-			f.write(tag('br'))
+		render_object = {
+			'title_link':  '<a href="' + utf8(self.item['link']) + '">' + utf8(self.item['title']) + '</a>',
+			'title':       utf8(self.item['title']),
+			'content':     utf8(self.item['content']),
+		}
+
+		# create the "via" link
+		try:
+			render_object['via'] = ' via ' + re.sub('.*://', '', self.item['sources'].keys()[0]).replace('/',' / ').replace('=',' = ') + '<br /><br />'
+		except:
+			pass
 		
-			try:
-				url = ' via ' + re.sub('.*://', '', self.item['sources'].keys()[0]).replace('/',' / ').replace('=',' = ')
-				f.write(tag('em', url))
-				f.write(tag('br'))
-				f.write(tag('br'))
-			except:
-				pass
-		
-			f.write(tag('div', self.item['content']))
-		
-			f.writelines([
-				'	</body>',
-				'</html>'])
-			f.close()
-		
+		debug("rendering item to %s using template file %s" % (base + '.html', 'template/item.html'))
+		template.create(render_object, 'template/item.html', base + '.html')
+
+		try:
 			debug("converting to pdf")
-		
 			# convert to pdf:
 			cmd = 'python src/html2pdf.py ' + \
 				'-w ' + str(int(app_globals.OPTIONS['screen_width'])) + \
@@ -130,7 +80,9 @@ class Item:
 			else:
 				print "pdf conversion failed"
 		finally:
-			os.remove(base + '.html')
+			if not app_globals.OPTIONS['test']:
+				# cleanup
+				os.remove(base + '.html')
 	
 	def is_read(self):
 		return 'read' in self.item['categories']

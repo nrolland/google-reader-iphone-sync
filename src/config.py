@@ -13,14 +13,19 @@ from misc import *
 import app_globals
 
 
-"""
-Parse options from the command-line (sys.argv) or from the passed-in options array
-"""
 def parse_options(argv = None):
+	"""
+Usage:
+  -n, --num-items=[val]  set the number of items to download (per feed)
+  -v, --verbose          verbose output
+  -c, --cautious         cautious mode - prompt before performing destructive actions
+  -d, --no-download      don't download new items, just tell google reader about read items
+  -t, --test             run in test mode. Don't notify google reader of anything, and clobber "test_entries" for output
+"""
 	if argv is None:
 		argv = sys.argv[1:]
 		
-	(opts, argv) = getopt(argv, "n:vCdt", ['num-items=','verbose','cautious','no-download','test'])
+	(opts, argv) = getopt(argv, "n:vCdth", ['num-items=','verbose','cautious','no-download','test', 'help'])
 	for (key,val) in opts:
 		if key == '-v' or key == '--verbose':
 			app_globals.OPTIONS['verbose'] = True
@@ -38,6 +43,9 @@ def parse_options(argv = None):
 		elif key == '-t' or key == '--test':
 			app_globals.OPTIONS['test'] = True
 			print "Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir']
+		elif key == '-h' or key == '--help':
+			print parse_options.__doc__
+			sys.exit(1)
 
 	if len(argv) > 0:
 		app_globals.OPTIONS['num_items'] = argv[0]
@@ -49,10 +57,10 @@ def parse_options(argv = None):
 		try_shell('mkdir -p \'%s\'' % app_globals.CONFIG['test_output_dir'])
 
 
-"""
-Loads config.yml (or CONFIG['user_config_file']) and merges ith with the global OPTIONS hash
-"""
 def load_config(filename = None):
+	"""
+	Loads config.yml (or CONFIG['user_config_file']) and merges ith with the global OPTIONS hash
+	"""
 	if filename is None:
 		filename = app_globals.CONFIG['user_config_file']
 	
