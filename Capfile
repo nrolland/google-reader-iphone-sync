@@ -31,6 +31,8 @@ $rsync_opts = "--recursive --delete --progress --checksum"
 $remote_mac_path = "#{$mac_user}@#{$mac_server}:#{$mac_path}"
 $remote_ipod_path = "#{$ipod_user}@#{$ipod_server}:#{$ipod_path}"
 
+$run_opts = {}
+
 # -----------------------------------------
 # application options
 $app_opts = []
@@ -58,22 +60,40 @@ task :pull_without_web do
 end
 
 desc "Copy files from iPod"
-task :pull do pull_without_web ; sync_web end
+task :pull do pull_without_web ; pause("push read items info to google"); push_web end
 
-desc "sync to the web (get new items)"
-task :sync do do_sync end
+desc "sync to the web (mark as read; get new items)"
+task :sync_web do do_sync end
 
 desc "just mark-as-read on the web (don't download new stuff)"
-task :sync_web do do_sync('--no-download') end
+task :push_web do do_sync('--no-download') end
+	
+desc "update navigation on downloaded items"
+task :nav do do_sync('--nav-only') end
 
 desc "flush the dns cache"
 task :dns do `sudo dscacheutil -flushcache` end
 
 desc "Do a full sync"
-task :all do pull_without_web; sync; push end
+task :all do pull_without_web; pause("sync with google"); sync_web; pause("push files to ipod"); push; push_template end
 
-desc "Test things out..."
-task :t do do_sync('--test --num-items=1') end
+$only_one = true
+task :many do $only_one = false end
+
+desc "run a web-sync in test mode"
+task :t do
+	opts = ['--test']
+	opts << '--num-items=1' if $only_one
+	do_sync(opts.join(" "))
+end
+
+desc "pause between steps"
+task :pause do $run_opts[:pause] = true end
+
+desc "Copy the template files (buttons, styles) to iPod"
+task :push_template do
+	run "rsync #{$rsync_opts} --exclude='*.psd' #{$remote_mac_path}/../template #{$ipod_path}/../"
+end
 
 # make sure that folder is empty, aside from files matching allowed_patterns
 # (when it's a remote directory, it only ensures the directory exists)
@@ -83,7 +103,7 @@ def check_folder(path, remote = false)
 		run(cmd)
 	else
 		system(cmd)
-		allowed_patterns = [/\.pdf$/, /\.pickle$/]
+		allowed_patterns = [/\.pdf$/, /\.pickle$/, /\.html/]
 		Dir[path + '/**/*'].each do |f|
 #			puts f
 			unless allowed_patterns.any? { |pattern| f =~ pattern }
@@ -101,9 +121,17 @@ EOF
 	end
 end
 
+def pause(desc = "something")
+	if $run_opts[:pause]
+		puts("About do #{desc}...")
+		puts("  [press return to continue]")
+		$stdin.gets
+	end
+end
+
 def do_sync(*opts)
 	return if $dry
 	synced = system "./src/main.py #{opts.join(' ')} #{$app_opts.join(' ')}"
-	puts "Sync failed :(" unless synced
+	puts "*** Sync failed ***" unless synced
 end
 

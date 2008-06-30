@@ -1,8 +1,52 @@
-body {
-	font-family: helvetica, sans-serif;
+html{
+	width:480;
+	margin-bottom:70px;
 }
 
+body {
+	font-family: helvetica, sans-serif;
+	color:white !important;
+	background:#333;
+	line-height: 1.3em;
+}
+
+a{ color:#acF; }
+
 h1, h2, h3, h4, h5, h6 {
-	color:#336;
+	color:#336 !important;
 	text-decoration:none;
 }
+
+
+#nav{
+	margin-top:20px;
+}
+
+#nav a, #nav div.sep{
+	display:block;
+	width:69px;
+	height:69px;
+	margin: 5px 0px;
+	color:transparent;
+	float:left;
+}
+
+#nav a.next {                           background: transparent url(img/next.png) no-repeat top left;   }
+#nav a.next:hover, #nav a.next:active { background: transparent url(img/a_next.png) no-repeat top left; }
+
+#nav a.prev{                            background: transparent url(img/prev.png) no-repeat top left;   }
+#nav a.prev:hover, #nav a.prev:active { background: transparent url(img/a_prev.png) no-repeat top left; }
+
+#nav a.up  {                            background: transparent url(img/up.png) no-repeat top left;   }
+#nav a.up:hover,   #nav a.up:active   { background: transparent url(img/a_up.png) no-repeat top left; }
+
+#nav div.sep{
+	width:2px;
+	background: transparent url(img/sep.png) no-repeat top left;
+}
+
+#nav a.sep:first, #nav a.sep:last{
+	display:none;
+}
+
+

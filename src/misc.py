@@ -39,3 +39,30 @@ def try_shell(cmd):
 	debug("running command: " + cmd)
 	if os.system(cmd) != 0:
 		raise Exception("shell command failed:\n%s" % cmd)
+
+def url_dirname(url):
+	"""
+	returns everything before and including the last slash in a URL
+	"""
+	return '/'.join(url.split('/')[:-1]) + '/'
+
+import os
+def ensure_dir_exists(path):
+	"""
+	takes a path, and ensures all drectories exist
+	"""
+	dirs = [x for x in os.path.split(path) if len(x) > 0]
+	active_dirs = []
+	for d in dirs:
+		active_dirs.append(d)
+		location = os.path.join(*active_dirs)
+		if not os.path.exists(location):
+			os.mkdir(location)
+
+def rm_rf(path):
+	danger("About to remove ENTIRE path below:\n%s" % path)
+	if os.path.exists(path):
+		os.system("rm -rf '%s'" % re.sub("'","\\\\'", path))
+
+def slashify_dbl_quotes(s):
+	return s.replace('\\','\\\\').replace('"','\\"')

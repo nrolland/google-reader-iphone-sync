@@ -2,9 +2,11 @@ from misc import *
 import app_globals
 import re
 
+import pdb
+
 def update(obj, input_filename, output_filename = None, restrict_to=None):
 	if output_filename is None:
-		outut_filename = input_filename
+		output_filename = input_filename
 	_process(obj, input_filename, output_filename, restrict_to)
 	
 def create(obj, input_filename, output_filename = None, restrict_to=None):
@@ -17,8 +19,10 @@ def get_str(obj):
 	Get a string value from an arbitrary object.
 	If it's callable, try to call it. If that fails, just convert it to a string.
 	"""
+	if obj is None:
+		return ""
 	try:
-		res = str(getattr(obj, '__call__')())
+		res = str(obj())
 	except Exception:
  		res = str(obj)
 	return res

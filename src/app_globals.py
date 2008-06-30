@@ -1,9 +1,12 @@
-# These are some defaults. They get overrided / extended by config.py
+# These are some defaults and other globals.
+# anything in OPTIONS can be overrided / extended by config.py in reaction to command-line or config.yml input
 
 CONFIG = {
 	'pickle_file': '.entries.pickle',
 	'user_config_file': 'config.yml',
 	'test_output_dir': 'test_entries',
+	'resources_path': '_resources',
+	'convert_to_pdf': False,
 }
 
 OPTIONS = {
@@ -14,7 +17,8 @@ OPTIONS = {
 	'cautious':      False,
 	'test':          False,
 	'screen_width':  320,
-	'screen_height': 480.
+	'screen_height': 480,
+	'nav_only':      False,
 }
 
 STATS = {
@@ -29,3 +33,5 @@ STATS = {
 READER = None
 DATABASE = None
 
+def file_extension():
+	return 'pdf' if CONFIG['convert_to_pdf'] else 'html'

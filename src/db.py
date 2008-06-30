@@ -15,7 +15,8 @@ class DB:
 		self.read = self.load_previous_unread_items()
 		
 		# now look for still-unread items:
-		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.pdf'):
+		file_extension = app_globals.file_extension()
+		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + file_extension):
 			key = self.get_key(f)
 			if not key:
 				continue
@@ -26,7 +27,7 @@ class DB:
 		debug("read:   " + str(self.read))
 	
 	def add_item(self, item):
-		self.unread.append(item.key())
+		self.unread.append(item.key)
 		
 	def get_key(self, str):
 		match = re.search('\.\|\|([^|]*)\|\|\.[^.]*$', str)

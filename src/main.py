@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # general includes
-import sys
+import sys, glob, urllib2
 
 # local includes
 from config import parse_options, load_config
@@ -9,6 +9,7 @@ from item import Item
 from misc import *
 from lib.GoogleReader import GoogleReader, CONST
 import app_globals
+import template
 
 
 def reader_login():
@@ -31,6 +32,9 @@ def execute():
 	"""
 	Logs in, syncs and downloads new items
 	"""
+	ensure_dir_exists(app_globals.OPTIONS['output_path'])
+	ensure_dir_exists(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['resources_path'])
+
 	reader_login()
 
 	line()
@@ -43,6 +47,27 @@ def execute():
 		download_new_items()
 	app_globals.DATABASE.save()
 
+def insert_navigation():
+	files = [None, None, None]
+	files_to_edit = glob.glob(app_globals.OPTIONS['output_path'] + '/*.html')
+	files_to_edit.append(None)
+	for f in files_to_edit:
+		
+		files.pop(0)
+		files.append(f)
+		
+		obj = {}
+		prev = files[-3]
+		next = files[-1]
+		filename = files[-2]
+		if prev is not None:
+			obj['nav_prev'] = '<a href="' + urllib2.quote(slashify_dbl_quotes(os.path.basename(prev))) + '" class="prev">PREVIOUS</a>'
+		if next is not None:
+			obj['nav_next'] = '<a href="' + urllib2.quote(slashify_dbl_quotes(os.path.basename(next))) + '" class="next">NEXT</a>'
+		if filename is not None:
+			obj['nav_up'] = '<a href="./" class="up">UP</a>'
+			debug("Updating navigation for file: " + filename)
+			template.update(obj, filename, restrict_to = ['nav_prev', 'nav_next','nav_email','nav_del','nav_up'])
 
 def download_new_items():
 	"""
@@ -69,11 +94,11 @@ def download_new_items():
 			debug('-' * 50)
 		
 			item = Item(entry)
-			state = app_globals.DATABASE.is_read(item.key())
-			name = item.basename()
+			state = app_globals.DATABASE.is_read(item.key)
+			name = item.basename
 		
 			if state is None:
-				if not item.is_read():
+				if not item.is_read:
 					try:
 						print "NEW: " + name
 						danger("About to output item")
@@ -86,7 +111,7 @@ def download_new_items():
 							raise
 						app_globals.STATS['failed'] += 1
 			else:
-				if state == True or item.is_read():
+				if state == True or item.is_read:
 					# item has been read either online or offline
 					print "READ: " + name
 					app_globals.STATS['read'] += 1
@@ -107,7 +132,13 @@ def main():
 	"""
 	load_config()
 	parse_options()
-	execute()
+	
+	if not app_globals.OPTIONS['nav_only']:
+		execute()
+	
+	print "Updating navigation for all items..."
+	insert_navigation()
+
 
 if __name__ == '__main__':
 	sys.exit(main())
