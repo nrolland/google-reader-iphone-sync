@@ -11,12 +11,12 @@ tag_list:
 
 # settings for your iPhone / iPod Touch
 iphone_hostname: "iPod.local"
-iphone_user: "mobile"
-iphone_destination_path: "~mobile/Media/PDF/RSS/"
+iphone_user: "root"
+iphone_destination_path: "RSS/" # this is a path within ~mobile/media
 
 # these aren't necessary to provide if you have set
 # up authorized ssh-keys for both your mac and iPhone:
-iphone_password: "alpine"
+iphone_password: "dottie"
 mac_password: "your_login_password"
 
 

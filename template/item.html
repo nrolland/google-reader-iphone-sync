@@ -8,7 +8,7 @@
 	</head>
 	<body>
 
-		<h3>
+		<h3 id="title">
 			<!--{title_link}-->
 		</h3>
 		
@@ -21,15 +21,15 @@
 		</div>
 
 		<div id="nav">
-			<!--{nav_prev}-->
+			<a class="prev" href="./?action=prev">&lt;- previous</a>
 			<div class="sep"></div>
-			<!--{nav_up}-->
+			<a class="up" href="./">^ up</a>
 			<div class="sep"></div>
-			<!--{nav_email}-->
+			<a class="email" href="#" onclick="return email()">email</a>
 			<div class="sep"></div>
-			<!--{nav_del}-->
+			<a class="delete" href="#" onclick="return delete_fn()">x delete</a>
 			<div class="sep"></div>
-			<!--{nav_next}-->
+			<a class="next" href="./?action=next">next -&gt;</a>
 		</div>
 
 	</body>

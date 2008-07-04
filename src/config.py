@@ -20,13 +20,13 @@ Usage:
   -v, --verbose          verbose output
   -c, --cautious         cautious mode - prompt before performing destructive actions
   -d, --no-download      don't download new items, just tell google reader about read items
-  -N, --nav-only         just update navigational links in existing downloaded items
+  -T, --template         just update the template used in existing downloaded items
   -t, --test             run in test mode. Don't notify google reader of anything, and clobber "test_entries" for output
 """
 	if argv is None:
 		argv = sys.argv[1:]
 		
-	(opts, argv) = getopt(argv, "n:vCdthN", ['num-items=','verbose','cautious','no-download','test', 'help', 'nav-only'])
+	(opts, argv) = getopt(argv, "n:vCdthT", ['num-items=','verbose','cautious','no-download','test', 'help', 'template'])
 	for (key,val) in opts:
 		if key == '-v' or key == '--verbose':
 			app_globals.OPTIONS['verbose'] = True
@@ -44,8 +44,8 @@ Usage:
 		elif key == '-t' or key == '--test':
 			app_globals.OPTIONS['test'] = True
 			print "Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir']
-		elif key == '-N' or key == '--nav-only':
-			app_globals.OPTIONS['nav_only'] = True
+		elif key == '-T' or key == '--template':
+			app_globals.OPTIONS['template_only'] = True
 			print "Just updating item navigation links..."
 		elif key == '-h' or key == '--help':
 			print parse_options.__doc__

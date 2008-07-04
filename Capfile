@@ -15,7 +15,7 @@ $mac_user = config['mac_user'] || `whoami`.chomp!
 $mac_server = `hostname`.chomp!
 
 # servers & paths
-$ipod_path = config['iphone_destination_path']
+$ipod_path = '/var/mobile/Media/' + config['iphone_destination_path']
 $mac_path	= `pwd`.chomp! + "/entries/"
 
 $ipod_server = ENV['IP'] || config['iphone_hostname']
@@ -68,9 +68,9 @@ task :sync_web do do_sync end
 desc "just mark-as-read on the web (don't download new stuff)"
 task :push_web do do_sync('--no-download') end
 	
-desc "update navigation on downloaded items"
-task :nav do do_sync('--nav-only') end
-
+desc "update templates on downloaded items"
+task :template do do_sync('--template') end
+	
 desc "flush the dns cache"
 task :dns do `sudo dscacheutil -flushcache` end
 
@@ -95,6 +95,25 @@ task :push_template do
 	run "rsync #{$rsync_opts} --exclude='*.psd' #{$remote_mac_path}/../template #{$ipod_path}/../"
 end
 
+desc "deploy lighttpd directory listing module"
+task :lighttpd do
+	dest_dir = '/var/mobile/Media/.dirlist/'
+	current_dir = `pwd`.chomp!
+	src = "#{$mac_user}@#{$mac_server}:#{current_dir}/lighttpd"
+	run "rsync --recursive --progress --checksum --exclude='.*' '#{src}/dirlist/' '#{dest_dir}'"
+	run "rsync --progress --checksum --exclude='.*' '#{src}/lighttpd.conf' '/usr/local/etc/lighttpd.conf'"
+end
+
+desc "install everything on your iPod / iPhone"
+task :install do
+	lighttpd
+	push_template
+	run("mkdir -p '#{$ipod_path}'")
+	puts "All set up!"
+end
+
+
+
 # make sure that folder is empty, aside from files matching allowed_patterns
 # (when it's a remote directory, it only ensures the directory exists)
 def check_folder(path, remote = false)
@@ -103,14 +122,14 @@ def check_folder(path, remote = false)
 		run(cmd)
 	else
 		system(cmd)
-		allowed_patterns = [/\.pdf$/, /\.pickle$/, /\.html/]
-		Dir[path + '/**/*'].each do |f|
+		allowed_patterns = [/\.pdf$/, /\.pickle$/, /\.html/,/_resources/]
+		Dir[path + '/*'].each do |f|
 #			puts f
 			unless allowed_patterns.any? { |pattern| f =~ pattern }
 				raise <<-EOF
 
 #{'*' * 80}
-ERROR: The destination folder contains non-PDF files:
+ERROR: The destination folder contains non-generated files:
 #{path}
 I'm not going to go ahead, because I've accidentally
 deleted my whole source tree in the past. It pays to be careful.

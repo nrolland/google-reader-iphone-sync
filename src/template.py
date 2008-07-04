@@ -8,6 +8,15 @@ def update(obj, input_filename, output_filename = None, restrict_to=None):
 	if output_filename is None:
 		output_filename = input_filename
 	_process(obj, input_filename, output_filename, restrict_to)
+
+def update_template(template_filename, input_filename, output_filename=None):
+	"""
+	update the output of a previous template to a new template version
+	"""
+	if output_filename is None:
+		output_filename = input_filename
+	obj = _extract_templated_values(input_filename)
+	_process(obj, template_filename, output_filename, None)
 	
 def create(obj, input_filename, output_filename = None, restrict_to=None):
 	if output_filename is None:
@@ -62,6 +71,23 @@ def process_string(subject_str, obj, restrict_to = None):
 				
 	return subject_str
 
+def extract_values(contents):
+	"""
+	grab a hash of values that were used to create the given
+	output string (from a previous template render)
+	
+	>>> extract_values('fkdjlf<!--{something=}-->Value!<!--{=something}-->dsds')
+	{'something': 'Value!'}
+	"""
+	obj = {}
+	matches = _expanded_regex().finditer(contents)
+	for match in matches:
+		key = match.groupdict()['tag']
+		content = match.groupdict()['content']
+		obj[key] = content
+	return obj
+
+
 default_tagex = '[a-zA-Z0-9_]+'
 def _unexpanded_regex(tagex = None):
 	global default_tagex
@@ -73,7 +99,7 @@ def _expanded_regex(tagex = None):
 	global default_tagex
 	if tagex is None:
 		tagex = default_tagex
-	return re.compile('<!--\{(?P<tag>' + tagex + ')=\}-->.*?<!--\{=(?P=tag)\}-->', re.DOTALL) # the dot can match newlines
+	return re.compile('<!--\{(?P<tag>' + tagex + ')=\}-->(?P<content>.*?)<!--\{=(?P=tag)\}-->', re.DOTALL) # the dot can match newlines
 
 
 ####################################################################################
@@ -88,6 +114,12 @@ def _process(obj, input_filename, output_filename, restrict_to):
 	outfile = file(output_filename, 'w')
 	outfile.write(contents)
 
+def _extract_templated_values(input_filename):
+	infile = file(input_filename, 'r')
+	contents = infile.read()
+	obj = extract_values(contents)
+	infile.close()
+	return obj
 
 def get_attribute(obj, attr):
 	"""

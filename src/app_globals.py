@@ -18,7 +18,7 @@ OPTIONS = {
 	'test':          False,
 	'screen_width':  320,
 	'screen_height': 480,
-	'nav_only':      False,
+	'template_only': False,
 }
 
 STATS = {

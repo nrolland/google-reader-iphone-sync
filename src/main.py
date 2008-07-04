@@ -47,7 +47,7 @@ def execute():
 		download_new_items()
 	app_globals.DATABASE.save()
 
-def insert_navigation():
+def update_templates():
 	files = [None, None, None]
 	files_to_edit = glob.glob(app_globals.OPTIONS['output_path'] + '/*.html')
 	files_to_edit.append(None)
@@ -66,8 +66,8 @@ def insert_navigation():
 			obj['nav_next'] = '<a href="' + urllib2.quote(slashify_dbl_quotes(os.path.basename(next))) + '" class="next">NEXT</a>'
 		if filename is not None:
 			obj['nav_up'] = '<a href="./" class="up">UP</a>'
-			debug("Updating navigation for file: " + filename)
-			template.update(obj, filename, restrict_to = ['nav_prev', 'nav_next','nav_email','nav_del','nav_up'])
+			debug("Updating template for file: " + filename)
+			template.update_template('template/item.html', filename)
 
 def download_new_items():
 	"""
@@ -133,11 +133,11 @@ def main():
 	load_config()
 	parse_options()
 	
-	if not app_globals.OPTIONS['nav_only']:
+	if not app_globals.OPTIONS['template_only']:
 		execute()
-	
-	print "Updating navigation for all items..."
-	insert_navigation()
+	else:
+		print "Updating templates for all items..."
+		update_templates()
 
 
 if __name__ == '__main__':

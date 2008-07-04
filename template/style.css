@@ -1,6 +1,6 @@
 html{
-	width:480;
-	margin-bottom:70px;
+	width:640;
+	padding-bottom:150px;
 }
 
 body {
@@ -31,14 +31,21 @@ h1, h2, h3, h4, h5, h6 {
 	float:left;
 }
 
-#nav a.next {                           background: transparent url(img/next.png) no-repeat top left;   }
-#nav a.next:hover, #nav a.next:active { background: transparent url(img/a_next.png) no-repeat top left; }
+#nav a.next         {  background: transparent url(img/next.png) no-repeat top left;   }
+#nav a.next:hover   { background: transparent url(img/a_next.png) no-repeat top left;  }
 
-#nav a.prev{                            background: transparent url(img/prev.png) no-repeat top left;   }
-#nav a.prev:hover, #nav a.prev:active { background: transparent url(img/a_prev.png) no-repeat top left; }
+#nav a.prev         {  background: transparent url(img/prev.png) no-repeat top left;   }
+#nav a.prev:hover   { background: transparent url(img/a_prev.png) no-repeat top left;  }
 
-#nav a.up  {                            background: transparent url(img/up.png) no-repeat top left;   }
-#nav a.up:hover,   #nav a.up:active   { background: transparent url(img/a_up.png) no-repeat top left; }
+#nav a.up           { background: transparent url(img/up.png) no-repeat top left;    }
+#nav a.up:hover     { background: transparent url(img/a_up.png) no-repeat top left;  }
+
+#nav a.delete       { background: transparent url(img/del.png) no-repeat top left;   }
+#nav a.delete:hover { background: transparent url(img/a_del.png) no-repeat top left; }
+
+#nav a.email        { background: transparent url(img/fwd.png) no-repeat top left;   }
+#nav a.email:hover  { background: transparent url(img/a_fwd.png) no-repeat top left; }
+
 
 #nav div.sep{
 	width:2px;

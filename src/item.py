@@ -20,17 +20,36 @@ def unesc(s): return urllib.unquote(s)
 def ascii(s): return s.encode('ascii','ignore') if isinstance(s, unicode) else s
 def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
 
+class MinimalItem:
+	"""
+	an empty item with skeleton functionality (that can be derived from its google_id)
+	"""
+	def __init__(self, google_id):
+		self.item = {'google_id': google_id}
+	
+	def get_key(self):
+		return urllib.quote(self.item['google_id'],safe='')
+	key = property(get_key)
+	
+	def get_resources_path(self):
+		return "%s/%s/%s" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'], self.key)
+	resources_path = property(get_resources_path)
 
-class Item:
+	def delete(self):
+		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.key + '.*'):
+			print "Removing file: " + f
+			rm_rf(f)
+		print "removing directory: %s" % self.resources_path
+		rm_rf(self.resources_path)
+
+
+class Item(MinimalItem):
 	"""
 	A wrapper around a GoogleReader item
 	"""
 	def __init__(self, feedItem):
 		self.item = feedItem
 
-	def get_key(self):
-		return urllib.quote(self.item['google_id'],safe='')
-		
 	def get_basename(self):
 		tag_str = ''
 		for cat in self.item['categories']:
@@ -40,6 +59,8 @@ class Item:
 		time.strftime('%Y-%m-%d', time.localtime(self.item['updated'])) + ' ' + tag_str +
 			filter(lambda x: x not in '"\':#+/$\\?*', ascii(remove_the_damn_html_entities(self.item['title'])))[:120] + ' .||' +
 			self.key + '||' )
+	basename = property(get_basename)
+
 	
 	def process(self):
 		# setup:
@@ -58,9 +79,6 @@ class Item:
 		
 		# teardown
 		self.item['content'] = self.item['soup'].prettify()
-	
-	def get_resources_path(self):
-		return "%s/%s/%s" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'], self.key)
 	
 	def output(self):
 		base = app_globals.OPTIONS['output_path'] + '/' + self.basename
@@ -103,16 +121,5 @@ class Item:
 	
 	def get_is_read(self):
 		return 'read' in self.item['categories']
-	
-	def delete(self):
-		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.key + '.*'):
-			print "Removing file: " + f
-			rm_rf(f)
-		rm_rf(self.resources_path)
-	
-	# properties!
-	key = property(get_key)
-	basename = property(get_basename)
-	resources_path = property(get_resources_path)
 	is_read = property(get_is_read)
 

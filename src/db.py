@@ -7,6 +7,7 @@ import pickle, re, urllib, glob
 # local imports
 import app_globals
 from misc import *
+from item import MinimalItem
 
 class DB:
 	def __init__(self):
@@ -60,6 +61,9 @@ class DB:
 			return False
 		return None
 	
+	def get_key(self, encoded_key):
+		return urllib.unquote(encoded_key)
+	
 	def mark_key_as_read(self, key):
 		google_id = urllib.unquote(key)
 		try:
@@ -77,10 +81,11 @@ class DB:
 			print "Failed to mark item as read"
 			raise Exception("Failed to mark item as read")
 
-	
 	def sync_to_google(self):
 		print "Syncing with google..."
 		if len(self.read) == 0: return
 		print "Marking %s items as read on google-reader" % len(self.read)
 		for key in self.read:
+			debug("marking as read: %s" % key)
 			self.mark_key_as_read(key)
+			MinimalItem(self.get_key(key)).delete()
