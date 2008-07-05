@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="../template/style.css" type="text/css" />
 		<script language="javascript" type="text/javascript" src="../template/main.js"></script>
 	</head>
-	<body>
+	<body onload="init()">
 
 		<h3 id="title">
 			<!--{title_link}-->
@@ -26,6 +26,8 @@
 			<a class="up" href="./">^ up</a>
 			<div class="sep"></div>
 			<a class="email" href="#" onclick="return email()">email</a>
+			<div class="sep"></div>
+			<a class="star" href="#" onclick="return star()">star</a>
 			<div class="sep"></div>
 			<a class="delete" href="#" onclick="return delete_fn()">x delete</a>
 			<div class="sep"></div>
