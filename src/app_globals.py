@@ -5,7 +5,7 @@ CONFIG = {
 	'pickle_file': '.entries.pickle',
 	'user_config_file': 'config.yml',
 	'test_output_dir': 'test_entries',
-	'resources_path': '.resources',
+	'resources_path': '_resources',
 	'convert_to_pdf': False,
 }
 

@@ -31,9 +31,9 @@ class MinimalItem:
 		return urllib.quote(self.item['google_id'],safe='')
 	key = property(get_key)
 	
-	def get.resources_path(self):
+	def get_resources_path(self):
 		return "%s/%s/%s" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'], self.key)
-	resources_path = property(get.resources_path)
+	resources_path = property(get_resources_path)
 
 	def delete(self):
 		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.key + '.*'):

@@ -40,7 +40,7 @@ def execute():
 	line()
 	app_globals.DATABASE = DB()
 	app_globals.DATABASE.sync_to_google()
-	app_globals.DATABASE.cleanup() # remove old .resources files
+	app_globals.DATABASE.cleanup() # remove old _resources files
 
 	if app_globals.OPTIONS['no_download']:
 		print "not downloading any new items..."
