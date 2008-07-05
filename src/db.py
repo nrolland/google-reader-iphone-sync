@@ -15,6 +15,7 @@ class DB:
 		# assume we've read everything that was left unread from last time
 		self.unread = []
 		self.read = self.load_previous_unread_items()
+		self.starred = self.load_starred_items_file()
 		
 		# now look for still-unread items:
 		file_extension = app_globals.file_extension()
@@ -25,8 +26,9 @@ class DB:
 			self.unread.append(key)
 			try_remove(key, self.read)
 		
-		debug("unread: " + str(self.unread))
-		debug("read:   " + str(self.read))
+		debug("unread:  " + str(self.unread))
+		debug("read:    " + str(self.read))
+		debug("starred: " + str(self.starred))
 	
 	def cleanup(self):
 		res_prefix = "%s/%s/" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'])
@@ -61,6 +63,13 @@ class DB:
 		except:
 			print "Note: loading of previous items failed"
 			return []
+	
+	def load_starred_items_file(self):
+		file_path = app_globals.OPTIONS['output_path'] + '/.starred'
+		try:
+			return [self.get_key(x.strip()) for x in file(file_path, 'r').readlines() if len(x.strip()) > 0]
+		except:
+			return []
 		
 	def save(self):
 		f = file(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['pickle_file'],'w')
@@ -78,28 +87,45 @@ class DB:
 	def unencode_key(self, encoded_key):
 		return urllib.unquote(encoded_key)
 	
-	def mark_key_as_read(self, key):
-		google_id = urllib.unquote(key)
-		try:
-			danger("Marking item %s as read" % google_id)
-			self.mark_id_as_read(google_id)
-		except:
-			print "Failed to mark item %s as read" % google_id
-	
-	def mark_id_as_read(self, google_id):
+	def google_do_with_key(self, action, key):
 		if app_globals.OPTIONS['test']:
 			print "Not telling google about anything - we're testing!"
 			return
+		google_id = urllib.unquote(key)
+		danger("Applying function %s to item %s" % (action, google_id))
+		action(google_id)
+	
+	def mark_id_as_read(self, google_id):
 		res = app_globals.READER.set_read(google_id)
 		if not res:
 			print "Failed to mark item as read"
 			raise Exception("Failed to mark item as read")
+	
+	def mark_id_as_starred(self, google_id):
+		res = app_globals.READER.add_star(google_id)
+		if not res:
+			print "Failed to add star to item"
+			raise Exception("Failed to add star to item")
 
 	def sync_to_google(self):
 		print "Syncing with google..."
-		if len(self.read) == 0: return
-		print "Marking %s items as read on google-reader" % len(self.read)
-		for key in self.read:
-			debug("marking as read: %s" % key)
-			self.mark_key_as_read(key)
-			MinimalItem(self.unencode_key(key)).delete()
+		self.mark_starred()
+#		self.mark_read()
+	
+	def mark_starred(self):
+		if len(self.starred) > 0:
+			print "Marking %s items as starred on google-reader" % len(self.starred)
+			for key in self.starred:
+				debug("marking as starred: %s" % key)
+				self.google_do_with_key(self.mark_id_as_starred, key)
+			debug("deleting .starred file")
+			if not app_globals.OPTIONS['test']:
+				os.remove(app_globals.OPTIONS['output_path'] + '/.starred')
+
+	def mark_read(self):
+		if len(self.read) > 0:
+			print "Marking %s items as read on google-reader" % len(self.read)
+			for key in self.read:
+				debug("marking as read: %s" % key)
+				self.google_do_with_key(self.mark_id_as_read, key)
+				MinimalItem(self.unencode_key(key)).delete()

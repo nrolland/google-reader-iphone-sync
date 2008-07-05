@@ -25,6 +25,11 @@ def output(s):
 		content.append("Content-type: text/html\n\n")
 	content.append(s)
 
+def append_to_file(f, text):
+	fl = file(f, 'a')
+	fl.write(text + '\n')
+	fl.close()
+
 def slashify_dbl_quotes(u):
 	return re.sub('\"','\\\\\"', re.sub('\\\\','\\\\\\\\',u))
 	
@@ -59,7 +64,7 @@ def get_nav_file(direction, current_file, path):
 	except:
 		output(repr(form))
 		output("sorry, couldn't find the current file (%s) in this directory" % str(current_file))
-		return None
+		return "./"
 
 	try:
 		new_pos = current_pos + offset
@@ -70,6 +75,7 @@ def get_nav_file(direction, current_file, path):
 			return files[new_pos]
 	except:
 		output("sorry, couldn't find the " + direction + " file from " + str(current_file))
+	return "./"
 
 # --------------------------------------------------------------------
 # setup globals
@@ -127,21 +133,45 @@ elif action == 'show':
 	output(footer)
 # --------------------------------------------------------------------
 elif action == 'delete' or action == 'delete_ref':
-	filename =  urllib2.unquote(form.getfirst('file','')) if action == 'delete' else http_ref_file
-	filename = '/' + filename.split('/')[-1]
-	if not os.path.isfile(path + filename):
-		output("file does not exist: " + path + filename)
+	filename = urllib2.unquote(form.getfirst('file','')) if action == 'delete' else http_ref_file
+	filename = filename.split('/')[-1]
+	if not os.path.isfile(path + '/' + filename):
+		output("file does not exist: " + path + '/' + filename)
 	else:
 		# grab the next file before this one disappears!
-		next_file = get_nav_file('next', os.path.basename(filename), path)
-		if(not safe_mode):
-			os.remove(path + filename)
+		next_file = get_nav_file('next', filename, path)
+		if not safe_mode:
+			os.remove(path +'/'+ filename)
 		if action == 'delete':
 			print 'OK'
 		else:
 			# continue on!
 			if next_file is not None:
 				redirect(next_file)
+# --------------------------------------------------------------------
+elif action == 'star_ref':
+	filename = http_ref_file
+	filename = filename.split('/')[-1]
+	
+	if not os.path.isfile(path + '/' + filename):
+		output("file does not exist: " + path + '/' + filename)
+	else:
+		# flag it for the backend
+		append_to_file(path + '/.starred', filename)
+		
+		# and now for the front-end:
+		next_file = get_nav_file('next', filename, path)
+		if not safe_mode:
+			os.remove(path + '/' + filename)
+
+		# now we send a response
+		if action == 'star':
+			# ajax
+			print 'OK'
+		else:
+			# redirect
+			redirect(next_file)
+			
 # --------------------------------------------------------------------
 elif action == 'next' or action == 'prev':
 	redirect(get_nav_file(action, http_ref_file, path))
