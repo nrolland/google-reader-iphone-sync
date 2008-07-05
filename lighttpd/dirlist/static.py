@@ -52,19 +52,23 @@ def header(title, title_link):
 				this.xhr = new XMLHttpRequest();
 				url = './';
 				vars = 'action='+action+'&file='+escape(filename);
-				xhr.open('POST', url + '?' + vars, true);
+				xhr.open('POST', url, true);
+				xhr.setRequestHeader('User-Agent','XMLHTTP/1.0');
+				xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == 4) {
 						resp = xhr.responseText;
 						if(resp != 'OK'){
 							alert("Error: " + resp);
+							document.location.href = url+'?action=echo&text='+escape(resp);
 						} else {
-							if(callback == nil){
+							if(callback != nil){
+								callback();
 							}
 						}
 					}
 				}
-				xhr.send('');
+				xhr.send(vars);
 			}
 			</script>
 

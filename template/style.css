@@ -1,6 +1,6 @@
 html{
-	width:640;
-	padding-bottom:150px;
+	width:680;
+	padding-bottom:100px;
 }
 
 body {
@@ -8,6 +8,7 @@ body {
 	color:white !important;
 	background:#333;
 	line-height: 1.3em;
+	font-size:0.9em;
 }
 
 a{ color:#acF; }
@@ -19,7 +20,7 @@ h1, h2, h3, h4, h5, h6 {
 
 
 #nav{
-	margin-top:20px;
+	margin-top:80px;
 }
 
 #nav a, #nav div.sep{
@@ -31,20 +32,20 @@ h1, h2, h3, h4, h5, h6 {
 	float:left;
 }
 
-#nav a.next         {  background: transparent url(img/next.png) no-repeat top left;   }
-#nav a.next:hover   { background: transparent url(img/a_next.png) no-repeat top left;  }
+#nav a.next         { background: transparent url(img/next.png) no-repeat top left;   }
+#nav a.next:hover   { background: transparent url(img/a_next.png) no-repeat top left; }
 
-#nav a.prev         {  background: transparent url(img/prev.png) no-repeat top left;   }
-#nav a.prev:hover   { background: transparent url(img/a_prev.png) no-repeat top left;  }
+#nav a.prev         { background: transparent url(img/prev.png) no-repeat top left;   }
+#nav a.prev:hover   { background: transparent url(img/a_prev.png) no-repeat top left; }
 
-#nav a.up           { background: transparent url(img/up.png) no-repeat top left;    }
-#nav a.up:hover     { background: transparent url(img/a_up.png) no-repeat top left;  }
+#nav a.up           { background: transparent url(img/up.png) no-repeat top left;     }
+#nav a.up:hover     { background: transparent url(img/a_up.png) no-repeat top left;   }
 
-#nav a.delete       { background: transparent url(img/del.png) no-repeat top left;   }
-#nav a.delete:hover { background: transparent url(img/a_del.png) no-repeat top left; }
+#nav a.delete       { background: transparent url(img/del.png) no-repeat top left;    }
+#nav a.delete:hover { background: transparent url(img/a_del.png) no-repeat top left;  }
 
-#nav a.email        { background: transparent url(img/fwd.png) no-repeat top left;   }
-#nav a.email:hover  { background: transparent url(img/a_fwd.png) no-repeat top left; }
+#nav a.email        { background: transparent url(img/fwd.png) no-repeat top left;    }
+#nav a.email:hover  { background: transparent url(img/a_fwd.png) no-repeat top left;  }
 
 
 #nav div.sep{

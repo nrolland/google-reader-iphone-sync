@@ -95,16 +95,15 @@ task :push_template do
 	run "rsync #{$rsync_opts} --exclude='*.psd' #{$remote_mac_path}/../template #{$ipod_path}/../"
 end
 
-desc "deploy lighttpd directory listing module"
 task :lighttpd do
 	dest_dir = '/var/mobile/Media/.dirlist/'
 	current_dir = `pwd`.chomp!
 	src = "#{$mac_user}@#{$mac_server}:#{current_dir}/lighttpd"
 	run "rsync --recursive --progress --checksum --exclude='.*' '#{src}/dirlist/' '#{dest_dir}'"
-	run "rsync --progress --checksum --exclude='.*' '#{src}/lighttpd.conf' '/usr/local/etc/lighttpd.conf'"
+	sudo "rsync --progress --checksum --exclude='.*' '#{src}/lighttpd.conf' '/usr/local/etc/lighttpd.conf'"
 end
 
-desc "install everything on your iPod / iPhone"
+desc "install required files on your iPod / iPhone"
 task :install do
 	lighttpd
 	push_template
@@ -122,19 +121,12 @@ def check_folder(path, remote = false)
 		run(cmd)
 	else
 		system(cmd)
-		allowed_patterns = [/\.pdf$/, /\.pickle$/, /\.html/,/_resources/]
+		allowed_patterns = [/\.pdf$/, /\.pickle$/, /\.html$/,/^./]
 		Dir[path + '/*'].each do |f|
 #			puts f
 			unless allowed_patterns.any? { |pattern| f =~ pattern }
-				raise <<-EOF
-
-#{'*' * 80}
-ERROR: The destination folder contains non-generated files:
-#{path}
-I'm not going to go ahead, because I've accidentally
-deleted my whole source tree in the past. It pays to be careful.
-#{'*' * 80}
-EOF
+				loud_error("ERROR: The destination folder contains non-generated files:\n#{path}\n" +
+					"Please clean out this folder or pick a different destination folder in config.yml")
 			end
 		end
 	end
@@ -154,3 +146,11 @@ def do_sync(*opts)
 	puts "*** Sync failed ***" unless synced
 end
 
+def loud_error(err)
+	raise <<-EOF
+
+#{'*' * 80}
+#{err}
+#{'*' * 80}
+EOF
+end

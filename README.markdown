@@ -1,7 +1,9 @@
 # google-reader-iphone-sync
 
-This is a small, cobbled-together tool which allows you to read your Google
-Reader feed items offline on your iPhone or iPod Touch.
+This is a small command-line tool which allows you to sync your Google
+Reader feed items to your iPhone or iPod Touch for offline reading. It
+handles pre-downloading of images, and includes a lighttpd module for
+viewing and navigating your feed items directly in MobileSafari.
 
 ## Dependencies:
 Since the tool is thrown together with what I had around, its
@@ -37,6 +39,13 @@ Run sync.command. This will
 To read your items, go to the following address (on your iPhone)
 http://127.0.0.1/RSS/
 (or the appropriate path, if you change iphone\_destination_path in config.yml)
+
+To mark an item as read on google reader, you just delete the file from your iPhone.
+Google reader will be updated when you next run the sync command.
+
+_**power users**: you can run subsets of tasks (like just pushing or pulling items to/from your iPhone,_
+_as well as syncing to google-reader without downloading any new items._
+_Run `cap -T` from the base directory to see what's available._
 
 
 ## Issues:

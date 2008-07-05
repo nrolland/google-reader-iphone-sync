@@ -3,6 +3,7 @@ Exports:
 DB class
 """
 import pickle, re, urllib, glob
+from sets import Set
 
 # local imports
 import app_globals
@@ -26,6 +27,19 @@ class DB:
 		
 		debug("unread: " + str(self.unread))
 		debug("read:   " + str(self.read))
+	
+	def cleanup(self):
+		res_prefix = "%s/%s/" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'])
+		glob_str = res_prefix + "*"
+		current_keys = Set([os.path.basename(x) for x in glob.glob(glob_str)])
+		unread_keys = Set(self.unread)
+		
+		current_but_read = current_keys.difference(unread_keys)
+		if len(current_but_read) > 0:
+			print "Cleaning up %s old resource directories" % len(current_but_read)
+			danger("remove %s old resource directories" % len(current_but_read))
+			for key in current_but_read:
+				rm_rf(res_prefix + key)
 	
 	def add_item(self, item):
 		self.unread.append(item.key)
@@ -61,7 +75,7 @@ class DB:
 			return False
 		return None
 	
-	def get_key(self, encoded_key):
+	def unencode_key(self, encoded_key):
 		return urllib.unquote(encoded_key)
 	
 	def mark_key_as_read(self, key):
@@ -88,4 +102,4 @@ class DB:
 		for key in self.read:
 			debug("marking as read: %s" % key)
 			self.mark_key_as_read(key)
-			MinimalItem(self.get_key(key)).delete()
+			MinimalItem(self.unencode_key(key)).delete()

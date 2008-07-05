@@ -55,9 +55,14 @@ li {
     font-weight: bold;
     list-style: none;
     font-family: helvetica;
-	min-height:38px;
+	min-height:30px;
 }
 
+a img {
+	position:absolute;
+	border:none;
+	left:10px;
+}
 li.folder {
 	background: url(/.dirlist/iPhoneArrow.png) no-repeat right center;
 }
@@ -116,7 +121,7 @@ a.button {
 	margin-left:0px;
 	padding-left:5px;
 	padding:6px;
-	padding-top:16px;
+	padding-top:10px;
 
 	/* Button image is 29px wide.
 		14px for the left part of the button
@@ -127,5 +132,5 @@ a.button {
 	/* -webkit-border-image: url(icons/whiteButton.png) 0 5 0 5; */
 	background-image: url(icons/del.png);
 	background-repeat: no-repeat;
-	background-position:6px 15px;
+	background-position:6px 10px;
 }

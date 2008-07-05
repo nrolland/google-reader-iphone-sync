@@ -31,9 +31,9 @@ class MinimalItem:
 		return urllib.quote(self.item['google_id'],safe='')
 	key = property(get_key)
 	
-	def get_resources_path(self):
+	def get.resources_path(self):
 		return "%s/%s/%s" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'], self.key)
-	resources_path = property(get_resources_path)
+	resources_path = property(get.resources_path)
 
 	def delete(self):
 		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.key + '.*'):
@@ -56,8 +56,8 @@ class Item(MinimalItem):
 			if re.search('ipod$', cat, re.I) is not None:
 				tag_str = '[txt] '
 		return utf8(
-		time.strftime('%Y-%m-%d', time.localtime(self.item['updated'])) + ' ' + tag_str +
-			filter(lambda x: x not in '"\':#+/$\\?*', ascii(remove_the_damn_html_entities(self.item['title'])))[:120] + ' .||' +
+		time.strftime('%Y-%m-%d|%H-%M-%S', time.localtime(self.item['updated'])) + ' ' + tag_str +
+			filter(lambda x: x not in '"\':#!+/$\\?*', ascii(remove_the_damn_html_entities(self.item['title'])))[:120] + ' .||' +
 			self.key + '||' )
 	basename = property(get_basename)
 
