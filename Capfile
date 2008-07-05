@@ -100,7 +100,7 @@ task :lighttpd do
 	current_dir = `pwd`.chomp!
 	src = "#{$mac_user}@#{$mac_server}:#{current_dir}/lighttpd"
 	run "rsync --recursive --progress --checksum --exclude='.*' '#{src}/dirlist/' '#{dest_dir}'"
-	sudo "rsync --progress --checksum --exclude='.*' '#{src}/lighttpd.conf' '/usr/local/etc/lighttpd.conf'"
+	run "rsync --progress --checksum --exclude='.*' '#{src}/lighttpd.conf' '/usr/local/etc/lighttpd.conf'"
 end
 
 desc "install required files on your iPod / iPhone"

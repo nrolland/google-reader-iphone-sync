@@ -3,7 +3,7 @@ import cgitb; cgitb.enable()
 from static import header, footer
 
 # turn on safe mode to prevent any actual file deletions
-safe_mode = True
+safe_mode = False
 
 form = cgi.FieldStorage()
 # gotta have an action (default is "show")
