@@ -44,7 +44,7 @@ def header(title, title_link):
 					function(){
 						// on success, remove the link node from the page:
 						var elem = link.parentNode
-						elem.parentNode.removeChild(elem)
+						elem.parentNode.removeChild(elem);
 					})
 			}
 		
@@ -58,11 +58,11 @@ def header(title, title_link):
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == 4) {
 						resp = xhr.responseText;
-						if(resp != 'OK'){
+						if(!resp.match('^OK')){
 							alert("Error: " + resp);
 							document.location.href = url+'?action=echo&text='+escape(resp);
 						} else {
-							if(callback != nil){
+							if(callback != null){
 								callback();
 							}
 						}
