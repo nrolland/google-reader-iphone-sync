@@ -110,7 +110,7 @@ class DB:
 	def sync_to_google(self):
 		print "Syncing with google..."
 		self.mark_starred()
-#		self.mark_read()
+		self.mark_read()
 	
 	def mark_starred(self):
 		if len(self.starred) > 0:
