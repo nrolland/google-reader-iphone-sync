@@ -6,6 +6,10 @@ from misc import *
 def insert_alt_text(item):
 	"""
 	insert bolded image title text after any image on the page
+	
+	>>> item = {'soup': BeautifulSoup('<p><img src="blah" title="some texts" /></p>')}
+	>>> insert_alt_text(item)
+	{'soup': <p><img src="blah" title="some texts" /><p><b>( some texts )</b></p></p>}
 	"""
 	soup = item['soup']
 	images = soup.findAll('img',{'title':True})
@@ -53,6 +57,15 @@ def download_images(item, dest_folder, href_prefix):
 def absolute_url(url, base = None):
 	"""
 	grab the absolute URL of a link that comes from {base}
+	
+	>>> absolute_url('http://abcd')
+	'http://abcd'
+	>>> absolute_url('abcd','http://google.com/stuff/file')
+	'http://google.com/stuff/abcd'
+	>>> absolute_url('abcd','http://google.com/stuff/file/')
+	'http://google.com/stuff/file/abcd'
+	>>> absolute_url('/abcd','http://google.com/stuff/file')
+	'http://google.com/abcd'
 	"""
 	if re.match('[a-zA-Z]+://', url):
 		return url

@@ -74,6 +74,11 @@ task :template do do_sync('--template') end
 desc "flush the dns cache"
 task :dns do `sudo dscacheutil -flushcache` end
 
+desc "test the source code with nosetest"
+task :nose do
+	system('nosetests -c nose.cfg')
+end
+
 desc "Do a full sync"
 task :all do pull_without_web; pause("sync with google"); sync_web; pause("push files to ipod"); push; push_template end
 

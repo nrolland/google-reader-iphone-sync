@@ -27,6 +27,9 @@ def line():
 	print '-' * 50
 
 def try_remove(elem, lst):
+	"""
+	Try to remove an element from a list. If it fails, nobody has to know...
+	"""
 	try:
 		lst.remove(elem)
 	except:
@@ -35,6 +38,12 @@ def try_remove(elem, lst):
 def try_shell(cmd):
 	"""
 	Execute a shell command. if it returns a non-zero (error) status, raise an exception
+	
+	>>> try_shell('[ 0 = 0 ]')
+	>>> try_shell('[ 0 = 1 ]')
+	Traceback (most recent call last):
+	Exception: shell command failed:
+	[ 0 = 1 ]
 	"""
 	debug("running command: " + cmd)
 	if os.system(cmd) != 0:
@@ -46,7 +55,6 @@ def url_dirname(url):
 	"""
 	return '/'.join(url.split('/')[:-1]) + '/'
 
-import os
 def ensure_dir_exists(path):
 	"""
 	takes a path, and ensures all drectories exist
@@ -65,4 +73,22 @@ def rm_rf(path):
 		os.system("rm -rf '%s'" % re.sub("'","\\\\'", path))
 
 def slashify_dbl_quotes(s):
+	r"""
+	>>> print slashify_dbl_quotes('\\ "')
+	\\ \"
+	"""
 	return s.replace('\\','\\\\').replace('"','\\"')
+
+
+def write_file(filename, content):
+	f = file(filename, 'w')
+	f.write(content)
+	f.close()
+
+def write_file_lines(filename, content):
+	f = file(filename, 'w')
+	f.writelines(content)
+	f.close()
+
+def touch_file(name):
+	write_file(name, '\n')

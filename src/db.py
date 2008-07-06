@@ -46,12 +46,17 @@ class DB:
 	def add_item(self, item):
 		self.unread.append(item.key)
 		
-	def get_key(self, str):
-		match = re.search('\.\|\|([^|]*)\|\|\.[^.]*$', str)
+	@staticmethod
+	def get_key(s):
+		"""
+		>>> DB.get_key('blah.||this is the key, guys!||.html')
+		'this is the key, guys!'
+		"""
+		match = re.search('\.\|\|([^|]*)\|\|\.[^.]*$', s)
 		if match:
 			return match.group(1)
 		else:
-			debug("Couldn't extract key from filename: %s" % str)
+			debug("Couldn't extract key from filename: %s" % s)
 			return None
 	
 	def load_previous_unread_items(self):
@@ -84,10 +89,12 @@ class DB:
 			return False
 		return None
 	
-	def unencode_key(self, encoded_key):
+	@staticmethod
+	def unencode_key(encoded_key):
 		return urllib.unquote(encoded_key)
 	
-	def google_do_with_key(self, action, key):
+	@staticmethod
+	def google_do_with_key(action, key):
 		if app_globals.OPTIONS['test']:
 			print "Not telling google about anything - we're testing!"
 			return
@@ -95,13 +102,15 @@ class DB:
 		danger("Applying function %s to item %s" % (action, google_id))
 		action(google_id)
 	
-	def mark_id_as_read(self, google_id):
+	@staticmethod
+	def mark_id_as_read(google_id):
 		res = app_globals.READER.set_read(google_id)
 		if not res:
 			print "Failed to mark item as read"
 			raise Exception("Failed to mark item as read")
 	
-	def mark_id_as_starred(self, google_id):
+	@staticmethod
+	def mark_id_as_starred(google_id):
 		res = app_globals.READER.add_star(google_id)
 		if not res:
 			print "Failed to add star to item"
@@ -129,3 +138,4 @@ class DB:
 				debug("marking as read: %s" % key)
 				self.google_do_with_key(self.mark_id_as_read, key)
 				MinimalItem(self.unencode_key(key)).delete()
+

@@ -37,19 +37,19 @@ def get_str(obj):
 	return res
 
 def process_string(subject_str, obj, restrict_to = None):
-	"""
+	r"""
 	Replaces {variable} substitutions that are within HTML comments.
 	The replacement includes html-comment markers so that the value can be replaced / updated if desired.
 
 	>>> process_string("<!--{content}-->", {'content':"la la la"})
-	"<!--{content=}-->la la la<!--{=content}-->"
+	'<!--{content=}-->la la la<!--{=content}-->'
 
-	>>> process_string("<!-- #{content=} -->previous\ncontent<!-- #{=content} -->", {'content':"new value"})
-	"<!--{content=}-->new value<!--{=content} -->"
+	>>> process_string('<!--{content=}-->previous\ncontent<!--{=content}-->', {'content':"new value"})
+	'<!--{content=}-->new value<!--{=content}-->'
 
 	# the restrict_to argument limits the set of keys that will be interpreted:
 	>>> process_string("<!--{content}-->", {'content':"new value"}, ['other_key'])
-	"<!--{content}-->"
+	'<!--{content}-->'
 	>>>
 	"""
 	# do expanded first, otherwise you'll expand it and match it again with expanded_re!
@@ -126,6 +126,16 @@ def get_attribute(obj, attr):
 	Much like the built-in getattr, except:
 	 - it returns None on failure
 	 - it tries dictionary lookups if no attribute is found
+	
+	>>> class Something:
+	... 	def __init__(self):
+	... 		self.internal_var = 'moop'
+
+	>>> get_attribute(Something(), 'internal_var')
+	'moop'
+
+	>>> get_attribute({'test_var':'test_val'}, 'test_var')
+	'test_val'
 	"""
 	
 	ret = None
@@ -137,11 +147,3 @@ def get_attribute(obj, attr):
 		except Exception:
 			pass
 	return ret
-
-
-if __name__ == '__main__':
-	app_globals.OPTIONS['verbose'] = True
-	# just print out some 
-	print _process_string("<!--{content}-->", {'content':"la la la"})
-	print "\n\n"
-	print _process_string("<!-- #{content=} -->previous\ncontent<!-- #{=content} -->", {'content':"new value"})
