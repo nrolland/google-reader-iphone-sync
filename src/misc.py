@@ -35,6 +35,17 @@ def try_remove(elem, lst):
 	except:
 		pass
 
+def matches_any_regex(s, regexes, flags = 0):
+	"""
+	>>> matches_any_regex('abcd',['.*f','agg'])
+	False
+	>> matches_any_regex('abCD',['bce?d','qwert'], flags=re.IGNORECASE)
+	True
+	"""
+	regexes = [re.compile(regex, flags) if isinstance(regex, str) else regex for regex in regexes]
+	return any([regex.search(s) for regex in regexes])
+
+
 def try_shell(cmd):
 	"""
 	Execute a shell command. if it returns a non-zero (error) status, raise an exception
