@@ -34,7 +34,7 @@ def download_images(item, dest_folder, href_prefix):
 	# (to prevent accidental execution of image files that look like scripts, for example)
 	safe_image_matches = ['jpe?g','gif','png','gif','bmp']
 	re_safe_image_matches = [re.compile('\.' + x + '$', re.IGNORECASE) for x in safe_image_matches]
-	images = [img for img in images if matches_any_regex(img, re_safe_images)]
+	images = [img for img in images if matches_any_regex(img['src'], re_safe_image_matches)]
 	
 	if len(images) > 0:
 		ensure_dir_exists(dest_folder)
