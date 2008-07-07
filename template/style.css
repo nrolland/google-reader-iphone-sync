@@ -1,5 +1,5 @@
 html{
-	width:680px;
+	max-width:580px;
 }
 
 body {
@@ -7,57 +7,63 @@ body {
 	color:white !important;
 	background:#333;
 	line-height: 1.3em;
-	font-size:0.9em;
+	font-size:0.87em;
 }
 
 a{ color:#acF; }
 
 h1, h2, h3, h4, h5, h6 {
-	color:#336 !important;
+	color:#acF !important;
 	text-decoration:none;
 }
 
-h3{
-	font-size:1.35em;
+h1{
+	font-size:1.8em;
+	line-height:1.4em
 }
 
 
-#nav{
-	padding-top:60px;
-	padding-bottom:160px;
+#nav_bottom{
+	padding-top:30px;
+	padding-bottom:100px;
 }
 
-#nav a, #nav div.sep{
+#nav_top{
+	padding-top:10px;
+	padding-bottom:80px;
+}
+
+.nav a, .nav div.sep{
 	display:block;
-	width:100px;
-	height:100px;
-	margin: 5px 0px;
+	width:  77px;
+	height: 77px;
+	margin: 0;
 	color:transparent;
 	float:left;
 }
 
-#nav a {
+.nav a {
 	background-color: transparent;
 	background-position: top left;
 	background-repeat: no-repeat;
 }
-#nav a:hover { background-position: 0px -100px;   }
+.nav a:hover { background-position: 0px -78px;   }
 
-#nav a.next         { background-image: url(img/next.png);    }
-#nav a.prev         { background-image: url(img/prev.png);    }
-#nav a.up           { background-image: url(img/up.png);      }
-#nav a.delete       { background-image: url(img/del.png);     }
-#nav a.email        { background-image: url(img/fwd.png);     }
-#nav a.star         { background-image: url(img/star.png);    }
-#nav a.star_on      { background-image: url(img/star_on.png); }
+.nav a.next         { background-image: url(img/next.png);    }
+.nav a.prev         { background-image: url(img/prev.png);    }
+.nav a.up           { background-image: url(img/up.png);      }
+.nav a.delete       { background-image: url(img/del.png);     }
+.nav a.email        { background-image: url(img/fwd.png);     }
+.nav a.star         { background-image: url(img/star.png);    }
+.nav a.star_on      { background-image: url(img/star_on.png); }
 
 
-#nav div.sep{
-	width:4px;
+.nav div.sep{
+	width:3px;
 	background: transparent url(img/sep.png) no-repeat top left;
 }
 
-#nav a.sep:first, #nav a.sep:last{
+.nav a.sep:first, .nav a.sep:last{
 	display:none;
 }
 

@@ -18,7 +18,6 @@ def insert_alt_text(item):
 		img.append(desc)
 	return item
 
-
 def download_images(item, dest_folder, href_prefix):
 	"""
 	Download all referenced images to the {dest} folder
@@ -30,6 +29,13 @@ def download_images(item, dest_folder, href_prefix):
 		base = item['base']
 	except:
 		base = None
+
+	# only accept a whitelist of image extensions for locally downloading
+	# (to prevent accidental execution of image files that look like scripts, for example)
+	safe_image_matches = ['jpe?g','gif','png','gif','bmp']
+	re_safe_image_matches = [re.compile('\.' + x + '$', re.IGNORECASE) for x in safe_image_matches]
+	images = [img for img in images if matches_any_regex(img, re_safe_images)]
+	
 	if len(images) > 0:
 		ensure_dir_exists(dest_folder)
 	for img in images:

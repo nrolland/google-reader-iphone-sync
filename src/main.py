@@ -41,6 +41,8 @@ def execute():
 	app_globals.DATABASE = DB()
 	app_globals.DATABASE.sync_to_google()
 	app_globals.DATABASE.cleanup() # remove old _resources files
+	
+	update_templates()
 
 	if app_globals.OPTIONS['no_download']:
 		print "not downloading any new items..."
@@ -137,7 +139,7 @@ def main():
 	if not app_globals.OPTIONS['template_only']:
 		execute()
 	else:
-		print "Updating templates for all items..."
+		print "Updating templates for all existing items..."
 		update_templates()
 
 

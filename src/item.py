@@ -37,9 +37,7 @@ class MinimalItem:
 
 	def delete(self):
 		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.key + '.*'):
-			print "Removing file: " + f
 			rm_rf(f)
-		print "removing directory: %s" % self.resources_path
 		rm_rf(self.resources_path)
 
 
