@@ -2,61 +2,25 @@ import cgi, os, re, urllib2, sys
 import cgitb; cgitb.enable()
 from static import header, footer
 
-# turn on safe mode to prevent any actual file deletions
-safe_mode = False
+import helpers
+helpers.DEBUG = False
+safe_mode = False # safe mode means we don't delete anything
+from helpers import *
 
 form = cgi.FieldStorage()
-# gotta have an action (default is "show")
-try:
-	action = form.getfirst('action','show')
-except:
-	action = 'show'
+DEBUG = DEBUG or param(form, 'debug', None) is not None
+dbg('-'*50)
+dbg("FORM:",form)
+action = param(form,'action','show')
+dbg('ACTION:',action)
 
-def env(key):
-	try:
-		return os.environ[key]
-	except:
-		return None
 
-content = []
-def output(s):
-	global content
-	if len(content) == 0:
-		content.append("Content-type: text/html\n\n")
-	content.append(s)
-
-def append_to_file(f, text):
-	fl = file(f, 'a')
-	fl.write(text + '\n')
-	fl.close()
-
-def slashify_dbl_quotes(u):
-	return re.sub('\"','\\\\\"', re.sub('\\\\','\\\\\\\\',u))
-	
-def slashify_all_quotes(u):
-	return re.sub('\'','\\\\\'', slashify_dbl_quotes(u))
-
-def html_attr(s):
-	return cgi.escape(s)
-
-def url_safe(u):
-	return urllib2.quote(u)
-
-def url_in_html(u):
-	return html_attr(url_safe(u))
-
-def redirect(url):
-	print "location: " + url_safe(url) + "\n\n"
-	sys.exit(0)
-
-def file_list(path):
-	try:
-		# strip out any dotfiles
-		return [x for x in os.listdir(path) if x[0] != '.']
-	except:
-		return []
-	
 def get_nav_file(direction, current_file, path):
+	"""
+	Get the next/previous file in the given path (directory), relative to the current file name.
+	Returns None when there are no more files in the requested direction.
+	* direction is 'next' or 'prev'
+	"""
 	offset = 1 if direction == 'next' else -1
 	files = file_list(path)
 	try:
@@ -79,25 +43,34 @@ def get_nav_file(direction, current_file, path):
 
 # --------------------------------------------------------------------
 # setup globals
-rel_path = form.getfirst('path','')
+rel_path = param(form,'path','')
+dbg("rel_path:",rel_path)
 request_uri = env('REQUEST_URI')
+dbg("request URI:", request_uri)
 if '?' in request_uri:
 	request_uri = request_uri.split('?',1)[0]
+dbg("[trimmed] request URI:", request_uri)
+
 # split (& clean) the request_URI
 request_uri_parts = [x for x in request_uri.split('/') if len(x) > 1 and any([char != '.' for char in x])]
 request_uri = '/' + '/'.join(request_uri_parts)
+dbg("[cleaned] request URI:", request_uri)
 
 # get the whole path, including document_root
 path = env('DOCUMENT_ROOT') + request_uri
 path_parts = path.split('/')
+dbg("PATH:",path)
 
 # directory path
 dir_path = path_parts[:-1]
 
 http_ref = env('HTTP_REFERER')
+dbg("HTTP_REF:",http_ref)
 if http_ref is not None:
 	http_ref = re.sub('\?|#.*$','', http_ref)
 	http_ref_file = urllib2.unquote(http_ref).split('/')[-1]
+
+dbg("    - - -")
 
 # --------------------------------------------------------------------
 # now process all the action types
@@ -106,6 +79,7 @@ if action == 'echo':
 	output(urllib2.unquote(form.getfirst('text')))
 # --------------------------------------------------------------------
 elif action == 'show':
+	dbg("show")
 	title_link_parts = ['<a href="/">root</a>']
 	for i in range(0, len(request_uri_parts)):
 		title_link_parts.append('<a href="/' + url_in_html('/'.join(request_uri_parts[:i+1])) + '">' + request_uri_parts[i] + '</a>')
@@ -119,7 +93,7 @@ elif action == 'show':
 		output('<div>')
 		url = url_in_html(f)
 		# strip out ugly datestamps & google-reader tags
-		display_file = re.sub('^[^ ]* ','', re.sub(' \.\|\|.*$','',f))
+		display_file = re.sub('^[-|0-9]* ','', re.sub(' \.\|\|.*$','',f))
 		if os.path.isdir(path +'/'+ f):
 			output('<a href="' + url + '" class="folder"><li class="folder">')
 			output('<img src="/.dirlist/icons/folder.gif" height="15" />')
@@ -133,8 +107,10 @@ elif action == 'show':
 	output(footer)
 # --------------------------------------------------------------------
 elif action == 'delete' or action == 'delete_ref':
+	dbg("DELETE")
 	filename = urllib2.unquote(form.getfirst('file','')) if action == 'delete' else http_ref_file
 	filename = filename.split('/')[-1]
+	dbg("FILE:",filename)
 	if not os.path.isfile(path + '/' + filename):
 		output("file does not exist: " + path + '/' + filename)
 	else:
@@ -150,10 +126,13 @@ elif action == 'delete' or action == 'delete_ref':
 				redirect(next_file)
 # --------------------------------------------------------------------
 elif action == 'star_ref':
+	dbg("STAR")
 	filename = http_ref_file
 	filename = filename.split('/')[-1]
+	dbg("FILE:",filename)
 	
 	if not os.path.isfile(path + '/' + filename):
+		dbg("No such file.")
 		output("file does not exist: " + path + '/' + filename)
 	else:
 		# flag it for the backend
@@ -165,6 +144,7 @@ elif action == 'star_ref':
 			os.remove(path + '/' + filename)
 
 		# now we send a response
+		dbg("SUCCESS!")
 		if action == 'star':
 			# ajax
 			print 'OK'
@@ -177,9 +157,10 @@ elif action == 'next' or action == 'prev':
 	redirect(get_nav_file(action, http_ref_file, path))
 # --------------------------------------------------------------------
 
+dbg('-'*50)
+
 # print any output!
-for line in content:
-	print line
+print_content()
 
 # test / debug stuff:
 #print "<hr />"; cgi.test()
