@@ -90,6 +90,13 @@ def slashify_dbl_quotes(s):
 	"""
 	return s.replace('\\','\\\\').replace('"','\\"')
 
+def slashify_single_quotes(s):
+	r"""
+	>>> print slashify_single_quotes("\\ '")
+	\\ \'
+	"""
+	return s.replace('\\','\\\\').replace("'","\\'")
+
 
 def write_file(filename, content):
 	f = file(filename, 'w')
