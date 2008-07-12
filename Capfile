@@ -117,6 +117,30 @@ task :install do
 end
 
 
+# installing & running the code on your iPhone
+desc "install code on iPod"
+task :install_code do
+#		install_eggs
+		run "rsync #{$rsync_opts} #{$remote_mac_path}../src #{$ipod_path}"
+		run "scp #{$remote_mac_path}../config.yml #{$ipod_path}"
+end
+
+def install_egg_file(file, location='eggs')
+	path = location + '/' + file
+	python_plugin_path = '/usr/lib/python2.5/site-packages/'
+	system "scp '#{path}' '#{$ipod_user}@#{$ipod_server}:#{python_plugin_path}'" or loud_error("couldn't copy egg file: #{path}")
+	run "cd '#{python_plugin_path}' && unzip -uo '#{file}' && rm '#{file}'"
+end
+
+task :install_eggs do
+	install_egg_file('PyYAML-3.05-py2.5.egg')
+end
+
+task :run_remotely do
+	run "cd #{$ipod_path} && src/main.py"
+end
+
+
 
 # make sure that folder is empty, aside from files matching allowed_patterns
 # (when it's a remote directory, it only ensures the directory exists)
