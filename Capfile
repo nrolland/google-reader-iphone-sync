@@ -120,9 +120,23 @@ end
 # installing & running the code on your iPhone
 desc "install code on iPod"
 task :install_code do
-#		install_eggs
-		run "rsync #{$rsync_opts} #{$remote_mac_path}../src #{$ipod_path}"
-		run "scp #{$remote_mac_path}../config.yml #{$ipod_path}"
+		install_eggs
+		update_code
+end
+
+desc "update ipod code"
+task :update_code do
+	# put code in app bundle
+	local "mkdir -p GRiS.app"
+	local "cp -R app_contents/* GRiS.app"
+	local "cp -R src GRiS.app/"
+	local "cp config.yml GRiS.app/"
+	# sync it
+	run "rsync #{$rsync_opts} #{$remote_mac_path}../GRiS.app /Applications/"
+	# set the python executable
+	run 'ln -sf `which python` /Applications/GRiS.app/Python'
+	# and the entries folder
+	run "ln -sf #{$ipod_path} /Applications/GRiS.app/entries"
 end
 
 def install_egg_file(file, location='eggs')
@@ -173,6 +187,11 @@ def do_sync(*opts)
 	return if $dry
 	synced = system "./src/main.py #{opts.join(' ')} #{$app_opts.join(' ')}"
 	puts "*** Sync failed ***" unless synced
+end
+
+def local(cmd, error=nil)
+	error = "command failed: #{cmd}" if error.nil?
+	system(cmd) or loud_error(error)
 end
 
 def loud_error(err)
