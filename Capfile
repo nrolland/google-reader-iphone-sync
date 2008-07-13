@@ -124,13 +124,18 @@ task :install_code do
 		update_code
 end
 
-desc "update ipod code"
-task :update_code do
+desc "crate .app package"
+task :make_app do
 	# put code in app bundle
 	local "mkdir -p GRiS.app"
 	local "cp -R app_contents/* GRiS.app"
 	local "cp -R src GRiS.app/"
 	local "cp config.yml GRiS.app/"
+end
+
+desc "update ipod code"
+task :update_code do
+	make_app
 	# sync it
 	run "rsync #{$rsync_opts} #{$remote_mac_path}../GRiS.app /Applications/"
 	# set the python executable

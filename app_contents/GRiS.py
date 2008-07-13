@@ -1,105 +1,75 @@
 import objc
-from _uicaboodle import UIApplicationMain
+from _uicaboodle import *
 from objc import YES, NO, NULL
-from sqlite3 import dbapi2 as sqlite 
+
+from src.config import load_config
+import src.app_globals as app_globals
 
 objc.loadBundle("Celestial", globals(), "/System/Library/Frameworks/Celestial.framework")
 objc.loadBundle("UIKit", globals(), "/System/Library/Frameworks/UIKit.framework")
 
+
+class FeedList(NSObject):
+	def init(self):
+		self.subscriptions = app_globals.OPTIONS['tag_list']
+		return self
+
+	# tableview datasource methods
+	@objc.signature("@@:@i@@")
+	def table_cellForRow_column_reusing_(self, table, row, col, reusing):
+		if reusing is not None:
+			cell = reusing
+		else:
+			cell = UIImageAndTextTableCell.alloc().init()
+		cell.setTitle_(self.subscriptions[row])
+		return cell
+		
+	@objc.signature("i@:@")
+	def numberOfRowsInTable_(self, table):
+		return len(self.subscriptions)
+	
+	
+
 class PYApplication(UIApplication):
-    def getName(self, contact):
-        name = contact["first"]
-        if contact["last"] is not None:
-            name += " " + contact["last"]
-        return name
+	@objc.signature("v@:@")
+	def applicationDidFinishLaunching_(self, unused):
+		outer = UIHardware.fullScreenApplicationContentRect()
+		self.window = UIWindow.alloc().initWithFrame_(outer)
 
-    @objc.signature("i@:@")
-    def numberOfSectionsInSectionList_(self, list):
-        return len(self.sections_)
+		self.window.orderFront_(self)
+		self.window.makeKey_(self)
+		self.window._setHidden_(NO)
 
-    @objc.signature("@@:@i")
-    def sectionList_titleForSection_(self, list, section):
-        return self.sections_[section]["title"]
+		inner = self.window.bounds()
+		navsize = UINavigationBar.defaultSize()
+		navrect = ((0, 0), (inner[1][0], navsize[1]))
 
-    @objc.signature("i@:@i")
-    def sectionList_rowForSection_(self, list, section):
-        return self.sections_[section]["row"]
+		self.view = UIView.alloc().initWithFrame_(self.window.bounds())
+		self.window.setContentView_(self.view)
 
-    @objc.signature("i@:@")
-    def numberOfRowsInTable_(self, table):
-        return len(self.contacts_)
+		self.navbar = UINavigationBar.alloc().initWithFrame_(navrect);
+		self.view.addSubview_(self.navbar)
 
-    @objc.signature("@@:@i@@")
-    def table_cellForRow_column_reusing_(self, table, row, col, reusing):
-        contact = self.contacts_[row]
-        if reusing is not None:
-            cell = reusing
-        else:
-            cell = UIImageAndTextTableCell.alloc().init()
-        cell.setTitle_(self.getName(contact))
-        return cell
+		self.navbar.setBarStyle_(1)
 
-    @objc.signature("c@:@i")
-    def table_canSelectRow_(self, table, row):
-        return NO
+		navitem = UINavigationItem.alloc().initWithTitle_("Feed List")
+		self.navbar.pushNavigationItem_(navitem)
+		
+		# add a tableView
+		load_config()
+		lower = ((0, navsize[1]), (inner[1][0], inner[1][1] - navsize[1]));
+		self.table = UITable.alloc().initWithFrame_(lower)
+		self.view.addSubview_(self.table)
 
-    @objc.signature("v@:@")
-    def applicationDidFinishLaunching_(self, unused):
-        self.contacts_ = []
-        self.sections_ = []
+		col = UITableColumn.alloc().initWithTitle_identifier_width_("Name", "name", 320)
 
-        db = sqlite.connect(self.userHomeDirectory() + "/Library/AddressBook/AddressBook.sqlitedb")
-        cursor = db.cursor()
-        cursor.execute("select first, last from ABPerson where first is not null order by first")
-        for first, last in cursor.fetchall():
-            self.contacts_.append({"first": first, "last": last})
-        cursor.close()
-        db.close()
+		self.table.setSeparatorStyle_(1)
+		self.table.addTableColumn_(col)
+		self.table.setReusesTableCells_(YES)
 
-        outer = UIHardware.fullScreenApplicationContentRect()
-        self.window = UIWindow.alloc().initWithFrame_(outer)
+		self.feed_list = FeedList.alloc().init()
+		self.table.setDataSource_(self.feed_list)
+		self.table.reloadData()
 
-        self.window.orderFront_(self)
-        self.window.makeKey_(self)
-        self.window._setHidden_(NO)
-
-        inner = self.window.bounds()
-        navsize = UINavigationBar.defaultSize()
-        navrect = ((0, 0), (inner[1][0], navsize[1]))
-
-        self.view = UIView.alloc().initWithFrame_(self.window.bounds())
-        self.window.setContentView_(self.view)
-
-        self.navbar = UINavigationBar.alloc().initWithFrame_(navrect);
-        self.view.addSubview_(self.navbar)
-
-        self.navbar.setBarStyle_(1)
-
-        navitem = UINavigationItem.alloc().initWithTitle_("Feed List")
-        self.navbar.pushNavigationItem_(navitem)
-
-        i = 0
-        letter = u""
-        for contact in self.contacts_:
-            name = self.getName(contact)
-            now = unicode(name[0])
-            if letter != now:
-                letter = now
-                self.sections_.append({"row": i, "title": now})
-            i += 1
-
-        lower = ((0, navsize[1]), (inner[1][0], inner[1][1] - navsize[1]));
-        self.list = UISectionList.alloc().initWithFrame_(lower)
-        self.view.addSubview_(self.list)
-
-        col = UITableColumn.alloc().initWithTitle_identifier_width_("Name", "name", 320)
-
-        table = self.list.table();
-        table.setSeparatorStyle_(1)
-        table.addTableColumn_(col)
-        table.setReusesTableCells_(YES)
-
-        self.list.setDataSource_(self)
-        self.list.reloadData()
-
+	
 UIApplicationMain(["GRiS"], PYApplication)
