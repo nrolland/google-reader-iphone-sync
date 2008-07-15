@@ -85,37 +85,19 @@ class Item(MinimalItem):
 			'title_link':  '<a href="' + utf8(self.item['link']) + '">' + utf8(self.item['title']) + '</a>',
 			'title_html':  '<title>' + utf8(self.item['title']) + '</title>',
 			'content':     utf8(self.item['content']),
+			'via':        'from tag <b>'+ self.feed_name +'</b>'
 		}
 
 		# create the "via" link
 		try:
-			render_object['via'] = ' via ' + re.sub('.*://', '', self.item['sources'].keys()[0]).replace('/',' / ').replace('=',' = ') + '<br /><br />'
+			render_object['via'] += '<br />url ' + re.sub('.*://', '', self.item['sources'].keys()[0]).replace('/',' / ').replace('=',' = ') + '<br /><br />'
 		except:
 			pass
 		
 		debug("rendering item to %s using template file %s" % (base + '.html', 'template/item.html'))
 		template.create(render_object, 'template/item.html', base + '.html')
-
-		if app_globals.CONFIG['convert_to_pdf']:
-			try:
-				debug("converting to pdf")
-				# convert to pdf:
-				cmd = 'python src/html2pdf.py ' + \
-					'-w ' + str(int(app_globals.OPTIONS['screen_width'])) + \
-					' -h '+ str(int(app_globals.OPTIONS['screen_height'])) + \
-					' "' + base + '.html" "'+ base +'.pdf"'
-				debug("command: " + cmd)
-				# i like to shell out for this, because sometimes it segfaults. I guess pyObjC isn't 100% stable...
-				ret = os.system(cmd)
-				debug("command returned: " + str(ret))
-				if ret == 0:
-					app_globals.DATABASE.add_item(self)
-				else:
-					print "pdf conversion failed"
-			finally:
-				if not app_globals.OPTIONS['test']:
-					# cleanup
-					rm_rf(base + '.html')
+		
+		app_globals.DATABASE.add_item(self)
 	
 	def get_is_read(self):
 		return 'read' in self.item['categories']
