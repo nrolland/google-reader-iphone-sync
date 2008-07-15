@@ -8,6 +8,18 @@ import src.app_globals as app_globals
 objc.loadBundle("Celestial", globals(), "/System/Library/Frameworks/Celestial.framework")
 objc.loadBundle("UIKit", globals(), "/System/Library/Frameworks/UIKit.framework")
 
+LOGFILE = None
+def endlog():
+	global LOGFILE
+	LOGFILE.close()
+def log(*args):
+	global LOGFILE
+	if LOGFILE is None:
+		LOGFILE = open('/var/mobile/GRiS.last.log','a')
+		print >> LOGFILE, '\n-----'
+	print >> LOGFILE, ' '.join(args)
+	LOGFILE.flush()
+		
 
 class FeedList(NSObject):
 	def init(self):
@@ -33,6 +45,7 @@ class FeedList(NSObject):
 class PYApplication(UIApplication):
 	@objc.signature("v@:@")
 	def applicationDidFinishLaunching_(self, unused):
+		log("started!")
 		outer = UIHardware.fullScreenApplicationContentRect()
 		self.window = UIWindow.alloc().initWithFrame_(outer)
 
@@ -55,8 +68,9 @@ class PYApplication(UIApplication):
 		navitem = UINavigationItem.alloc().initWithTitle_("Feed List")
 		self.navbar.pushNavigationItem_(navitem)
 		
+		
+		
 		# add a tableView
-		load_config()
 		lower = ((0, navsize[1]), (inner[1][0], inner[1][1] - navsize[1]));
 		self.table = UITable.alloc().initWithFrame_(lower)
 		self.view.addSubview_(self.table)
@@ -67,9 +81,17 @@ class PYApplication(UIApplication):
 		self.table.addTableColumn_(col)
 		self.table.setReusesTableCells_(YES)
 
+		load_config()
 		self.feed_list = FeedList.alloc().init()
 		self.table.setDataSource_(self.feed_list)
 		self.table.reloadData()
+		log("done launching")
 
+
+	@objc.signature("v@:@")
+	def applicationWillTerminate_(self, app):
+		log("terminating")
+		endlog()
+	
 	
 UIApplicationMain(["GRiS"], PYApplication)
