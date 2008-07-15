@@ -45,8 +45,9 @@ class Item(MinimalItem):
 	"""
 	A wrapper around a GoogleReader item
 	"""
-	def __init__(self, feedItem):
-		self.item = feedItem
+	def __init__(self, feed_item, feed_name = '(unknown)'):
+		self.item = feed_item
+		self.feed_name = feed_name
 
 	def get_basename(self):
 		tag_str = ''

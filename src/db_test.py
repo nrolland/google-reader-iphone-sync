@@ -2,6 +2,7 @@
 from db import *
 
 # test helpers
+import test_helper
 from lib.mock import Mock
 import pickle
 from StringIO import StringIO
@@ -12,13 +13,7 @@ import config
 class DBTest(unittest.TestCase):
 
 	def setUp(self):
-		config.parse_options(['--test','--num-items=3','--verbose'])
-
-		self.output_folder = 'test_entries'
-		assert app_globals.OPTIONS['output_path'] == self.output_folder
-
-		# but we're mocking things, so pretend to be running the real thing
-		app_globals.OPTIONS['test'] = False
+		self.output_folder = test_helper.init_output_folder()
 
 		read_files = ['read filea a.||a||.html', 'starred but deleted file c.||c||.html']
 		remaining_files = ['retained file b.||b||.html', 'starred and retained file d.||d||.html']
@@ -27,10 +22,9 @@ class DBTest(unittest.TestCase):
 		
 		# make it look like we've been run before:
 		# previously seen items
-		f = file(self.output_folder + '/.entries.pickle', 'w')
-		pickle.dump([DB.get_key(x) for x in previously_downloaded_files], f)
-		f.close()
-		f = None
+		save_pickle(
+			[DB.get_key(x) for x in previously_downloaded_files],
+			self.output_folder + '/.entries.pickle')
 	
 		# starred items
 		write_file(self.output_folder + '/.starred', '\n'.join(starred_files + ['\t','  ']))
@@ -95,7 +89,4 @@ class DBTest(unittest.TestCase):
 	
 	def test_save(self):
 		self.db.save()
-		f = file(self.output_folder + '/.entries.pickle', 'r')
-		assert pickle.load(f) == ['b','d']
-		f.close()
-		f = None
+		assert load_pickle(self.output_folder + '/.entries.pickle') == ['b','d']
