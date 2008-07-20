@@ -2,6 +2,7 @@
 from item import *
 
 # test helpers
+import test_helper
 from lib.mock import Mock
 import pickle
 from StringIO import StringIO
@@ -28,10 +29,11 @@ sample_item = {
 
 
 def test_minimal_item():
+	output_folder = test_helper.init_output_folder()
 	itemid = 'tag:my_google_id'
 	item = MinimalItem(itemid)
-	assert item.key == 'tag%3A'
-	assert item.resources_path == self.output_folder + '/_resources/tag%3Amy_google_id'
+	assert item.key == 'tag%3Amy_google_id'
+	assert item.resources_path == output_folder + '/_resources/tag%3Amy_google_id'
 	ensure_dir_exists(item.resources_path)
 	touch_file(item.resources_path + '/somefile')
 	assert os.path.exists(item.resources_path) == True
@@ -52,22 +54,35 @@ class ItemTest(unittest.TestCase):
 	
 	# ------------------------------------------------------------------
 
-	def test_basename():
+	def test_basename(self):
 		item = Item(sample_item, 'feed-name')
 		assert item.basename == '2008-06-24|11-00-09 Assembly Fail .||tag%3Agoogle.com%2C2005%3Areader%2Fitem%2Fdcb79527f18794d0||'
 	
-	def test_output():
-		item = Item(sample_item, 'feed-name')
+	def test_output(self):
+		# setup mocks
 		import template
 		template_mock = template.create = Mock()
-		assert template_mock.call_args_list == [(
-			({
-				'content': '<div>\n <br />\n <p>\n  Thx Penntastic\n </p>\n <p>\n  <img src="_resources/tag%253Agoogle.com%252C2005%253Areader%252Fitem%252Fdcb79527f18794d0/assembly-fail.jpg" alt="fail owned pwned pictures" />\n </p>\n <img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/failblog.wordpress.com/1234/" />\n <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/failblog.wordpress.com/1234/" />\n <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/failblog.wordpress.com/1234/">\n  <img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/failblog.wordpress.com/1234/" />\n </a>\n <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/failblog.wordpress.com/1234/">\n  <img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/failblog.wordpress.com/1234/" />\n </a>\n <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/failblog.wordpress.com/1234/">\n  <img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/failblog.wordpress.com/1234/" />\n </a>\n <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/failblog.wordpress.com/1234/">\n  <img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/failblog.wordpress.com/1234/" />\n </a>\n <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/failblog.wordpress.com/1234/">\n  <img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/failblog.wordpress.com/1234/" />\n </a>\n <img alt="" border="0" src="_resources/tag%253Agoogle.com%252C2005%253Areader%252Fitem%252Fdcb79527f18794d0/b.gif" />\n</div>\n<img src="http://feeds.feedburner.com/~r/failblog/~4/318806514" height="1" width="1" />\n',
-				'title_html': '<title>Assembly Fail</title>',
-				'title_link': '<a href="http://feeds.feedburner.com/~r/failblog/~3/318806514/">Assembly Fail</a>',
-				'via': u'from tag <b>feed-name</b><br />url feeds.feedburner.com / failblog<br /><br />'
-			}, 'template/item.html', 'entries/2008-06-24|11-00-09 Assembly Fail .||tag%3Agoogle.com%2C2005%3Areader%2Fitem%2Fdcb79527f18794d0||.html'),{})]
+		import process
+		process_mock = process.download_images = Mock()
+		
+		# make the item
+		item = Item(sample_item, 'feed-name')
+		feed_item = item.item
+		item.output()
+		
+		print len(template_mock.call_args_list)
+		assert len(template_mock.call_args_list) == 1 # called once
+		create_call = template_mock.call_args[0]
+		print repr(create_call)
+		assert create_call[1] == 'template/item.html' # template file
+		assert create_call[2] == 'test_entries/' + item.basename + '.html' # output file
+		template_content = create_call[0]
+		assert template_content == { 'content': feed_item['content'],
+									 'title_html': '<title>Assembly Fail</title>',
+									 'title_link': '<a href="http://feeds.feedburner.com/~r/failblog/~3/318806514/">Assembly Fail</a>',
+									 'via': u'from tag <b>feed-name</b><br />url feeds.feedburner.com / failblog<br /><br />' }
+		
 		assert ('add_item', (item,), {}) in self.mock_db.method_calls
 	
-	def test_read():
+	def test_read(self):
 		item = Item(sample_item, 'feed-name')
