@@ -17,7 +17,7 @@ dependencies are a bit all over the place:
 On your iPhone / iPod Touch, you will need:
 
 * To be jailbroken, for starters.
-* SSH server (this is part of the "BSD Subststem")
+* OpenSSH
 * lighttpd
 * python
 
@@ -38,7 +38,7 @@ Run sync.command. This will
 
 To read your items, go to the following address (on your iPhone)
 http://127.0.0.1/RSS/
-(or the appropriate path, if you change iphone\_destination_path in config.yml)
+(or the appropriate path, if you change `iphone\_destination\_path` in config.yml)
 
 To mark an item as read on google reader, you just delete the file from your iPhone.
 Google reader will be updated when you next run the sync command.
@@ -47,16 +47,6 @@ _**power users**: you can run subsets of tasks (like just pushing or pulling ite
 _as well as syncing to google-reader without downloading any new items._
 _Run `cap -T` from the base directory to see what's available._
 
-
-## Issues:
-To transfer things, it actually ssh's into your iPhone and pushes/pulls
-files from there to your mac (using rsync). This is because I found that
-rsync from my mac to my iPod dropped out constantly, whereas this method
-seems quite stable.
-
-This means you need to put your mac account password into config.yml.
-If (like me) you realise that this is a terrible idea, you should instead
-invest in setting up ssh-keys on both your iPhone and mac.
 
 ## Thanks:
 
