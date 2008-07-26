@@ -2,7 +2,7 @@
 Exports:
 DB class
 """
-import pickle, re, urllib, glob
+import pickle, re, urllib, glob, shutil
 from sets import Set
 
 # local imports
@@ -61,9 +61,7 @@ class DB:
 	
 	def load_previous_unread_items(self):
 		try:
-			f = file(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['pickle_file'],'r')
-			ret = pickle.load(f)
-			f.close()
+			ret = load_pickle(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['pickle_file'])
 			return ret
 		except:
 			print "Note: loading of previous items failed"
@@ -77,10 +75,14 @@ class DB:
 			return []
 		
 	def save(self):
-		f = file(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['pickle_file'],'w')
-		ret = pickle.dump(self.unread, f)
-		f.close()
-		return ret
+		filename = app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['pickle_file']
+		try:
+			shutil.move(filename, filename + '.bak')
+		except:
+			pass
+
+		debug("Dumping \"unread items\":\n%s" % self.unread)
+		save_pickle(self.unread, filename)
 	
 	def is_read(self, key):
 		if key in self.read:

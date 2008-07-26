@@ -96,7 +96,7 @@ def download_new_items():
 			debug(entry.__repr__())
 			debug('-' * 50)
 		
-			item = Item(entry)
+			item = Item(entry, feed_tag)
 			state = app_globals.DATABASE.is_read(item.key)
 			name = item.basename
 		

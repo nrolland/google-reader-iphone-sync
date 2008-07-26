@@ -26,10 +26,11 @@ puts "SERVER = #{$ipod_server.inspect}"
 role :ipod, $ipod_server
 
 # general options
-$rsync_opts = "--recursive --delete --progress --checksum"
+$rsync_opts = "--recursive --delete --checksum --progress --links"
 
 $remote_mac_path = "#{$mac_user}@#{$mac_server}:#{$mac_path}"
 $remote_ipod_path = "#{$ipod_user}@#{$ipod_server}:#{$ipod_path}"
+$remote_ipod = "#{$ipod_user}@#{$ipod_server}:"
 
 $run_opts = {}
 
@@ -51,12 +52,12 @@ task :fake do $dry = true; $rsync_opts += " --dry-run" end
 desc "Copy files to iPod"
 task :push do
 	check_folder($ipod_path, true)
-	run "rsync #{$rsync_opts} #{$remote_mac_path} #{$ipod_path}"
+	local "rsync #{$rsync_opts} #{$mac_path} #{$remote_ipod_path}"
 end
 
 task :pull_without_web do
 	check_folder($mac_path)
-	run "rsync #{$rsync_opts} #{$ipod_path} #{$remote_mac_path}"
+	local "rsync #{$rsync_opts} #{$remote_ipod_path} #{$mac_path}"
 end
 
 desc "Copy files from iPod"
@@ -97,15 +98,25 @@ task :pause do $run_opts[:pause] = true end
 
 desc "Copy the template files (buttons, styles) to iPod"
 task :push_template do
-	run "rsync #{$rsync_opts} --exclude='*.psd' #{$remote_mac_path}/../template #{$ipod_path}/../"
+	check_folder($ipod_path + '/../', true)
+	local "rsync #{$rsync_opts} --exclude='*.psd' '#{$mac_path}/../template' '#{$remote_ipod_path}/../'"
+end
+
+desc "copy ~/.ssh/id_rsa.pub to ipod / iphone"
+task :ssh_auth do
+	upload '~/.ssh/id_rsa.pub', "~/.ssh_id_#{$mac_user}"
+	run "cat '~/.ssh_id_#{$mac_user}' >> '~/.ssh/authorrized_keys'"
 end
 
 task :lighttpd do
-	dest_dir = '/var/mobile/Media/.dirlist/'
+	check_folder('/var/mobile/Media/.dirlist/', true)
+	check_folder('/usr/local/etc/', true)
+	dest_dir = "#{$remote_ipod}/var/mobile/Media/.dirlist/"
 	current_dir = `pwd`.chomp!
-	src = "#{$mac_user}@#{$mac_server}:#{current_dir}/lighttpd"
-	run "rsync --recursive --progress --checksum --exclude='.*' '#{src}/dirlist/' '#{dest_dir}'"
-	run "rsync --progress --checksum --exclude='.*' '#{src}/lighttpd.conf' '/usr/local/etc/lighttpd.conf'"
+	src = "#{current_dir}/lighttpd"
+	local "rsync #{$rsync_opts} '#{src}/dirlist/' '#{dest_dir}'"
+	local "rsync #{$rsync_opts} '#{src}/lighttpd.conf' '#{$remote_ipod}/usr/local/etc/'"
+	local "rsync #{$rsync_opts} '#{src}/com.sysprosoft.gfxmonk.lighttpd.startup.plist' '#{$remote_ipod}/System/Library/LaunchDaemons/'"
 end
 
 desc "install required files on your iPod / iPhone"
@@ -168,7 +179,7 @@ def check_folder(path, remote = false)
 	if remote
 		run(cmd)
 	else
-		system(cmd)
+		local(cmd)
 		allowed_patterns = [/\.pdf$/, /\.pickle$/, /\.html$/,/^./]
 		Dir[path + '/*'].each do |f|
 #			puts f
@@ -186,6 +197,11 @@ def pause(desc = "something")
 		puts("  [press return to continue]")
 		$stdin.gets
 	end
+end
+
+def local(cmd, error_msg="Command Failed")
+	puts "running locally:\n >#{cmd}"
+	system(cmd) or loud_error("> #{cmd}\n#{error_msg}")
 end
 
 def do_sync(*opts)

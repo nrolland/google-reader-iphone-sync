@@ -1,6 +1,6 @@
 import app_globals
 
-import os, re, sys
+import os, re, sys, shutil, pickle
 
 def danger(desc):
 	"""
@@ -37,10 +37,10 @@ def try_remove(elem, lst):
 
 def matches_any_regex(s, regexes, flags = 0):
 	"""
-	>>> matches_any_regex('abcd',['.*f','agg'])
-	False
-	>>> matches_any_regex('abCD',['bce?d','qwert'], flags=re.IGNORECASE)
-	True
+		>>> matches_any_regex('abcd',['.*f','agg'])
+		False
+		>>> matches_any_regex('abCD',['bce?d','qwert'], flags=re.IGNORECASE)
+		True
 	"""
 	regexes = [re.compile(regex, flags) if isinstance(regex, str) else regex for regex in regexes]
 	return any([regex.search(s) for regex in regexes])
@@ -50,11 +50,11 @@ def try_shell(cmd):
 	"""
 	Execute a shell command. if it returns a non-zero (error) status, raise an exception
 	
-	>>> try_shell('[ 0 = 0 ]')
-	>>> try_shell('[ 0 = 1 ]')
-	Traceback (most recent call last):
-	Exception: shell command failed:
-	[ 0 = 1 ]
+		>>> try_shell('[ 0 = 0 ]')
+		>>> try_shell('[ 0 = 1 ]')
+		Traceback (most recent call last):
+		Exception: shell command failed:
+		[ 0 = 1 ]
 	"""
 	debug("running command: " + cmd)
 	if os.system(cmd) != 0:
@@ -79,16 +79,33 @@ def ensure_dir_exists(path):
 			os.mkdir(location)
 
 def rm_rf(path):
+	"""
+		>>> os.system('mkdir /tmp/blah && touch /tmp/blah/foo')
+		0
+		>>> os.path.isdir('/tmp/blah')
+		True
+		>>> rm_rf('/tmp/blah')
+		>>> os.path.isdir('/tmp/blah')
+		False
+		>>> rm_rf('/tmp/blah')
+	"""
 	danger("About to remove ENTIRE path below:\n%s" % path)
 	if os.path.exists(path):
-		os.system("rm -rf '%s'" % re.sub("'","\\\\'", path))
+		shutil.rmtree(path, ignore_errors = True)
 
 def slashify_dbl_quotes(s):
 	r"""
-	>>> print slashify_dbl_quotes('\\ "')
-	\\ \"
+		>>> print slashify_dbl_quotes('\\ "')
+		\\ \"
 	"""
 	return s.replace('\\','\\\\').replace('"','\\"')
+
+def slashify_single_quotes(s):
+	r"""
+	>>> print slashify_single_quotes("\\ '")
+	\\ \'
+	"""
+	return s.replace('\\','\\\\').replace("'","\\'")
 
 
 def write_file(filename, content):
@@ -103,3 +120,28 @@ def write_file_lines(filename, content):
 
 def touch_file(name):
 	write_file(name, '\n')
+	
+def save_pickle(obj, filename):
+	"""
+	Save pickled version of `obj` to the file named `filename`
+	
+		>>> save_pickle({'key':'value'}, '/tmp/test_pickle')
+		>>> load_pickle('/tmp/test_pickle')
+		{'key': 'value'}
+	"""
+	f = file(filename,'w')
+	ret = pickle.dump(obj, f)
+	f.close()
+
+def load_pickle(filename):
+	"""
+	Load an object from a pickle file named `filename`
+
+		>>> save_pickle({'key':'value'}, '/tmp/test_pickle')
+		>>> load_pickle('/tmp/test_pickle')
+		{'key': 'value'}
+	"""
+	f = file(filename,'r')
+	obj = pickle.load(f)
+	f.close()
+	return obj
