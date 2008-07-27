@@ -2,142 +2,152 @@
 Exports:
 DB class
 """
-import pickle, re, urllib, glob, shutil
+import pickle, re, urllib, glob, shutil, os
 from sets import Set
 
 # local imports
 import app_globals
 from misc import *
-from item import MinimalItem
+from item import Item
 
+import sqlite3 as sqlite
 class DB:
-	def __init__(self):
-		# assume we've read everything that was left unread from last time
-		self.unread = []
-		self.read = self.load_previous_unread_items()
-		self.starred = self.load_starred_items_file()
+	def __init__(self, filename = 'entries.sqlite'):
+		if app_globals.OPTIONS['test']:
+			filename = os.path.dirname(filename) + 'test_' + os.path.basename(filename)
+		self.filename = filename
+		self.db = sqlite.connect(filename)
+		self.schema = {
+			'columns': [
+				('google_id','TEXT primary key'),
+				('date', 'TIMESTAMP'),
+				('url', 'TEXT'),
+				('title', 'TEXT'),
+				('content', 'TEXT'),
+				('feed_name', 'TEXT'),
+				('is_read', 'BOOLEAN'),
+				('is_starred', 'BOOLEAN'),
+				('is_dirty', 'BOOLEAN default 0'),
+			],
+			'indexes' : [ ('item_id_index', 'items(google_id)') ]
+		}
+		self.cols = [x for (x,y) in self.schema['columns']]
+		self.setup_db()
+
+	def reload(self):
+		self.cleanup()
+		self.db = sqlite.connect(filename)
+
+	def sql(self, stmt, data = None):
+		debug("SQL statement: %s" % stmt)
+		if data is not None:
+			debug("    data: %r" % (data,))
+			result = self.db.execute(stmt, data)
+		else:
+			result = self.db.execute(stmt)
+
+		self.db.commit()
+		return result
+	
+	def erase(self):
+		if not app_globals.OPTIONS['test']:
+			raise Exception("erase() called, but we're not in test mode...")
+		self.sql('drop table if exists items')
+
+	def reset(self):
+		self.erase()
+		self.setup_db()
+	
+	def tables(self):
+		return [row[0] for row in self.db.execute('select name from sqlite_master where type = "table"')]
+
+	def setup_db(self):
+		# "if not exists" is broken in subtle and weird ways in pysqlite - this would be ideal:
+		#col_str = 'create table if not exists items('
 		
-		# now look for still-unread items:
-		file_extension = app_globals.file_extension()
-		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + file_extension):
-			key = self.get_key(f)
-			if not key:
-				continue
-			self.unread.append(key)
-			try_remove(key, self.read)
+		# so we just use this:
+		col_str = 'create table items('
+		col_str += ', '.join(' '.join(x) for x in self.schema['columns'])
+		col_str += ')'
+
+		# and catch the exception if it fails
+		try:
+			self.db.execute(col_str)
+		except sqlite.OperationalError:
+			pass
 		
-		debug("unread:  " + str(self.unread))
-		debug("read:    " + str(self.read))
-		debug("starred: " + str(self.starred))
+		index_strs = ['create unique index if not exists %s on %s;' % (col, typestr) for (col, typestr) in self.schema['indexes']]
+		for index_str in index_strs:
+			self.sql(index_str)
+
+	def add_item(self, item):
+		self.sql("insert into items (%s) values (%s)" % (', '.join(self.cols), ', '.join(['?'] * len(self.cols))),
+			[getattr(item, attr) for attr in self.cols])
+
+	def update_item(self, item):
+		self.sql("update items set is_read=?, is_starred=?, is_dirty=? where google_id=?",
+			(item.is_read, item.is_starred, item.is_dirty, item.google_id));
+
+	def get_items(self, condition=None, args=None):
+		sql = "select * from items"
+		if condition is not None:
+			sql += " where %s" % condition
+		cursor = self.sql(sql, args)
+		for row_tuple in cursor:
+			yield self.item_from_row(row_tuple)
+	
+	def get_items_list(self, *args, **kwargs):
+		return [x for x in self.get_items(*args, **kwargs)]
+
+	def item_from_row(self, row_as_tuple):
+		i = 0
+		item = {}
+		for i in range(len(row_as_tuple)):
+			val = row_as_tuple[i]
+			if 'BOOLEAN' in self.schema['columns'][i][1]:
+				# convert to a python boolean
+				val = val == 1
+			item[self.cols[i]] = val
+		return Item(raw_data = item)
 	
 	def cleanup(self):
+		self.cleanup_resources_directory()
+		
+	def close(self):
+		self.db.close()
+		self.db = None
+
+	def is_read(self, google_id):
+		cursor = self.sql('select is_read from items where google_id = ?', (google_id,))
+		try:
+			return cursor.next()[0] == 1 # truth is 1 in sqlite's mind
+		except StopIteration:
+			return None
+	
+	def sync_to_google(self):
+		print "Syncing with google..."
+		for item in self.get_items('is_dirty = 1'):
+			debug('syncing item state \"%s\"' % item.title)
+			item.save_to_web()
+			
+			#assert 0 == 1
+			self.update_item(item)
+		for item in self.get_items('is_read = 1'):
+			debug('deleting item \"%s\"' % item.title)
+			item.delete()
+		danger("about to delete items from db")
+		self.sql('delete from items where is_read = 1')
+	
+	def cleanup_resources_directory(self):
 		res_prefix = "%s/%s/" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'])
 		glob_str = res_prefix + "*"
 		current_keys = Set([os.path.basename(x) for x in glob.glob(glob_str)])
-		unread_keys = Set(self.unread)
-		
+		unread_keys = Set([Item.escape_google_id(row[0]) for row in self.sql('select google_id from items where is_read = 0')])
+
 		current_but_read = current_keys.difference(unread_keys)
 		if len(current_but_read) > 0:
 			print "Cleaning up %s old resource directories" % len(current_but_read)
 			danger("remove %s old resource directories" % len(current_but_read))
 			for key in current_but_read:
 				rm_rf(res_prefix + key)
-	
-	def add_item(self, item):
-		self.unread.append(item.key)
-		
-	@staticmethod
-	def get_key(s):
-		"""
-		>>> DB.get_key('blah.||this is the key, guys!||.html')
-		'this is the key, guys!'
-		"""
-		match = re.search('\.\|\|([^|]*)\|\|\.[^.]*$', s)
-		if match:
-			return match.group(1)
-		else:
-			debug("Couldn't extract key from filename: %s" % s)
-			return None
-	
-	def load_previous_unread_items(self):
-		try:
-			ret = load_pickle(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['pickle_file'])
-			return ret
-		except:
-			print "Note: loading of previous items failed"
-			return []
-	
-	def load_starred_items_file(self):
-		file_path = app_globals.OPTIONS['output_path'] + '/.starred'
-		try:
-			return [self.get_key(x.strip()) for x in file(file_path, 'r').readlines() if len(x.strip()) > 0]
-		except:
-			return []
-		
-	def save(self):
-		filename = app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['pickle_file']
-		try:
-			shutil.move(filename, filename + '.bak')
-		except:
-			pass
-
-		debug("Dumping \"unread items\":\n%s" % self.unread)
-		save_pickle(self.unread, filename)
-	
-	def is_read(self, key):
-		if key in self.read:
-			return True
-		if key in self.unread:
-			return False
-		return None
-	
-	@staticmethod
-	def unencode_key(encoded_key):
-		return urllib.unquote(encoded_key)
-	
-	@staticmethod
-	def google_do_with_key(action, key):
-		if app_globals.OPTIONS['test']:
-			print "Not telling google about anything - we're testing!"
-			return
-		google_id = urllib.unquote(key)
-		danger("Applying function %s to item %s" % (action, google_id))
-		action(google_id)
-	
-	@staticmethod
-	def mark_id_as_read(google_id):
-		res = app_globals.READER.set_read(google_id)
-		if not res:
-			print "Failed to mark item as read"
-			raise Exception("Failed to mark item as read")
-	
-	@staticmethod
-	def mark_id_as_starred(google_id):
-		res = app_globals.READER.add_star(google_id)
-		if not res:
-			print "Failed to add star to item"
-			raise Exception("Failed to add star to item")
-
-	def sync_to_google(self):
-		print "Syncing with google..."
-		self.mark_starred()
-		self.mark_read()
-	
-	def mark_starred(self):
-		if len(self.starred) > 0:
-			print "Marking %s items as starred on google-reader" % len(self.starred)
-			for key in self.starred:
-				debug("marking as starred: %s" % key)
-				self.google_do_with_key(self.mark_id_as_starred, key)
-			debug("deleting .starred file")
-			if not app_globals.OPTIONS['test']:
-				os.remove(app_globals.OPTIONS['output_path'] + '/.starred')
-
-	def mark_read(self):
-		if len(self.read) > 0:
-			print "Marking %s items as read on google-reader" % len(self.read)
-			for key in self.read:
-				debug("marking as read: %s" % key)
-				self.google_do_with_key(self.mark_id_as_read, key)
-				MinimalItem(self.unencode_key(key)).delete()
 

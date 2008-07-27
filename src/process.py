@@ -3,22 +3,20 @@ import urllib2, re, os
 from misc import *
 
 ## processing modules:
-def insert_alt_text(item):
+def insert_alt_text(soup):
 	"""
 	insert bolded image title text after any image on the page
 	
-		>>> item = {'soup': BeautifulSoup('<p><img src="blah" title="some texts" /></p>')}
-		>>> insert_alt_text(item)
-		{'soup': <p><img src="blah" title="some texts" /><p><b>( some texts )</b></p></p>}
+		>>> insert_alt_text( BeautifulSoup('<p><img src="blah" title="some texts" /></p>') )
+		<p><img src="blah" title="some texts" /><p><b>( some texts )</b></p></p>
 	"""
-	soup = item['soup']
 	images = soup.findAll('img',{'title':True})
 	for img in images:
 		desc = BeautifulSoup('<p><b>( %s )</b></p>' % img['title'])
 		img.append(desc)
-	return item
+	return soup
 
-def download_images(item, dest_folder, href_prefix):
+def download_images(soup, dest_folder, href_prefix, base_href = None):
 	"""
 	Download all referenced images to the {dest} folder
 	Replace href attributes with {href_prefix}/output_filename
@@ -28,26 +26,21 @@ def download_images(item, dest_folder, href_prefix):
 		>>> import process
 		>>> process.download_file = Mock()
 
-		>>> item = {'soup': BeautifulSoup('<img src="http://google.com/image.jpg?a=b&c=d"/>')}
-		>>> download_images(item, 'dest_folder', 'local_folder/')
-		{'soup': <img src="local_folder/image.jpg" />}
+		>>> soup = BeautifulSoup('<img src="http://google.com/image.jpg?a=b&c=d"/>')
+		>>> download_images(soup, 'dest_folder', 'local_folder/')
+		<img src="local_folder/image.jpg" />
 	
 		# (make sure the file was downloaded from the correct URL:)
 		>>> process.download_file.call_args
 		((u'http://google.com/image.jpg?a=b&c=d', u'dest_folder/image.jpg'), {})
 		
 		# doesn't touch "dangerous" or empty file extensions
-		>>> download_images({'soup':BeautifulSoup('<img src="http://example/nasty.py"/>')}, 'dest_folder', 'local_folder/')
-		{'soup': <img src="http://example/nasty.py" />}
-		>>> download_images({'soup':BeautifulSoup('<img src="http://example/empty"/>')}, 'dest_folder', 'local_folder/')
-		{'soup': <img src="http://example/empty" />}
+		>>> download_images(BeautifulSoup('<img src="http://example/nasty.py"/>'), 'dest_folder', 'local_folder/')
+		<img src="http://example/nasty.py" />
+		>>> download_images(BeautifulSoup('<img src="http://example/empty"/>'), 'dest_folder', 'local_folder/')
+		<img src="http://example/empty" />
 	"""
-	soup = item['soup']
 	images = soup.findAll('img',{'src':True})
-	try:
-		base = item['base']
-	except:
-		base = None
 	
 	# only accept a whitelist of image extensions for locally downloading
 	# (to prevent accidental execution of image files that look like scripts, for example)
@@ -59,7 +52,7 @@ def download_images(item, dest_folder, href_prefix):
 		ensure_dir_exists(dest_folder)
 	for img in images:
 		debug("Processing image link: " + img['src'])
-		href = absolute_url(img['src'], base)
+		href = absolute_url(img['src'], base_href)
 		
 		filename = get_filename(img['src'])
 		output_filename = dest_folder + '/' + filename
@@ -72,7 +65,7 @@ def download_images(item, dest_folder, href_prefix):
 		download_file(href, output_filename)
 		img['src'] = urllib2.quote(href_prefix + filename)
 	
-	return item
+	return soup
 
 
 

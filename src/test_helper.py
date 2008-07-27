@@ -14,8 +14,6 @@ def init_output_folder():
 
 	output_folder = 'test_entries'
 	assert app_globals.OPTIONS['output_path'] == output_folder
+	assert type(app_globals.READER) == Mock
 
-	# but we're mocking things, so pretend to be running the real thing
-	app_globals.OPTIONS['test'] = False
-	
 	return output_folder

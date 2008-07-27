@@ -28,18 +28,6 @@ sample_item = {
 	'updated': 1214269209.0}
 
 
-def test_minimal_item():
-	output_folder = test_helper.init_output_folder()
-	itemid = 'tag:my_google_id'
-	item = MinimalItem(itemid)
-	assert item.key == 'tag%3Amy_google_id'
-	assert item.resources_path == output_folder + '/_resources/tag%3Amy_google_id'
-	ensure_dir_exists(item.resources_path)
-	touch_file(item.resources_path + '/somefile')
-	assert os.path.exists(item.resources_path) == True
-	item.delete()
-	assert os.path.exists(item.resources_path) == False
-
 class ItemTest(unittest.TestCase):
 
 	def setUp(self):
@@ -56,7 +44,7 @@ class ItemTest(unittest.TestCase):
 
 	def test_basename(self):
 		item = Item(sample_item, 'feed-name')
-		assert item.basename == '2008-06-24|11-00-09 Assembly Fail .||tag%3Agoogle.com%2C2005%3Areader%2Fitem%2Fdcb79527f18794d0||'
+		assert item.basename == '20080624110009 Assembly Fail .||tag%3Agoogle.com%2C2005%3Areader%2Fitem%2Fdcb79527f18794d0||'
 	
 	def test_output(self):
 		# setup mocks
@@ -67,8 +55,7 @@ class ItemTest(unittest.TestCase):
 		
 		# make the item
 		item = Item(sample_item, 'feed-name')
-		feed_item = item.item
-		item.output()
+		item.save()
 		
 		print len(template_mock.call_args_list)
 		assert len(template_mock.call_args_list) == 1 # called once
@@ -77,10 +64,10 @@ class ItemTest(unittest.TestCase):
 		assert create_call[1] == 'template/item.html' # template file
 		assert create_call[2] == 'test_entries/' + item.basename + '.html' # output file
 		template_content = create_call[0]
-		assert template_content == { 'content': feed_item['content'],
+		assert template_content == { 'content': sample_item['content'],
 									 'title_html': '<title>Assembly Fail</title>',
 									 'title_link': '<a href="http://feeds.feedburner.com/~r/failblog/~3/318806514/">Assembly Fail</a>',
-									 'via': u'from tag <b>feed-name</b><br />url feeds.feedburner.com / failblog<br /><br />' }
+									 'via': u'from tag <b>feed-name</b><br /><em>failblog.wordpress.com</em><br /><br />' }
 		
 		assert ('add_item', (item,), {}) in self.mock_db.method_calls
 	

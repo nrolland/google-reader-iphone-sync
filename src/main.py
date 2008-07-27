@@ -18,6 +18,10 @@ def reader_login():
 	Stores the logged-in reader in the global READER variable
 	Raises exception if authentication fails
 	"""
+	if app_globals.OPTIONS['test']:
+		print "using a mock google reader..."
+		return
+
 	app_globals.READER = GoogleReader()
 	app_globals.READER.identify(
 		app_globals.OPTIONS['user'],
@@ -48,7 +52,7 @@ def execute():
 		print "not downloading any new items..."
 	else:
 		download_new_items()
-	app_globals.DATABASE.save()
+	app_globals.DATABASE.close()
 
 def update_templates():
 	files = [None, None, None]
@@ -97,7 +101,7 @@ def download_new_items():
 			debug('-' * 50)
 		
 			item = Item(entry, feed_tag)
-			state = app_globals.DATABASE.is_read(item.key)
+			state = app_globals.DATABASE.is_read(item.google_id)
 			name = item.basename
 		
 			if state is None:
@@ -106,7 +110,7 @@ def download_new_items():
 						print "NEW: " + name
 						danger("About to output item")
 						item.process()
-						item.output()
+						item.save()
 						app_globals.STATS['new'] += 1
 					except Exception,e:
 						print " ** FAILED **: " + str(e)

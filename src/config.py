@@ -43,6 +43,8 @@ Usage:
 			print "Downloading turned off.."
 		elif key == '-t' or key == '--test':
 			app_globals.OPTIONS['test'] = True
+			from lib.mock import Mock
+			app_globals.READER = Mock()
 			print "Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir']
 		elif key == '-T' or key == '--template':
 			app_globals.OPTIONS['template_only'] = True

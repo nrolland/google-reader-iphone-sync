@@ -1,5 +1,6 @@
 # the tested module
 from db import *
+from item import Item
 
 # test helpers
 import test_helper
@@ -10,68 +11,98 @@ from lib.OpenStruct import OpenStruct
 import unittest
 import config
 
+def fake_item(**kwargs):
+	args = {
+		'google_id' : 'sample_id',
+		'title' : 'title',
+		'url' : 'http://example.com/post/1',
+		'is_read' : False,
+		'is_dirty' : False,
+		'is_starred' : False,
+		'feed_name' : 'feedname',
+		'date' : 'date',
+		'content' : '<h1>content!</h1>'
+		}
+	args.update(kwargs)
+	return OpenStruct(**args)
+
+
 class DBTest(unittest.TestCase):
 
 	def setUp(self):
 		self.output_folder = test_helper.init_output_folder()
 
-		read_files = ['read filea a.||a||.html', 'starred but deleted file c.||c||.html']
-		remaining_files = ['retained file b.||b||.html', 'starred and retained file d.||d||.html']
-		starred_files = ['starred but deleted file c.||c||.html', 'starred and retained file d.||d||.html']
-		previously_downloaded_files = read_files + remaining_files
-		
-		# make it look like we've been run before:
-		# previously seen items
-		save_pickle(
-			[DB.get_key(x) for x in previously_downloaded_files],
-			self.output_folder + '/.entries.pickle')
-	
-		# starred items
-		write_file(self.output_folder + '/.starred', '\n'.join(starred_files + ['\t','  ']))
-	
-		# remaining items
-		for f in remaining_files:
-			touch_file(self.output_folder + '/' + f)
-
-		files = os.listdir(self.output_folder) 
-		assert files == ['.entries.pickle','.starred'] + remaining_files
-		
 		# initialise the DB
 		app_globals.DATABASE = self.db = DB()
-
+		print "running db reset: %r" % self.db
+		self.db.reset()
+		assert self.db.tables() == ['items']
+		
 	def tearDown(self):
+		self.db.close()
 		rm_rf(self.output_folder)
 	
 	# ------------------------------------------------------------------
 
-	def test_processing_folder_contents(self):
-		(read, unread, starred) = (self.db.read, self.db.unread, self.db.starred)
-		assert unread == ['b','d']
-		assert starred == ['c','d']
-		assert read == ['a','c']
+	def test_adding_items(self):
+		# add to DB
+		input_item = fake_item()
+		self.db.add_item(input_item)
 		
-		# read returns true, unread returns false. items we've never seen return none
-		assert self.db.is_read('a') == True
-		assert self.db.is_read('b') == False
-		assert self.db.is_read('non_existant') is None
+		# grab it out
+		items = list(self.db.get_items())
+		assert len(items) == 1
+		item = items[0]
+		
+		# and check it still looks the same:
+		for attr in ['url','title','feed_name','google_id','is_read','is_dirty','is_starred','date','content']:
+			assert getattr(item, attr) == getattr(input_item, attr)
+
+		# test updating
+		item.is_read = True
+		self.db.update_item(item)
+		items = list(self.db.get_items())
+		assert len(items) == 1
+		item = items[0]
+		assert item.is_read == True
 
 	
-	def test_adding_items(self):
-		self.db.add_item(OpenStruct(key='new_item'))
-		assert self.db.unread == ['b','d','new_item']
+	def test_is_read(self):
+		assert self.db.is_read('sample_id') == None
+		self.db.add_item(fake_item())
+		assert self.db.is_read('sample_id') == False
+		self.db.sql('update items set is_read = 1 where google_id = "sample_id"')
+		assert self.db.is_read('sample_id') == True
 	
 	def test_google_sync(self):
 		# mock out the google reader
-		app_globals.READER = reader = Mock(['set_read','add_star'])
+		reader = app_globals.READER
 		reader.set_read.return_value = True
 		reader.add_star.return_value = True
+		reader.set_unread.return_value = True
+		reader.del_star.return_value = True
 		
+		self.db.add_item(fake_item(google_id = 'b', is_read = False, is_dirty = True))
+		self.db.add_item(fake_item(google_id = 'd', is_read = False, is_dirty = True))
+		self.db.add_item(fake_item(google_id = 'c', is_starred = True, is_read = True, is_dirty = True))
+
 		self.db.sync_to_google()
 		assert reader.method_calls == [
-			('add_star', ('c',), {}),
-			('add_star', ('d',), {}),
-			('set_read', ('a',), {}),
-			('set_read', ('c',), {})]
+			('set_unread', ('b',), {}),
+			('del_star', ('b',), {}),
+			('set_unread', ('d',), {}),
+			('del_star', ('d',), {}),
+			('set_read', ('c',), {}),
+			('add_star', ('c',), {})]
+		
+		assert self.db.get_items_list('is_dirty = 1') == []
+		assert len(self.db.get_items_list('is_dirty = 0')) == 3
+		reader.reset()
+	
+	def test_google_sync_failures(self):
+		self.db.add_item(fake_item(google_id = 'b', is_read = True, is_dirty = True))
+		app_globals.READER.set_read.return_value = False
+		self.assertRaises(Exception, self.db.sync_to_google)
 	
 	def test_cleanup(self):
 		res_folders = ['a','b','blah','blah2','c','d']
@@ -82,11 +113,13 @@ class DBTest(unittest.TestCase):
 	
 		assert os.listdir(self.output_folder + '/_resources') == res_folders
 		
+		# insert some existing items
+		self.db.add_item(fake_item(google_id = 'b', is_read = False))
+		self.db.add_item(fake_item(google_id = 'd', is_read = False))
+		self.db.add_item(fake_item(google_id = 'c', is_read = True))
+		
 		# clean up that mess!
+		self.db.sync_to_google() # remove all the read items
 		self.db.cleanup()
 		
 		assert os.listdir(self.output_folder + '/_resources') == ['b','d']
-	
-	def test_save(self):
-		self.db.save()
-		assert load_pickle(self.output_folder + '/.entries.pickle') == ['b','d']

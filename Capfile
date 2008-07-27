@@ -77,7 +77,13 @@ task :dns do `sudo dscacheutil -flushcache` end
 
 desc "test the source code with nosetest"
 task :nose do
-	system('nosetests -c nose.cfg')
+	if ENV['file']
+		where = ENV['file']
+	else
+		puts " (add file=src/<module>.py to test a single module)"
+		where = '--where=src'
+	end
+	system("nosetests -c nose.cfg #{where}")
 end
 
 desc "Do a full sync"

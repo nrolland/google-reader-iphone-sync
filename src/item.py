@@ -20,87 +20,126 @@ def unesc(s): return urllib.unquote(s)
 def ascii(s): return s.encode('ascii','ignore') if isinstance(s, unicode) else s
 def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
 
-class MinimalItem:
-	"""
-	an empty item with skeleton functionality (that can be derived from its google_id)
-	"""
-	def __init__(self, google_id):
-		self.item = {'google_id': google_id}
-	
-	def get_key(self):
-		return urllib.quote(self.item['google_id'],safe='')
-	key = property(get_key)
-	
-	def get_resources_path(self):
-		return "%s/%s/%s" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'], self.key)
-	resources_path = property(get_resources_path)
-
-	def delete(self):
-		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.key + '.*'):
-			rm_rf(f)
-		rm_rf(self.resources_path)
-
-
-class Item(MinimalItem):
+class Item:
 	"""
 	A wrapper around a GoogleReader item
 	"""
-	def __init__(self, feed_item, feed_name = '(unknown)'):
-		self.item = feed_item
-		self.feed_name = feed_name
+	def __init__(self, feed_item = None, feed_name = '(unknown)', raw_data = None):
+		if feed_item is not None:
+			try: self.feed_name = feed_item['feed_name']
+			except:
+				self.feed_name = feed_name
+			self.title = feed_item['title']
+			self.google_id = feed_item['google_id']
+			self.date = time.strftime('%Y%m%d%H%M%S', time.localtime(feed_item['updated']))
+			self.is_read = 'read' in feed_item['categories']
+			self.is_starred = 'starred' in feed_item['categories']
+			self.url = feed_item['link']
+			self.content = feed_item['content']
+			self.original_id = feed_item['original_id']
+			self.is_dirty = False
+		else:
+			# just copy the dict's keys to my instance vars
+			for key,value in raw_data.items():
+				setattr(self, key, value)
+		
+		# calculated attributes that aren't stored in the DB
+		self.safe_google_id = Item.escape_google_id(self.google_id)
+		self.resources_path = "%s/%s/%s" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'], self.safe_google_id)
+		self.basename = self.get_basename()
+	
+	@staticmethod
+	def unescape_google_id(safe_google_id):
+		return urllib.unquote(safe_google_id)
+
+	@staticmethod
+	def escape_google_id(unsafe_google_id):
+		return urllib.quote(unsafe_google_id, safe='')
 
 	def get_basename(self):
-		tag_str = ''
-		for cat in self.item['categories']:
-			if re.search('ipod$', cat, re.I) is not None:
-				tag_str = '[txt] '
 		return utf8(
-		time.strftime('%Y-%m-%d|%H-%M-%S', time.localtime(self.item['updated'])) + ' ' + tag_str +
-			filter(lambda x: x not in '"\':#!+/$\\?*', ascii(remove_the_damn_html_entities(self.item['title'])))[:120] + ' .||' +
-			self.key + '||' )
-	basename = property(get_basename)
+			self.date + ' ' +
+			filter(lambda x: x not in '"\':#!+/$\\?*', ascii(remove_the_damn_html_entities(self.title)))[:120] + ' .||' +
+			self.safe_google_id + '||' )
 
-	
 	def process(self):
 		# setup:
-		self.item['soup'] = BeautifulSoup(self.item['content'])
+		soup = BeautifulSoup(self.content)
 		try:
-			self.item['base'] = url_dirname(item['original_id'])
+			base = url_dirname(self.original_id)
 		except:
-			self.item['base'] = None
-		
+			base = None
+
 		# process
-		self.item = process.insert_alt_text(self.item)
-		self.item = process.download_images(
-			self.item,
+		soup = process.insert_alt_text(soup)
+		soup = process.download_images(soup,
 			dest_folder = self.resources_path,
-			href_prefix = app_globals.CONFIG['resources_path'] + '/' + self.key + '/')
+			href_prefix = app_globals.CONFIG['resources_path'] + '/' + self.safe_google_id + '/',
+			base_href = base)
 		
-		# teardown
-		self.item['content'] = self.item['soup'].prettify()
+		# save changes back as content
+		self.content = soup.prettify()
 	
-	def output(self):
+	def save(self):
 		base = app_globals.OPTIONS['output_path'] + '/' + self.basename
 
 		render_object = {
-			'title_link':  '<a href="' + utf8(self.item['link']) + '">' + utf8(self.item['title']) + '</a>',
-			'title_html':  '<title>' + utf8(self.item['title']) + '</title>',
-			'content':     utf8(self.item['content']),
-			'via':        'from tag <b>'+ self.feed_name +'</b>'
+			'title_link':  '<a href="' + utf8(self.url) + '">' + utf8(self.title) + '</a>',
+			'title_html':  '<title>' + utf8(self.title) + '</title>',
+			'content':     utf8(self.content),
+			'via':        'from tag <b>'+ utf8(self.feed_name) +'</b>'
 		}
 
 		# create the "via" link
 		try:
-			render_object['via'] += '<br />url ' + re.sub('.*://', '', self.item['sources'].keys()[0]).replace('/',' / ').replace('=',' = ') + '<br /><br />'
+			render_object['via'] += '<br /><em>' + re.sub('.*://([^/]+).*', '\\1', self.original_id) + '</em><br /><br />'
 		except:
 			pass
 		
 		debug("rendering item to %s using template file %s" % (base + '.html', 'template/item.html'))
 		template.create(render_object, 'template/item.html', base + '.html')
 		
-		app_globals.DATABASE.add_item(self)
+		self.add_to_db()
 	
-	def get_is_read(self):
-		return 'read' in self.item['categories']
-	is_read = property(get_is_read)
+	def add_to_db(self):
+		app_globals.DATABASE.add_item(self)
 
+	def delete(self):
+		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.safe_google_id + '.*'):
+			rm_rf(f)
+		rm_rf(self.resources_path)
+
+	def save_to_web(self):
+		if not self.is_dirty:
+			return
+		
+		# actions are effects to apply in order to ensure the web has been updated with our current state
+		# i.e anything that the user *can* change must be set here
+		actions = []
+		# read status
+		if self.is_read:
+			actions.append(app_globals.READER.set_read)
+		else:
+			actions.append(app_globals.READER.set_unread)
+
+		# stars
+		if self.is_starred:
+			actions.append(app_globals.READER.add_star)
+		else:
+			actions.append(app_globals.READER.del_star)
+
+		# apply the actions
+		for action in actions:
+			result = Item.google_do_with_id(action, self.google_id)
+			if not result:
+				msg = "Failed to apply function %s" % action
+				print msg
+				raise Exception(msg)
+		
+		self.is_dirty = False
+
+	@staticmethod
+	def google_do_with_id(action, google_id):
+		debug("Applying function %s to item %s" % (action, google_id))
+		danger("Applying function %s to item %s" % (action, google_id))
+		return action(google_id)
