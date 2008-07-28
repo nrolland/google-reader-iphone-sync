@@ -1,0 +1,9 @@
+
+Thanks to the following folks for patches and other contributions:
+
+D. Richard Hipp (The author of SQLite)
+Zach Wily
+Kris Markel
+Blackhole Media
+Daniel Pasco
+Bil Moorehead

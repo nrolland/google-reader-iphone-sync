@@ -1,0 +1,82 @@
+#import "tcItem.h"
+
+@implementation tcItem
+@synthesize google_id, url, date, title, content, is_read, is_starred, is_dirty;
+- (id) initWithId: (NSString *) ngoogle_id
+	date: (NSString *) ndate
+	url: (NSString *) nurl
+	title: (NSString *) ntitle
+	content: (NSString *) ncontent
+	is_read: (BOOL) nis_read
+	is_starred:	(BOOL) nis_starred
+	db: (id) ndb
+{
+	self = [super init];
+	google_id = [ngoogle_id retain];
+	date = [ndate retain];
+	url = [nurl retain];
+	title = [ntitle retain];
+	content = [ncontent retain];
+	source_db = [ndb retain];
+
+	// booleans don't need no retaining
+	is_read = nis_read;
+	is_starred = nis_starred;
+	is_dirty = NO;
+	
+	sticky_read_state = NO;
+	return self;
+}
+
+- (void) save {
+	[source_db updateItem:self];
+}
+
+- (void) dealloc {
+	[source_db release];
+	[google_id release];
+	[date release];
+	[url release];
+	[title release];
+	[content release];
+	[super dealloc];
+}
+
+- (NSString *) html {
+	return [[NSString stringWithFormat: @"<html><head><meta name='viewport' content='width=500' /><link rel='stylesheet' href='../template/style.css' type='text/css' /></head><body><h1>%@</h1>%@</body></html>", title, content] autorelease];
+}
+
+- (void) userDidScrollPast {
+	if(sticky_read_state == NO && is_read == NO){
+		is_read = YES;
+		is_dirty = YES;
+		[self save];
+	}
+}
+
+- (BOOL) userHasMarkedAsRead {
+	NSLog(@"user has marked as read? %d", sticky_read_state && is_read);
+	return sticky_read_state && is_read;
+}
+
+- (BOOL) toggleReadState {
+	if (!sticky_read_state) {
+		// the first "toggle" saves it - ie mark as UNread
+		is_read = YES;
+	} else {
+		is_read = !is_read;
+	}
+	sticky_read_state = YES;
+	is_dirty = YES;
+	[self save];
+	return [self userHasMarkedAsRead];
+}
+
+- (BOOL) toggleStarredState {
+	is_starred = !is_starred;
+	is_dirty = YES;
+	[self save];
+	return is_starred;
+}
+
+@end
