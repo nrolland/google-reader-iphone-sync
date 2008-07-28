@@ -3,3 +3,4 @@
 entries
 config.yml
 *.app
+*.sqlite

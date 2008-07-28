@@ -88,10 +88,6 @@ class DBTest(unittest.TestCase):
 
 		self.db.sync_to_google()
 		assert reader.method_calls == [
-			('set_unread', ('b',), {}),
-			('del_star', ('b',), {}),
-			('set_unread', ('d',), {}),
-			('del_star', ('d',), {}),
 			('set_read', ('c',), {}),
 			('add_star', ('c',), {})]
 		

@@ -119,14 +119,10 @@ class Item:
 		# read status
 		if self.is_read:
 			actions.append(app_globals.READER.set_read)
-		else:
-			actions.append(app_globals.READER.set_unread)
 
 		# stars
 		if self.is_starred:
 			actions.append(app_globals.READER.add_star)
-		else:
-			actions.append(app_globals.READER.del_star)
 
 		# apply the actions
 		for action in actions:
