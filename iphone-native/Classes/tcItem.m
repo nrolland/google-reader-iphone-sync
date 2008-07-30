@@ -43,7 +43,25 @@
 }
 
 - (NSString *) html {
-	return [[NSString stringWithFormat: @"<html><head><meta name='viewport' content='width=500' /><link rel='stylesheet' href='../template/style.css' type='text/css' /></head><body><h1>%@</h1>%@</body></html>", title, content] autorelease];
+	return [[NSString stringWithFormat:
+		@"<html>\n\
+			<head>\n\
+				<meta name='viewport' content='width=500' />\n\
+				<link rel='stylesheet' href='../template/style.css' type='text/css' />\n\
+			</head>\n\
+			<body>\n\
+				<h1 id='title'>\n\
+					<a href='%@'>%@</a>\n\
+				</h1>\n\
+				<div class='via'>\n\
+					from tag <b>%@</b><br />url %@<br /><br />\n\
+				</div>\n\
+				<div id='content'><p>\n\
+					%@\n\
+				</div>\n\
+			</body>\n\
+		</html>",
+		url, title, @"TAG missing", url, content] autorelease];
 }
 
 - (void) userDidScrollPast {

@@ -84,7 +84,7 @@
 	 [currentHTML release];
 	 */
 	currentHTML = newHTML;
-	[self loadHTMLString:currentHTML baseURL: [NSURL fileURLWithPath: @"file://localhost/Users/tim/Documents/Programming/Python/reader/working/entries/"]];
+	[self loadHTMLString:currentHTML baseURL: [NSURL fileURLWithPath: @"/Users/tim/Documents/Programming/Python/reader/working/entries/"]];
 }
 
 - (void)dealloc {

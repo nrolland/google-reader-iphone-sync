@@ -4,6 +4,7 @@
 @interface Feeds2AppDelegate : NSObject {
     IBOutlet UIWindow *window;
 	IBOutlet BrowserViewController * browseController;
+	NSString * appDocsPath;
 }
 
 @property (nonatomic, retain) UIWindow *window;

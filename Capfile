@@ -154,12 +154,10 @@ desc "update ipod code"
 task :update_code do
 	make_app
 	# sync it
-	run "rsync #{$rsync_opts} #{$remote_mac_path}../GRiS.app /Applications/"
-	# set the python executable
-	run 'ln -sf `which python` /Applications/GRiS.app/Python'
-	# and the entries folder
-	run "ln -sf #{$ipod_path} /Applications/GRiS.app/entries"
+	local "rsync #{$rsync_opts} iphone-native/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
 end
+
+task :
 
 def install_egg_file(file, location='eggs')
 	path = location + '/' + file

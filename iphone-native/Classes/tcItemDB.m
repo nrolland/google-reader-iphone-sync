@@ -30,40 +30,37 @@
 
 - (BOOL) dbHadError {
 	if ([db hadError]) {
-        NSLog(@"Error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
+		NSLog(@"Error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 		return YES;
-    }
+	}
 	return NO;
 }
 	
 - (id) initWithFilename:(NSString *)filename {
-	NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-	NSString *appDocsDirectory = [docsPath stringByAppendingPathComponent: @".GRiS"];
-	NSString *path = [docsPath stringByAppendingPathComponent:filename];
-	if(![tcHelpers ensureDirectoryExists: appDocsDirectory]) return nil;
+	NSString *path = [[[[UIApplication sharedApplication] delegate] appDocsPath] stringByAppendingPathComponent:filename];
 	return [self initWithPath: path];
 }
 
 - (id) initWithPath:(NSString *) path {
 	self = [super init];
 	if(!self) return self;
-	NSLog(@"loading database at path: %@", path);
-    db = [[FMDatabase alloc] initWithPath:path];
-    if (![db open]) {
-        NSLog(@"Could not open db.");
+	dbg(@"loading database at path: %@", path);
+	db = [[FMDatabase alloc] initWithPath:path];
+	if (![db open]) {
+		NSLog(@"Could not open db.");
 		[db release];
-        return nil;
-    }
-	NSLog(@"success!");
+		return nil;
+	}
+	dbg(@"success!");
 	return self;
 }
 
 - (void) updateItem:(id) item {
 	return; // TODO: don't chicken out!
 	[db executeUpdate:@"update items set is_read=?, is_starred=? , is_dirty=1 where google_id=?" ,
-	    [item is_read],
+		[item is_read],
 		[item is_starred],
-	    [item google_id]];
+		[item google_id]];
 	if_error [NSException raise:@"UpdateFailed" format:@"updating item id %@ failed", [item google_id]];
 }
 
@@ -81,15 +78,15 @@
 }
 
 - (NSEnumerator *) enumeratorForQuery: (NSString *) sql, ... {
-    va_list args;
-    va_start(args, sql);
-    
-    FMResultSet *rs = [db executeQuery:sql arguments:args];
-    
-    va_end(args);
+	va_list args;
+	va_start(args, sql);
+	
+	FMResultSet *rs = [db executeQuery:sql arguments:args];
+	
+	va_end(args);
 	if_error return nil;
 	
-    return [[[tcItemEnumerator alloc] initWithResultSet:rs fromDB: self] autorelease];
+	return [[[tcItemEnumerator alloc] initWithResultSet:rs fromDB: self] autorelease];
 }
 
 - (NSEnumerator *) itemsMatchingCondition:(NSString *) condition {
@@ -104,8 +101,8 @@
 - (NSEnumerator *) allItems		{ return [self itemsMatchingCondition: nil]; }
 - (NSEnumerator *) unreadItems	{ return [self itemsMatchingCondition: @"is_read = 0"]; }
 - (NSEnumerator *) readItems	{ return [self itemsMatchingCondition: @"is_read = 1"]; }
-- (NSEnumerator *) starredItems	{ return [self itemsMatchingCondition: @"is_starred = 1"]; }
-- (NSEnumerator *) locallyModifiedItems	{ return [self itemsMatchingCondition: @"dirty = 1"]; }
+- (NSEnumerator *) starredItems { return [self itemsMatchingCondition: @"is_starred = 1"]; }
+- (NSEnumerator *) locallyModifiedItems { return [self itemsMatchingCondition: @"dirty = 1"]; }
 
 - (id) itemWithID: (NSString *) google_id {
 	return [self itemFromResultSet: [db executeQuery: @"select * from items where google_id = ?", google_id]];
