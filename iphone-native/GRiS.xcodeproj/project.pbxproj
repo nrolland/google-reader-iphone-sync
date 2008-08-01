@@ -11,6 +11,10 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		225D849B0E43376A00BFE7D1 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D849A0E43376A00BFE7D1 /* MainTabBarController.m */; };
+		225D84A50E433E2F00BFE7D1 /* FeedListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */; };
+		225D84A80E433E3800BFE7D1 /* ItemListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */; };
+		225D85210E435FF200BFE7D1 /* SyncController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D851F0E435FF200BFE7D1 /* SyncController.m */; };
 		22C6B5280E3DD33700B8F9A3 /* BrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */; };
 		22C6B6850E3DEF6100B8F9A3 /* active_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C6B6750E3DEF6100B8F9A3 /* active_read.png */; };
 		22C6B6860E3DEF6100B8F9A3 /* active_star.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C6B6760E3DEF6100B8F9A3 /* active_star.png */; };
@@ -47,6 +51,14 @@
 		1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feeds2AppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* Feeds2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Feeds2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		225D84990E43376A00BFE7D1 /* MainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTabBarController.h; sourceTree = "<group>"; };
+		225D849A0E43376A00BFE7D1 /* MainTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTabBarController.m; sourceTree = "<group>"; };
+		225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedListDelegate.m; sourceTree = "<group>"; };
+		225D84A40E433E2F00BFE7D1 /* FeedListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedListDelegate.h; sourceTree = "<group>"; };
+		225D84A60E433E3800BFE7D1 /* ItemListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemListDelegate.h; sourceTree = "<group>"; };
+		225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemListDelegate.m; sourceTree = "<group>"; };
+		225D851F0E435FF200BFE7D1 /* SyncController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncController.m; sourceTree = "<group>"; };
+		225D85200E435FF200BFE7D1 /* SyncController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncController.h; sourceTree = "<group>"; };
 		22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowserViewController.m; sourceTree = "<group>"; };
 		22C6B5270E3DD33700B8F9A3 /* BrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowserViewController.h; sourceTree = "<group>"; };
 		22C6B6750E3DEF6100B8F9A3 /* active_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = active_read.png; path = button_images/active_read.png; sourceTree = "<group>"; };
@@ -108,6 +120,12 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */,
+				225D84A40E433E2F00BFE7D1 /* FeedListDelegate.h */,
+				225D84A60E433E3800BFE7D1 /* ItemListDelegate.h */,
+				225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */,
+				225D851F0E435FF200BFE7D1 /* SyncController.m */,
+				225D85200E435FF200BFE7D1 /* SyncController.h */,
 				22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */,
 				22C6B5270E3DD33700B8F9A3 /* BrowserViewController.h */,
 				22DF94FB0E3AF6040052AAAB /* tcItem.h */,
@@ -124,6 +142,8 @@
 				1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */,
 				22DF94CF0E3ABEE20052AAAB /* tcItemDB.h */,
 				22DF94D00E3ABEE20052AAAB /* tcItemDB.m */,
+				225D84990E43376A00BFE7D1 /* MainTabBarController.h */,
+				225D849A0E43376A00BFE7D1 /* MainTabBarController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -296,6 +316,10 @@
 				22DF94EF0E3AD2470052AAAB /* tcHelpers.m in Sources */,
 				22DF94FD0E3AF6040052AAAB /* tcItem.m in Sources */,
 				22C6B5280E3DD33700B8F9A3 /* BrowserViewController.m in Sources */,
+				225D849B0E43376A00BFE7D1 /* MainTabBarController.m in Sources */,
+				225D84A50E433E2F00BFE7D1 /* FeedListDelegate.m in Sources */,
+				225D84A80E433E3800BFE7D1 /* ItemListDelegate.m in Sources */,
+				225D85210E435FF200BFE7D1 /* SyncController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

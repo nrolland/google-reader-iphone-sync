@@ -19,6 +19,8 @@
 #define if_error if([self dbHadError])
 
 - (id)init {
+	// TODO: use a non-hacky path:
+	return [self initWithPath: @"/Users/tim/Documents/Programming/Python/reader/working/entries_copy.sqlite"];
 	return [self initWithFilename:@"items.sqlite"];
 }
 - (void) dealloc {

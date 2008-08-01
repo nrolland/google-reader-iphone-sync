@@ -36,18 +36,27 @@
 	}
 	
 	// now some actual UI: setup the viewer
-	[self showViewer: self];
+	[window setBackgroundColor: [UIColor groupTableViewBackgroundColor]];
+	//[self showViewer: self];
+	[self showNavigation: self];
 }
 
 - (NSString *) appDocsPath { return appDocsPath; }
 
+- (void) loadItemAtIndex: (int) index fromSet:(id) items {
+	[[browseController webView] loadItemAtIndex: index fromSet:items];
+	[self showViewer:self];
+}
+
 - (void)showNavigation: (id) sender {
-	[browseController deactivate];
 	dbg(@"Navigation!");
+	[browseController deactivate];
+	[mainController activate];
 }
 
 - (void)showViewer: (id) sender {
 	dbg(@"Viewer!");
+	[mainController deactivate];
 	[browseController activate];
 }
 

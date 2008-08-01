@@ -10,7 +10,7 @@
 	IBOutlet id buttonStar;
 	IBOutlet id buttonRead;
 	
-	tcItemDB * db;
+	IBOutlet tcItemDB * db;
 	id nextCursor;
 	id prevCursor;
 	NSString * currentHTML;
@@ -21,7 +21,7 @@
 - (void) loadHTMLString: (NSString *) newHTML;
 - (void) loadItem:(id)item;
 - (IBAction) loadUnread;
-- (void) loadItemAtIndex:(int) index;
+- (void) loadItemAtIndex:(int) index fromSet: (id) items;
 - (void) setButtonStates;
 - (BOOL) canGoNext;
 - (BOOL) canGoPrev;

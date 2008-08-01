@@ -3,16 +3,20 @@
 
 @implementation tcWebView
 - (void) load {
-	NSLog(@"loading db");
-	db = [[[tcItemDB alloc] initWithPath: @"/Users/tim/Documents/Programming/Python/reader/working/entries_copy.sqlite"] retain];
-	NSLog(@"loading item");
-	[self loadUnread];
+	if(allItems == nil) {
+		[self loadUnread];
+	}
 }
 
 - (IBAction) loadUnread {
 	[allItems release];
 	allItems = [[[db allItems] allObjects] retain];
 	[self loadItemAtIndex:0];
+}
+
+- (void) setAllItems:(id) newSetOfItems {
+	[allItems release];
+	allItems = [newSetOfItems retain];
 }
 
 - (void) loadItemAtIndex:(int) index {
@@ -40,6 +44,11 @@
 	[self setButtonStates];
 }
 
+- (void) loadItemAtIndex:(int) index fromSet:(id)items {
+	[self setAllItems: items];
+	[self loadItemAtIndex: index];
+}
+
 - (BOOL) canGoNext {
 	return currentItemIndex < [allItems count] - 1;
 }
@@ -52,6 +61,7 @@
 	if(!([self canGoNext] && [self canGoPrev])) {
 		[currentItem userDidScrollPast];
 	}
+	[self setAllItems: nil];
 }
 
 - (IBAction) goForward{
