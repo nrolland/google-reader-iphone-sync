@@ -6,4 +6,6 @@ config.yml
 *.sqlite
 iphone-native/GRiS.xcodeproj/*.mode1v3
 iphone-native/GRiS.xcodeproj/*.pbxuser
+iphone-native/GRiS.xcodeproj/*.tm_build_errors
+iphone-native/GRiS.tmproj
 iphone-native/build/
