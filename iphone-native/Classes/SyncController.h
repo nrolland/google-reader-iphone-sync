@@ -11,6 +11,7 @@
 	NSThread * syncThread;
 	IBOutlet id runningOutput;
 	BOOL syncRunning;
+	IBOutlet id window;
 }
 - (IBAction) sync: (id) sender;
 - (IBAction) cancelSync: (id) sender;
