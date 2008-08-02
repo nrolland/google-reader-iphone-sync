@@ -11,6 +11,7 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		222B0FE30E44C7A000ACD769 /* ApplicationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 222B0FE20E44C7A000ACD769 /* ApplicationSettings.m */; };
 		22425F350E43F02D00252E7A /* ItemsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22425F340E43F02D00252E7A /* ItemsListController.m */; };
 		22425F970E44098700252E7A /* emblem_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F940E44098700252E7A /* emblem_read.png */; };
 		22425F980E44098700252E7A /* emblem_read_and_starred.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F950E44098700252E7A /* emblem_read_and_starred.png */; };
@@ -65,8 +66,10 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* Feeds2AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Feeds2AppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feeds2AppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* Feeds2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Feeds2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* GRiS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GRiS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		222B0FE10E44C7A000ACD769 /* ApplicationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationSettings.h; sourceTree = "<group>"; };
+		222B0FE20E44C7A000ACD769 /* ApplicationSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationSettings.m; sourceTree = "<group>"; };
 		22425F330E43F02D00252E7A /* ItemsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemsListController.h; sourceTree = "<group>"; };
 		22425F340E43F02D00252E7A /* ItemsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemsListController.m; sourceTree = "<group>"; };
 		22425F940E44098700252E7A /* emblem_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_read.png; path = button_images/emblem_read.png; sourceTree = "<group>"; };
@@ -141,6 +144,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				222B0FE10E44C7A000ACD769 /* ApplicationSettings.h */,
+				222B0FE20E44C7A000ACD769 /* ApplicationSettings.m */,
 				22425F330E43F02D00252E7A /* ItemsListController.h */,
 				22425F340E43F02D00252E7A /* ItemsListController.m */,
 				225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */,
@@ -174,7 +179,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* Feeds2.app */,
+				1D6058910D05DD3D006BFB54 /* GRiS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -279,7 +284,7 @@
 			);
 			name = GRiS;
 			productName = Feeds2;
-			productReference = 1D6058910D05DD3D006BFB54 /* Feeds2.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* GRiS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -351,6 +356,7 @@
 				225D84A80E433E3800BFE7D1 /* ItemListDelegate.m in Sources */,
 				225D85210E435FF200BFE7D1 /* SyncController.m in Sources */,
 				22425F350E43F02D00252E7A /* ItemsListController.m in Sources */,
+				222B0FE30E44C7A000ACD769 /* ApplicationSettings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,7 +373,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Feeds2_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = Feeds2;
+				PRODUCT_NAME = GRiS;
 			};
 			name = Debug;
 		};
@@ -379,7 +385,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Feeds2_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = Feeds2;
+				PRODUCT_NAME = GRiS;
 			};
 			name = Release;
 		};

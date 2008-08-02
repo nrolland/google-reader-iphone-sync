@@ -5,9 +5,9 @@
 
 @interface tcItemDB : NSObject {
 	FMDatabase* db;
+       NSString * filename;
 }
--(id) initWithFilename: (NSString *)filename;
--(id) initWithPath:(NSString *) path;
+-(void) load;
 -(void) updateItem: (id) item;
 
 - (NSEnumerator *) allItems;

@@ -7,12 +7,13 @@
 	IBOutlet id db;
 	IBOutlet BrowserViewController * browseController;
 	IBOutlet MainTabBarController * mainController;
-	NSString * appDocsPath;
+       IBOutlet id appSettings;
 }
 
 @property (nonatomic, retain) UIWindow *window;
 
 - (IBAction) showNavigation: (id) sender;
 - (IBAction) showViewer: (id) sender;
-
+- (NSString *) appDocsPath;
+- (id) settings;
 @end

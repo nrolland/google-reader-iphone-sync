@@ -17,14 +17,32 @@
 
 #define db_ok [self dbHadError]
 #define if_error if([self dbHadError])
-
-- (id)init {
-	// TODO: use a non-hacky path:
-	return [self initWithPath: @"/Users/tim/Documents/Programming/Python/reader/working/entries_copy.sqlite"];
-	return [self initWithFilename:@"items.sqlite"];
+- (void) awakeFromNib {
+       [self load];
 }
+
+-(void) load {
+       if(filename == nil){
+               filename = @"items.sqlite";
+       }
+       id appdel = [[UIApplication sharedApplication] delegate];
+       id sett = [appdel settings];
+       id dp = [sett docsPath];
+       NSString *path = [[[[[UIApplication sharedApplication] delegate] settings] docsPath] stringByAppendingPathComponent:filename];
+       dbg(@"loading database at path: %@", path);
+       db = [[FMDatabase alloc] initWithPath:path];
+       if (![db open]) {
+               NSLog(@"Could not open db.");
+               [db release];
+               [[NSException exceptionWithName:@"ItemDBException" reason:@"Couldn't open the DB" userInfo:nil] raise];
+               return;
+       }
+       dbg(@"success!");
+}
+
 - (void) dealloc {
 	NSLog(@"db is being dealloc'd!");
+       [filename release];
 	[db close];
 	[db release];
 	[super dealloc];
@@ -38,24 +56,6 @@
 	return NO;
 }
 	
-- (id) initWithFilename:(NSString *)filename {
-	NSString *path = [[[[UIApplication sharedApplication] delegate] appDocsPath] stringByAppendingPathComponent:filename];
-	return [self initWithPath: path];
-}
-
-- (id) initWithPath:(NSString *) path {
-	self = [super init];
-	if(!self) return self;
-	dbg(@"loading database at path: %@", path);
-	db = [[FMDatabase alloc] initWithPath:path];
-	if (![db open]) {
-		NSLog(@"Could not open db.");
-		[db release];
-		return nil;
-	}
-	dbg(@"success!");
-	return self;
-}
 
 - (void) updateItem:(id) item {
 	[db executeUpdate:@"update items set is_read=?, is_starred=? , is_dirty=1 where google_id=?" ,
