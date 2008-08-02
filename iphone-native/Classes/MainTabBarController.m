@@ -2,6 +2,7 @@
 #import "tcHelpers.h"
 
 @implementation MainTabBarController
+@synthesize itemList;
 - (void) activate {
 	dbg(@"%@ activating", self);
 	[topLevelWindow addSubview:[self view]];

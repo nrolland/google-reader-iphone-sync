@@ -1,31 +1,40 @@
 #import "tcWebView.h"
 #import "tcDirList.h"
+#import "tcHelpers.h"
 
 @implementation tcWebView
 - (void) load {
-	if(allItems == nil) {
-		[self loadUnread];
+	[self allItems];
+	if(currentItem == nil) {
+		[self loadItemAtIndex:0];
 	}
 }
 
-- (IBAction) loadUnread {
-	[allItems release];
-	allItems = [[[db allItems] allObjects] retain];
-	[self loadItemAtIndex:0];
+- (id) allItems {
+	if(allItems == nil) {
+		dbg(@"allItems is nil - getting a fresh pack from the DB");
+		[self setAllItems: [[db allItems] allObjects]];
+	}
+	return allItems;
 }
 
 - (void) setAllItems:(id) newSetOfItems {
+	dbg(@"setting allItems to: %@", newSetOfItems);
 	[allItems release];
+	currentItem = nil;
+	currentItemIndex = 0;
 	allItems = [newSetOfItems retain];
 }
 
+
 - (void) loadItemAtIndex:(int) index {
-	NSLog(@"Loading item at index: %d", index);
+	dbg(@"Loading item at index: %d", index);
 	if(index < 0) {
 		currentItem = nil;
 		currentItemIndex = 0;
 	} else {
 		@try{
+			[self allItems];
 			currentItem = [allItems objectAtIndex: index];
 			currentItemIndex = index;
 		}
@@ -39,7 +48,6 @@
 	[buttonPrev setEnabled:[self canGoPrev]];
 	[buttonNext setEnabled:[self canGoNext]];
 
-	NSLog(@"loading item at index: %d", currentItemIndex);
 	[self loadItem: currentItem];
 	[self setButtonStates];
 }
@@ -57,33 +65,42 @@
 	return currentItemIndex > 0;
 }
 
+- (void) showCurrentItemInItemList: (id) itemList {
+	if(allItems && currentItem) {
+		dbg(@"selectingItem from %@", allItems);
+		[itemList selectItemWithID: [currentItem google_id] inItemSet: allItems];
+	} else {
+		dbg(@"no item to showCurrentItemInItemList");
+	}
+}
+
 - (void) deactivate {
 	if(!([self canGoNext] && [self canGoPrev])) {
 		[currentItem userDidScrollPast];
 	}
 	[self setAllItems: nil];
+	[self loadHTMLString:@""];
 }
 
 - (IBAction) goForward{
 	NSLog(@"FWD");
+	[currentItem userDidScrollPast];
 	[self loadItemAtIndex:currentItemIndex + 1];
 }
 
 - (IBAction) goBack{
 	NSLog(@"back");
+	[currentItem userDidScrollPast];
 	[self loadItemAtIndex:currentItemIndex - 1];
 }
 
-- (void) loadItem: (id) item {
+- (void) loadItem: (tcItem *) item {
 	NSLog(@"loading item %@", item);
-	[currentItem userDidScrollPast];
 	if(item == nil) {
 		[self loadHTMLString:@"<html><body><h1>No More</h1><p>..files for you!</p></body></html>"];
 	} else {
 		NSString *str = [item html];
-//		NSLog(@"html str: %@", str);
 		[self loadHTMLString:str];
-		NSLog(@"done");
 	}
 }
 - (void) loadHTMLString: (NSString *) newHTML {
@@ -98,13 +115,14 @@
 }
 
 - (void)dealloc {
+	[self deactivate];
 	[db release];
 	[super dealloc];
 }
 
 - (void) setButtonStates {
 	[buttonStar setSelected: [currentItem is_starred]];
-	[buttonRead setSelected: [currentItem userHasMarkedAsRead]];
+	[buttonRead setSelected: [currentItem userHasMarkedAsUnread]];
 }
 
 - (IBAction) toggleStarForCurrentItem:(id) sender {

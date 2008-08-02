@@ -44,12 +44,14 @@
 - (NSString *) appDocsPath { return appDocsPath; }
 
 - (void) loadItemAtIndex: (int) index fromSet:(id) items {
+	dbg(@"appdelegate - loading item at index: %d from set %@", index, items);
 	[[browseController webView] loadItemAtIndex: index fromSet:items];
 	[self showViewer:self];
 }
 
 - (void)showNavigation: (id) sender {
 	dbg(@"Navigation!");
+	[[browseController webView] showCurrentItemInItemList: [mainController itemList]];
 	[browseController deactivate];
 	[mainController activate];
 }

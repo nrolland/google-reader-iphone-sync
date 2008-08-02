@@ -11,6 +11,10 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		22425F350E43F02D00252E7A /* ItemsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22425F340E43F02D00252E7A /* ItemsListController.m */; };
+		22425F970E44098700252E7A /* emblem_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F940E44098700252E7A /* emblem_read.png */; };
+		22425F980E44098700252E7A /* emblem_read_and_starred.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F950E44098700252E7A /* emblem_read_and_starred.png */; };
+		22425F990E44098700252E7A /* emblem_starred.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F960E44098700252E7A /* emblem_starred.png */; };
 		225D849B0E43376A00BFE7D1 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D849A0E43376A00BFE7D1 /* MainTabBarController.m */; };
 		225D84A50E433E2F00BFE7D1 /* FeedListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */; };
 		225D84A80E433E3800BFE7D1 /* ItemListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */; };
@@ -51,6 +55,11 @@
 		1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feeds2AppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* Feeds2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Feeds2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		22425F330E43F02D00252E7A /* ItemsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemsListController.h; sourceTree = "<group>"; };
+		22425F340E43F02D00252E7A /* ItemsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemsListController.m; sourceTree = "<group>"; };
+		22425F940E44098700252E7A /* emblem_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_read.png; path = button_images/emblem_read.png; sourceTree = "<group>"; };
+		22425F950E44098700252E7A /* emblem_read_and_starred.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_read_and_starred.png; path = button_images/emblem_read_and_starred.png; sourceTree = "<group>"; };
+		22425F960E44098700252E7A /* emblem_starred.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_starred.png; path = button_images/emblem_starred.png; sourceTree = "<group>"; };
 		225D84990E43376A00BFE7D1 /* MainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTabBarController.h; sourceTree = "<group>"; };
 		225D849A0E43376A00BFE7D1 /* MainTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTabBarController.m; sourceTree = "<group>"; };
 		225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedListDelegate.m; sourceTree = "<group>"; };
@@ -120,6 +129,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				22425F330E43F02D00252E7A /* ItemsListController.h */,
+				22425F340E43F02D00252E7A /* ItemsListController.m */,
 				225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */,
 				225D84A40E433E2F00BFE7D1 /* FeedListDelegate.h */,
 				225D84A60E433E3800BFE7D1 /* ItemListDelegate.h */,
@@ -159,6 +170,9 @@
 		223350460E3C8B6800E9FAFE /* buttons */ = {
 			isa = PBXGroup;
 			children = (
+				22425F940E44098700252E7A /* emblem_read.png */,
+				22425F950E44098700252E7A /* emblem_read_and_starred.png */,
+				22425F960E44098700252E7A /* emblem_starred.png */,
 				22C6B6750E3DEF6100B8F9A3 /* active_read.png */,
 				22C6B6760E3DEF6100B8F9A3 /* active_star.png */,
 				22C6B6770E3DEF6100B8F9A3 /* disabled_next.png */,
@@ -294,6 +308,9 @@
 				22C6B6920E3DEF6100B8F9A3 /* read.png in Resources */,
 				22C6B6930E3DEF6100B8F9A3 /* star.png in Resources */,
 				22C6B6940E3DEF6100B8F9A3 /* up.png in Resources */,
+				22425F970E44098700252E7A /* emblem_read.png in Resources */,
+				22425F980E44098700252E7A /* emblem_read_and_starred.png in Resources */,
+				22425F990E44098700252E7A /* emblem_starred.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +337,7 @@
 				225D84A50E433E2F00BFE7D1 /* FeedListDelegate.m in Sources */,
 				225D84A80E433E3800BFE7D1 /* ItemListDelegate.m in Sources */,
 				225D85210E435FF200BFE7D1 /* SyncController.m in Sources */,
+				22425F350E43F02D00252E7A /* ItemsListController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

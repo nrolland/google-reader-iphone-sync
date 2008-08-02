@@ -1,4 +1,5 @@
 #import "tcItem.h"
+#import "tcHelpers.h"
 
 @implementation tcItem
 @synthesize google_id, url, date, title, content, is_read, is_starred, is_dirty;
@@ -65,29 +66,32 @@
 }
 
 - (void) userDidScrollPast {
+	dbg(@"user scrolled past item %@",[self title]);
 	if(sticky_read_state == NO && is_read == NO){
 		is_read = YES;
 		is_dirty = YES;
 		[self save];
+		dbg(@"is_read is now YES!");
 	}
 }
 
-- (BOOL) userHasMarkedAsRead {
-	NSLog(@"user has marked as read? %d", sticky_read_state && is_read);
-	return sticky_read_state && is_read;
+- (BOOL) userHasMarkedAsUnread {
+	NSLog(@"user has marked as unread? %d", sticky_read_state && !is_read);
+	return sticky_read_state && !is_read;
 }
+
 
 - (BOOL) toggleReadState {
 	if (!sticky_read_state) {
 		// the first "toggle" saves it - ie mark as UNread
-		is_read = YES;
+		is_read = NO;
 	} else {
 		is_read = !is_read;
 	}
 	sticky_read_state = YES;
 	is_dirty = YES;
 	[self save];
-	return [self userHasMarkedAsRead];
+	return [self userHasMarkedAsUnread];
 }
 
 - (BOOL) toggleStarredState {

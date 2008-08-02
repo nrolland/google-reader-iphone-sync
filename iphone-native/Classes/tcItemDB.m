@@ -83,6 +83,7 @@
 	va_list args;
 	va_start(args, sql);
 	
+	dbg(@"** SQL: enumeratorForQuery: %@", sql);
 	FMResultSet *rs = [db executeQuery:sql arguments:args];
 	
 	va_end(args);

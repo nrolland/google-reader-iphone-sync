@@ -11,12 +11,14 @@
 	// now swap out the views
 	[notSyncingView setHidden:YES];
 	[syncStatusView setHidden:NO];
+	[[self tabBarItem] setBadgeValue: @" "];
 }
 
 - (IBAction) cancelSync: (id) sender {
 	[syncStatusView setHidden:YES];
 	[spinner setAnimating:NO];
 	[notSyncingView setHidden:NO];
+	[[self tabBarItem] setBadgeValue: nil];
 }
 
 @end

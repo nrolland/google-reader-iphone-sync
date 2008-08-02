@@ -5,6 +5,9 @@
 @interface ItemListDelegate : UITableViewController {
 	IBOutlet tcItemDB * db;
 	id itemSet;
+	UIImage * starredImage;
+	UIImage * readImage;
+	UIImage * readAndStarredImage;
 }
 
 - (id) itemSet;

@@ -4,18 +4,47 @@
 @implementation ItemListDelegate
 
 - tableView:(id)view cellForRowAtIndexPath: (id) indexPath {
-	dbg(@"cellForRowAtPath: %@", indexPath);
 	UITableViewCell * cell = [view dequeueReusableCellWithIdentifier:@"itemCell"];
-	dbg(@"cell = %@", cell);
 	if(cell == nil) {
-		dbg(@"no cell - making one");
 		cell = [[UITableViewCell alloc] initWithFrame: CGRectMake(0,0,1,1) reuseIdentifier:@"itemCell"];
-		dbg(@"made one");
 	}
 	
-	[cell setText: [[self itemAtIndexPath:indexPath] title]];
-	dbg(@"returning %@", cell);
+	id item = [self itemAtIndexPath:indexPath];
+	[cell setText: [item title]];
+	
+	UIColor * textColor = [item is_read] ? [UIColor lightGrayColor] : [UIColor blackColor]; // nil should work (for black), but doesn't
+	[cell setTextColor: textColor];
+	
+	UIImage * image;
+	if([item userHasMarkedAsUnread]) {
+		image = [item is_starred] ? [self readAndStarredImage] : [self readImage];
+	} else {
+		image = [item is_starred] ? [self starredImage] : nil;
+	}
+	[cell setImage: image];
+	
 	return cell;
+}
+
+- (UIImage *) starredImage {
+	if(starredImage == nil) {
+		starredImage = [UIImage imageNamed: @"emblem_starred.png"];
+	}
+	return starredImage;
+}
+
+- (UIImage *) readImage {
+	if(readImage == nil) {
+		readImage = [UIImage imageNamed: @"emblem_read.png"];
+	}
+	return readImage;
+}
+
+- (UIImage *) readAndStarredImage {
+	if(readAndStarredImage == nil) {
+		readAndStarredImage = [UIImage imageNamed: @"emblem_read_and_starred.png"];
+	}
+	return readAndStarredImage;
 }
 
 - (int)numberOfSectionsInTableView:(id)view {
@@ -44,6 +73,31 @@
 	itemSet = nil;
 }
 
+- (id) getIndexPathForItemWithID:(NSString *) google_id {
+	int foundAtIndex = 0;
+	int index;
+	
+	itemSet = [self itemSet];
+	int count = [itemSet count];
+	for(index = 0; index < count; index++) {
+		if([[[itemSet objectAtIndex:index] google_id] isEqualToString: google_id]) {
+			// found it!
+			dbg(@"found item with id %@ at index %d", google_id, index);
+			foundAtIndex = index;
+			break;
+		}
+	}
+	NSUInteger indexes[2];
+	indexes[0] = 0;
+	indexes[1] = foundAtIndex;
+	return [NSIndexPath indexPathWithIndexes:indexes length:2];
+}
+
+- (void) setItemSet:(id)newItemSet {
+	[itemSet release];
+	itemSet = [newItemSet retain];
+}
+
 - (id) itemSet {
 	// ensure it exists
 	if(itemSet == nil) {
@@ -60,6 +114,9 @@
 }
 
 - (void) dealloc {
+	[starredImage release];
+	[readImage release];
+	[readAndStarredImage release];
 	[itemSet release];
 	[super dealloc];
 }

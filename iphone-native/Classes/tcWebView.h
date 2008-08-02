@@ -19,12 +19,13 @@
 	tcItem * currentItem;
 }
 - (void) loadHTMLString: (NSString *) newHTML;
-- (void) loadItem:(id)item;
+- (void) loadItem: (tcItem *) item;
 - (IBAction) loadUnread;
 - (void) loadItemAtIndex:(int) index fromSet: (id) items;
 - (void) setButtonStates;
 - (BOOL) canGoNext;
 - (BOOL) canGoPrev;
+- (void) loadItemAtIndex:(int) index;
 
 - (IBAction) toggleStarForCurrentItem:(id) sender;
 - (IBAction) toggleReadForCurrentItem:(id) sender;
