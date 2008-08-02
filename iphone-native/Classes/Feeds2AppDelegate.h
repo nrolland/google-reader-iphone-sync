@@ -3,7 +3,8 @@
 #import "MainTabBarController.h"
 
 @interface Feeds2AppDelegate : NSObject {
-    IBOutlet UIWindow *window;
+	IBOutlet UIWindow *window;
+	IBOutlet id db;
 	IBOutlet BrowserViewController * browseController;
 	IBOutlet MainTabBarController * mainController;
 	NSString * appDocsPath;

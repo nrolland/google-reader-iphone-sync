@@ -2,11 +2,12 @@
 #import "tcHelpers.h"
 
 @implementation ItemListDelegate
-
-- tableView:(id)view cellForRowAtIndexPath: (id) indexPath {
+- (id) tableView:(id)view cellForRowAtIndexPath: (id) indexPath {
 	UITableViewCell * cell = [view dequeueReusableCellWithIdentifier:@"itemCell"];
 	if(cell == nil) {
 		cell = [[UITableViewCell alloc] initWithFrame: CGRectMake(0,0,1,1) reuseIdentifier:@"itemCell"];
+		[cell setFont: [self cellFont]];
+		[cell setLineBreakMode: UILineBreakModeWordWrap];
 	}
 	
 	id item = [self itemAtIndexPath:indexPath];
@@ -26,6 +27,14 @@
 	return cell;
 }
 
+
+- (UIFont *) cellFont {
+	if(cellFont == nil) {
+		cellFont = [[UIFont systemFontOfSize:16.0] retain];
+	}
+	return cellFont;
+}
+		
 - (UIImage *) starredImage {
 	if(starredImage == nil) {
 		starredImage = [UIImage imageNamed: @"emblem_starred.png"];
@@ -118,6 +127,7 @@
 	[readImage release];
 	[readAndStarredImage release];
 	[itemSet release];
+	[cellFont release];
 	[super dealloc];
 }
 

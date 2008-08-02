@@ -8,6 +8,7 @@
 	UIImage * starredImage;
 	UIImage * readImage;
 	UIImage * readAndStarredImage;
+	UIFont * cellFont;
 }
 
 - (id) itemSet;

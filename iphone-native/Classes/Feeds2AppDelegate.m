@@ -6,6 +6,10 @@
 
 @synthesize window;
 
+- (void) applicationWillTerminate:(id) sender {
+	dbg(@"teminating...");
+	[db dealloc];
+}
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 	// Add the tab bar controller's current view as a subview of the window
 	dbg(@"Loaded...");
