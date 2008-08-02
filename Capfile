@@ -141,20 +141,15 @@ task :install_code do
 		update_code
 end
 
-desc "crate .app package"
-task :make_app do
-	# put code in app bundle
-	local "mkdir -p GRiS.app"
-	local "cp -R app_contents/* GRiS.app"
-	local "cp -R src GRiS.app/"
-	local "cp config.yml GRiS.app/"
-end
-
 desc "update ipod code"
 task :update_code do
-	make_app
 	# sync it
-	local "rsync #{$rsync_opts} iphone-native/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
+       local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
+       run "mkdir -p /var/mobile/GRiS"
+       local "rsync #{$rsync_opts} src #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
+       local "rsync #{$rsync_opts} template #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
+       run "ldid -S /Applications/GRiS.app/GRiS"
+       run "chown -R mobile.mobile /var/mobile/GRiS/"
 end
 
 def install_egg_file(file, location='eggs')
@@ -167,11 +162,6 @@ end
 task :install_eggs do
 	install_egg_file('PyYAML-3.05-py2.5.egg')
 end
-
-task :run_remotely do
-	run "cd #{$ipod_path} && src/main.py"
-end
-
 
 
 # make sure that folder is empty, aside from files matching allowed_patterns
