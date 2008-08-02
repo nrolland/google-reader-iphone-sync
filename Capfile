@@ -157,8 +157,6 @@ task :update_code do
 	local "rsync #{$rsync_opts} iphone-native/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
 end
 
-task :
-
 def install_egg_file(file, location='eggs')
 	path = location + '/' + file
 	python_plugin_path = '/usr/lib/python2.5/site-packages/'

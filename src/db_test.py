@@ -82,9 +82,9 @@ class DBTest(unittest.TestCase):
 		reader.set_unread.return_value = True
 		reader.del_star.return_value = True
 		
-		self.db.add_item(fake_item(google_id = 'b', is_read = False, is_dirty = True))
-		self.db.add_item(fake_item(google_id = 'd', is_read = False, is_dirty = True))
-		self.db.add_item(fake_item(google_id = 'c', is_starred = True, is_read = True, is_dirty = True))
+		self.db.add_item(fake_item(google_id = 'b', title='item b', is_read = False, is_dirty = True))
+		self.db.add_item(fake_item(google_id = 'd', title='item d', is_read = False, is_dirty = True))
+		self.db.add_item(fake_item(google_id = 'c', title='item c', is_starred = True, is_read = True, is_dirty = True))
 
 		self.db.sync_to_google()
 		assert reader.method_calls == [
@@ -92,13 +92,20 @@ class DBTest(unittest.TestCase):
 			('add_star', ('c',), {})]
 		
 		assert self.db.get_items_list('is_dirty = 1') == []
-		assert len(self.db.get_items_list('is_dirty = 0')) == 3
-		reader.reset()
+		# c should have been deleted because it was read
+		assert sorted(map(lambda x: x.title, self.db.get_items_list('is_dirty = 0'))) == ['item b','item d']
+		self.db.reload()
+		# check that changes have been saved
+		assert sorted(map(lambda x: x.title, self.db.get_items_list('is_dirty = 0'))) == ['item b','item d']
 	
 	def test_google_sync_failures(self):
 		self.db.add_item(fake_item(google_id = 'b', is_read = True, is_dirty = True))
 		app_globals.READER.set_read.return_value = False
 		self.assertRaises(Exception, self.db.sync_to_google)
+		
+		# item should still be marked as read
+		assert self.db.get_items_list('is_dirty = 0') == []
+		assert len(self.db.get_items_list('is_dirty = 1')) == 1
 	
 	def test_cleanup(self):
 		res_folders = ['a','b','blah','blah2','c','d']

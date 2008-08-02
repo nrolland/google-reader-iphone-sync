@@ -17,6 +17,11 @@ class DB:
 			filename = os.path.dirname(filename) + 'test_' + os.path.basename(filename)
 		self.filename = filename
 		self.db = sqlite.connect(filename)
+
+		# commit immediately after statements.
+		# doing commits every now and then seems buggy, and we don't need it.
+		self.db.isolation_level = "IMMEDIATE"
+
 		self.schema = {
 			'columns': [
 				('google_id','TEXT primary key'),
@@ -35,8 +40,11 @@ class DB:
 		self.setup_db()
 
 	def reload(self):
-		self.cleanup()
-		self.db = sqlite.connect(filename)
+		"""
+		reload the database
+		"""
+		self.close()
+		self.db = sqlite.connect(self.filename)
 
 	def sql(self, stmt, data = None):
 		debug("SQL statement: %s" % stmt)
@@ -46,7 +54,6 @@ class DB:
 		else:
 			result = self.db.execute(stmt)
 
-		self.db.commit()
 		return result
 	
 	def erase(self):
@@ -63,7 +70,7 @@ class DB:
 
 	def setup_db(self):
 		# "if not exists" is broken in subtle and weird ways in pysqlite - this would be ideal:
-		#col_str = 'create table if not exists items('
+		#col_str = 'create table if not exists items(' < code as below... > ')'
 		
 		# so we just use this:
 		col_str = 'create table items('
@@ -111,13 +118,22 @@ class DB:
 		return Item(raw_data = item)
 	
 	def cleanup(self):
+		"""Clean up any hanging resources (for items that have been deleted)"""
 		self.cleanup_resources_directory()
 		
 	def close(self):
+		"""close the db"""
+		debug("closing DB")
+		# despite our insistance of "IMMEDIATE" isolation level, this seems to be necessary
+		self.db.commit()
 		self.db.close()
 		self.db = None
 
 	def is_read(self, google_id):
+		"""
+		check if an item is marked as read in the DB.
+		If the id is not in the database, returns None
+		"""
 		cursor = self.sql('select is_read from items where google_id = ?', (google_id,))
 		try:
 			return cursor.next()[0] == 1 # truth is 1 in sqlite's mind
@@ -129,8 +145,6 @@ class DB:
 		for item in self.get_items('is_dirty = 1'):
 			debug('syncing item state \"%s\"' % item.title)
 			item.save_to_web()
-			
-			#assert 0 == 1
 			self.update_item(item)
 		for item in self.get_items('is_read = 1'):
 			debug('deleting item \"%s\"' % item.title)
