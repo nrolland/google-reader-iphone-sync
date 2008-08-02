@@ -7,7 +7,7 @@
 	IBOutlet id db;
 	IBOutlet BrowserViewController * browseController;
 	IBOutlet MainTabBarController * mainController;
-       IBOutlet id appSettings;
+	IBOutlet id appSettings;
 }
 
 @property (nonatomic, retain) UIWindow *window;

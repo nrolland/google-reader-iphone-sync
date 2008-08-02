@@ -9,7 +9,7 @@
 - (void) applicationWillTerminate:(id) sender {
 	dbg(@"teminating...");
 	[db dealloc];
-       [appSettings dealloc];
+	[appSettings dealloc];
 }
 
 - (id) settings { return appSettings; }

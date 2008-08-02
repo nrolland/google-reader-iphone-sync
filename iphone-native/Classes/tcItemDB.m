@@ -18,31 +18,31 @@
 #define db_ok [self dbHadError]
 #define if_error if([self dbHadError])
 - (void) awakeFromNib {
-       [self load];
+	[self load];
 }
 
 -(void) load {
-       if(filename == nil){
-               filename = @"items.sqlite";
-       }
-       id appdel = [[UIApplication sharedApplication] delegate];
-       id sett = [appdel settings];
-       id dp = [sett docsPath];
-       NSString *path = [[[[[UIApplication sharedApplication] delegate] settings] docsPath] stringByAppendingPathComponent:filename];
-       dbg(@"loading database at path: %@", path);
-       db = [[FMDatabase alloc] initWithPath:path];
-       if (![db open]) {
-               NSLog(@"Could not open db.");
-               [db release];
-               [[NSException exceptionWithName:@"ItemDBException" reason:@"Couldn't open the DB" userInfo:nil] raise];
-               return;
-       }
-       dbg(@"success!");
+	if(filename == nil){
+		filename = @"items.sqlite";
+	}
+	id appdel = [[UIApplication sharedApplication] delegate];
+	id sett = [appdel settings];
+	id dp = [sett docsPath];
+	NSString *path = [[[[[UIApplication sharedApplication] delegate] settings] docsPath] stringByAppendingPathComponent:filename];
+	dbg(@"loading database at path: %@", path);
+	db = [[FMDatabase alloc] initWithPath:path];
+	if (![db open]) {
+		NSLog(@"Could not open db.");
+		[db release];
+		[[NSException exceptionWithName:@"ItemDBException" reason:@"Couldn't open the DB" userInfo:nil] raise];
+		return;
+	}
+	dbg(@"success!");
 }
 
 - (void) dealloc {
 	NSLog(@"db is being dealloc'd!");
-       [filename release];
+	[filename release];
 	[db close];
 	[db release];
 	[super dealloc];

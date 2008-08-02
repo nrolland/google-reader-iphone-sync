@@ -5,7 +5,7 @@
 
 @interface tcItemDB : NSObject {
 	FMDatabase* db;
-       NSString * filename;
+	NSString * filename;
 }
 -(void) load;
 -(void) updateItem: (id) item;
