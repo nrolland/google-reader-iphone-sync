@@ -11,7 +11,6 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		222B0FE30E44C7A000ACD769 /* ApplicationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 222B0FE20E44C7A000ACD769 /* ApplicationSettings.m */; };
 		22425F350E43F02D00252E7A /* ItemsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22425F340E43F02D00252E7A /* ItemsListController.m */; };
 		22425F970E44098700252E7A /* emblem_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F940E44098700252E7A /* emblem_read.png */; };
 		22425F980E44098700252E7A /* emblem_read_and_starred.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F950E44098700252E7A /* emblem_read_and_starred.png */; };
@@ -43,11 +42,8 @@
 		22D4C5810E34AC93001E2E58 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D4C57B0E34AC93001E2E58 /* FMDatabaseAdditions.m */; };
 		22D4C5820E34AC93001E2E58 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D4C57D0E34AC93001E2E58 /* FMDatabase.m */; };
 		22D4C5840E34AD8F001E2E58 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D4C5830E34AD8F001E2E58 /* libsqlite3.0.dylib */; };
-		22DB0C640E456117008CD8C7 /* BackgroundShell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB0C630E456117008CD8C7 /* BackgroundShell.m */; };
-		22DB0CFB0E45982D008CD8C7 /* toolbar_feeds.png in Resources */ = {isa = PBXBuildFile; fileRef = 22DB0CF80E45982D008CD8C7 /* toolbar_feeds.png */; };
-		22DB0CFC0E45982D008CD8C7 /* toolbar_items.png in Resources */ = {isa = PBXBuildFile; fileRef = 22DB0CF90E45982D008CD8C7 /* toolbar_items.png */; };
-		22DB0CFD0E45982D008CD8C7 /* toolbar_sync.png in Resources */ = {isa = PBXBuildFile; fileRef = 22DB0CFA0E45982D008CD8C7 /* toolbar_sync.png */; };
-		22DB0CFF0E459AB1008CD8C7 /* toolbar_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 22DB0CFE0E459AB1008CD8C7 /* toolbar_settings.png */; };
+		22DB0D4A0E45C8BE008CD8C7 /* ApplicationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */; };
+		22DB0D4B0E45C8BE008CD8C7 /* BackgroundShell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */; };
 		22DF94D10E3ABEE20052AAAB /* tcItemDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DF94D00E3ABEE20052AAAB /* tcItemDB.m */; };
 		22DF94EF0E3AD2470052AAAB /* tcHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DF94EE0E3AD2470052AAAB /* tcHelpers.m */; };
 		22DF94FD0E3AF6040052AAAB /* tcItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DF94FC0E3AF6040052AAAB /* tcItem.m */; };
@@ -73,8 +69,6 @@
 		1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feeds2AppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* GRiS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GRiS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		222B0FE10E44C7A000ACD769 /* ApplicationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationSettings.h; sourceTree = "<group>"; };
-		222B0FE20E44C7A000ACD769 /* ApplicationSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationSettings.m; sourceTree = "<group>"; };
 		22425F330E43F02D00252E7A /* ItemsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemsListController.h; sourceTree = "<group>"; };
 		22425F340E43F02D00252E7A /* ItemsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemsListController.m; sourceTree = "<group>"; };
 		22425F940E44098700252E7A /* emblem_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_read.png; path = button_images/emblem_read.png; sourceTree = "<group>"; };
@@ -118,12 +112,10 @@
 		22D4C57D0E34AC93001E2E58 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMDatabase.m; path = Classes/fmdb/src/FMDatabase.m; sourceTree = "<group>"; };
 		22D4C57E0E34AC93001E2E58 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMDatabase.h; path = Classes/fmdb/src/FMDatabase.h; sourceTree = "<group>"; };
 		22D4C5830E34AD8F001E2E58 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
-		22DB0C620E456117008CD8C7 /* BackgroundShell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundShell.h; sourceTree = "<group>"; };
-		22DB0C630E456117008CD8C7 /* BackgroundShell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundShell.m; sourceTree = "<group>"; };
-		22DB0CF80E45982D008CD8C7 /* toolbar_feeds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = toolbar_feeds.png; path = button_images/toolbar_feeds.png; sourceTree = "<group>"; };
-		22DB0CF90E45982D008CD8C7 /* toolbar_items.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = toolbar_items.png; path = button_images/toolbar_items.png; sourceTree = "<group>"; };
-		22DB0CFA0E45982D008CD8C7 /* toolbar_sync.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = toolbar_sync.png; path = button_images/toolbar_sync.png; sourceTree = "<group>"; };
-		22DB0CFE0E459AB1008CD8C7 /* toolbar_settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = toolbar_settings.png; path = button_images/toolbar_settings.png; sourceTree = "<group>"; };
+		22DB0D460E45C8BE008CD8C7 /* ApplicationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationSettings.h; sourceTree = "<group>"; };
+		22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationSettings.m; sourceTree = "<group>"; };
+		22DB0D480E45C8BE008CD8C7 /* BackgroundShell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundShell.h; sourceTree = "<group>"; };
+		22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundShell.m; sourceTree = "<group>"; };
 		22DF94CF0E3ABEE20052AAAB /* tcItemDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcItemDB.h; sourceTree = "<group>"; };
 		22DF94D00E3ABEE20052AAAB /* tcItemDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tcItemDB.m; sourceTree = "<group>"; };
 		22DF94ED0E3AD2470052AAAB /* tcHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcHelpers.h; sourceTree = "<group>"; };
@@ -155,8 +147,10 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				222B0FE10E44C7A000ACD769 /* ApplicationSettings.h */,
-				222B0FE20E44C7A000ACD769 /* ApplicationSettings.m */,
+				22DB0D460E45C8BE008CD8C7 /* ApplicationSettings.h */,
+				22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */,
+				22DB0D480E45C8BE008CD8C7 /* BackgroundShell.h */,
+				22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */,
 				22425F330E43F02D00252E7A /* ItemsListController.h */,
 				22425F340E43F02D00252E7A /* ItemsListController.m */,
 				225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */,
@@ -164,8 +158,6 @@
 				225D84A60E433E3800BFE7D1 /* ItemListDelegate.h */,
 				225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */,
 				225D851F0E435FF200BFE7D1 /* SyncController.m */,
-				22DB0C620E456117008CD8C7 /* BackgroundShell.h */,
-				22DB0C630E456117008CD8C7 /* BackgroundShell.m */,
 				225D85200E435FF200BFE7D1 /* SyncController.h */,
 				22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */,
 				22C6B5270E3DD33700B8F9A3 /* BrowserViewController.h */,
@@ -200,10 +192,6 @@
 		223350460E3C8B6800E9FAFE /* buttons */ = {
 			isa = PBXGroup;
 			children = (
-				22DB0CFE0E459AB1008CD8C7 /* toolbar_settings.png */,
-				22DB0CF80E45982D008CD8C7 /* toolbar_feeds.png */,
-				22DB0CF90E45982D008CD8C7 /* toolbar_items.png */,
-				22DB0CFA0E45982D008CD8C7 /* toolbar_sync.png */,
 				22425F940E44098700252E7A /* emblem_read.png */,
 				22425F950E44098700252E7A /* emblem_read_and_starred.png */,
 				22425F960E44098700252E7A /* emblem_starred.png */,
@@ -346,10 +334,6 @@
 				22425F970E44098700252E7A /* emblem_read.png in Resources */,
 				22425F980E44098700252E7A /* emblem_read_and_starred.png in Resources */,
 				22425F990E44098700252E7A /* emblem_starred.png in Resources */,
-				22DB0CFB0E45982D008CD8C7 /* toolbar_feeds.png in Resources */,
-				22DB0CFC0E45982D008CD8C7 /* toolbar_items.png in Resources */,
-				22DB0CFD0E45982D008CD8C7 /* toolbar_sync.png in Resources */,
-				22DB0CFF0E459AB1008CD8C7 /* toolbar_settings.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,8 +361,8 @@
 				225D84A80E433E3800BFE7D1 /* ItemListDelegate.m in Sources */,
 				225D85210E435FF200BFE7D1 /* SyncController.m in Sources */,
 				22425F350E43F02D00252E7A /* ItemsListController.m in Sources */,
-				222B0FE30E44C7A000ACD769 /* ApplicationSettings.m in Sources */,
-				22DB0C640E456117008CD8C7 /* BackgroundShell.m in Sources */,
+				22DB0D4A0E45C8BE008CD8C7 /* ApplicationSettings.m in Sources */,
+				22DB0D4B0E45C8BE008CD8C7 /* BackgroundShell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
