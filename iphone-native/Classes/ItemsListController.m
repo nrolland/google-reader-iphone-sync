@@ -16,4 +16,18 @@
 	[self selectItemWithID: google_id];
 }
 
+- (IBAction) toggleOptions:(id)sender {
+	if(optionsAreVisible) {
+		[sender setTitle:@"Options"];
+		[optionsView setHidden:NO];
+		optionsAreVisible = NO;
+	} else {
+		[sender setTitle:@"Done"];
+		[optionsView setHidden:YES];
+		optionsAreVisible = YES;
+	}
+}
+
+-(IBAction)
+
 @end

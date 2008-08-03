@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "BackgroundShell.h"
 
 @interface SyncController : UIViewController {
 	IBOutlet id syncStatusView;
@@ -8,7 +9,7 @@
 	IBOutlet id okButton;
 	IBOutlet id spinner;
 	IBOutlet id downloadProgrssBar;
-	NSThread * syncThread;
+	BackgroundShell * syncThread;
 	IBOutlet id runningOutput;
 	BOOL syncRunning;
 	IBOutlet id window;

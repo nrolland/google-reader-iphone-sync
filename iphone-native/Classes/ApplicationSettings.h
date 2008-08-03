@@ -8,8 +8,12 @@
 	
 	IBOutlet id emailField;
 	IBOutlet id passwordField;
+	IBOutlet id tagListField;
 	IBOutlet id itemsPerFeedSlider;
 	IBOutlet id itemsPerFeedLabel;
+	
+	IBOutlet id tagListNavItem;
+	IBOutlet id stopEditingFeedsButton;
 }
 -(NSString *) docsPath;
 -(NSString *) email;

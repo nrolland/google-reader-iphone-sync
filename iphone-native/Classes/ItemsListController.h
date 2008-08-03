@@ -4,6 +4,9 @@
 @interface ItemsListController : UIViewController {
 	IBOutlet id dataSource;
 	IBOutlet id listView;
+	
+	IBOutlet id optionsView;
+	BOOL optionsAreVisible;
 }
-
+- (IBAction) toggleOptions:(id)sender;
 @end

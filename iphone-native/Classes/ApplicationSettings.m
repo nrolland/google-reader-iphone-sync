@@ -84,9 +84,9 @@
 }
 
 - (int) itemsPerFeedValue: (id) sender {
+	// - [UISlider value] just returns the UISlider object itself. How useful!
 	return (int)(([[sender valueForKey:@"value"] floatValue] / 5) + 0.5) * 5;
 }
-
 
 - (BOOL) textFieldShouldReturn:(UITextField *)sender{
 	[sender resignFirstResponder];
@@ -95,6 +95,7 @@
 	}
 	return YES;
 }
+
 - (IBAction) activatePasswordField:(id)sender {
 	[passwordField becomeFirstResponder];
 }
@@ -104,6 +105,16 @@
 	[self save];
 }
 
+-(IBAction) deactivateTagListField:(id) sender {
+	[tagListField resignFirstResponder];
+}
+
+- (IBAction) textFieldDidBeginEditing:(UITextField *)sender {
+	if(sender == tagListField) {
+		[tagListNavItem setRightBarButtonItem: stopEditingFeedsButton];
+	}
+}
+
 - (IBAction) textFieldDidEndEditing:(UITextField *)sender {
 	dbg(@"string value changed");
 	[sender resignFirstResponder];
@@ -111,11 +122,15 @@
 }
 
 - (IBAction) itemsPerFeedDidChange: (id) sender {
-	 // - [UISlider value] just returns the UISlider object itself. How useful!
 	int itemsPerFeed = [self itemsPerFeedValue: sender];
 	[itemsPerFeedLabel setText: [NSString stringWithFormat: @"%d", itemsPerFeed]];
 	[plistData setValue:[NSNumber numberWithInt:itemsPerFeed] forKey:@"num_items"];
 	[sender setValue: itemsPerFeed];
+}
+
+- (IBAction) textViewDidEndEditing: (id) sender {
+	dbg(@"textviewdidendediting");
+	[self stringValueDidChange:sender];
 }
 
 - (IBAction) stringValueDidChange:(id)sender {
@@ -124,6 +139,9 @@
 		key = @"user";
 	} else if (sender == passwordField) {
 		key = @"password";
+	} else if (sender == tagListField) {
+		key = @"feeds";
+		[tagListNavItem setRightBarButtonItem: nil];
 	} else {
 		NSLog(@"unknown item sent ApplicationSettings stringValueDidChange: %@", sender);
 		return;
@@ -142,6 +160,7 @@
 
 - (NSString *) email     { return [plistData valueForKey:@"user"]; }
 - (NSString *) password  { return [plistData valueForKey:@"password"]; }
+- (NSString *) feeds     { return [plistData valueForKey:@"feeds"]; }
 - (int) itemsPerFeed     {
 	int val = [[plistData valueForKey:@"num_items"] intValue];
 	if(val) return val;
