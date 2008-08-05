@@ -1,6 +1,8 @@
 #import "ApplicationSettings.h"
 #import "tcHelpers.h"
 
+// TODO: add the list of tags to sync to these settings
+
 @implementation ApplicationSettings
 - (NSString *) docsPath{ return docsPath; }
 - (void) setDocsPath:newPath{
@@ -109,18 +111,60 @@
 	[tagListField resignFirstResponder];
 }
 
-- (IBAction) textFieldDidBeginEditing:(UITextField *)sender {
+- (BOOL) getNavItem:(id *)navItem andDoneButton:(id*)btn forTextField:(id)sender {
+	*btn = nil;
+	*navItem = nil;
 	if(sender == tagListField) {
-		[tagListNavItem setRightBarButtonItem: stopEditingFeedsButton];
+		dbg(@"\"done\" button for tagList");
+		*btn = stopEditingFeedsButton;
+		*navItem = tagListNavItem;
+	} else if (sender == emailField || sender == passwordField) {
+		dbg(@"\"done\" button for account");
+		*btn = stopEditingAccountButton;
+		*navItem = accountNavItem;
+	} else {
+		dbg(@"unknown sender:%@", sender);
 	}
+	
+	return (*navItem && *btn);
 }
 
-- (IBAction) textFieldDidEndEditing:(UITextField *)sender {
+// general handler for text view & text fields
+- (void) textElementDidFinishEditing:(id) sender {
 	dbg(@"string value changed");
 	[sender resignFirstResponder];
 	[self stringValueDidChange: sender];
+	
+	// hide any done buttons if necessary)
+	id btn = nil;
+	id navItem = nil;
+	if([self getNavItem:&navItem andDoneButton:&btn forTextField:sender]) {
+		dbg(@"removing button %@ from %@", btn, navItem);
+		[navItem setRightBarButtonItem: nil];
+	}
+	[self stringValueDidChange:sender];
 }
 
+- (IBAction) textElementDidBeginEditing:(UITextField *)sender {
+	dbg(@"text field %@ did begin editing...", sender);
+	id btn = nil;
+	id navItem = nil;
+	if([self getNavItem:&navItem andDoneButton:&btn forTextField:sender]) {
+		dbg(@"adding button %@ to %@", btn, navItem);
+		[navItem setRightBarButtonItem: btn];
+	}
+}
+
+// begin editing
+- (IBAction) textFieldDidBeginEditing:(UITextField *)sender { [self textElementDidBeginEditing:sender]; }
+- (IBAction) textViewDidBeginEditing: (UITextField *)sender { [self textElementDidBeginEditing:sender]; }
+
+// end editing
+- (IBAction) textFieldDidEndEditing:(UITextField *)sender { [self textElementDidFinishEditing:sender]; }
+- (IBAction) textViewDidEndEditing: (UITextField *)sender { [self textElementDidFinishEditing:sender]; }
+
+
+// handle the slider when it, er, slides...
 - (IBAction) itemsPerFeedDidChange: (id) sender {
 	int itemsPerFeed = [self itemsPerFeedValue: sender];
 	[itemsPerFeedLabel setText: [NSString stringWithFormat: @"%d", itemsPerFeed]];
@@ -128,11 +172,7 @@
 	[sender setValue: itemsPerFeed];
 }
 
-- (IBAction) textViewDidEndEditing: (id) sender {
-	dbg(@"textviewdidendediting");
-	[self stringValueDidChange:sender];
-}
-
+// save string data
 - (IBAction) stringValueDidChange:(id)sender {
 	NSString * key;
 	if(sender == emailField) {
@@ -140,8 +180,7 @@
 	} else if (sender == passwordField) {
 		key = @"password";
 	} else if (sender == tagListField) {
-		key = @"feeds";
-		[tagListNavItem setRightBarButtonItem: nil];
+		key = @"tagList";
 	} else {
 		NSLog(@"unknown item sent ApplicationSettings stringValueDidChange: %@", sender);
 		return;
@@ -156,15 +195,21 @@
 	[passwordField setText: [self password]];
 	[itemsPerFeedSlider setValue:[self itemsPerFeed]];
 	[itemsPerFeedLabel setText:[NSString stringWithFormat:@"%d", [self itemsPerFeed]]];
+	[tagListField setText: [self tagList]];
 }
 
 - (NSString *) email     { return [plistData valueForKey:@"user"]; }
 - (NSString *) password  { return [plistData valueForKey:@"password"]; }
-- (NSString *) feeds     { return [plistData valueForKey:@"feeds"]; }
+- (NSString *) tagList   { return [plistData valueForKey:@"tagList"]; }
+
 - (int) itemsPerFeed     {
 	int val = [[plistData valueForKey:@"num_items"] intValue];
 	if(val) return val;
 	return 20; // default
+}
+
+- (NSArray *) itemListArray {
+	return [[self tagList] componentsSeparatedByString: @"\n"];
 }
 
 @end

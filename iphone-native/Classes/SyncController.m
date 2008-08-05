@@ -12,17 +12,18 @@
 	}
 	
 	id settings = [[[UIApplication sharedApplication] delegate] settings];
-	NSString * shellString = [NSString stringWithFormat:@"python '%@' --test --num-items='%d' --user='%@' --pass='%@' 2>&1",
+	NSString * shellString = [NSString stringWithFormat:@"python '%@' --test --basedir='%@' --num-items='%d' --user='%@' --password='%@' 2>&1",
 		[[settings docsPath] stringByAppendingPathComponent:@"src/main.py"],
+		[settings docsPath],
 		[settings itemsPerFeed],
 		[settings email],
 		[settings password]];
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
-	[syncThread start];
 
 	// visuals
 	[spinner setAnimating:YES];
+	[spinner setHidden:NO];
 	[downloadProgrssBar setProgress:0.0];
 	[cancelButton setHidden:NO];
 	[okButton setHidden:YES];
@@ -30,6 +31,8 @@
 	[notSyncingView setHidden:YES];
 	[syncStatusView setHidden:NO];
 	[window addSubview: syncStatusView];
+	[syncStatusView setFrame: [window frame]];
+	[runningOutput setText: @"starting up...\n"];
 
 	// ..and go!
 	[syncThread start];
@@ -42,11 +45,20 @@
 	}
 	NSLog(@"cancelling thread...");
 	[syncThread cancel];
+	[cancelButton setHidden:YES];
+}
 
-	// visuals
-	[syncStatusView removeFromSuperView];
+- (IBAction) hideSyncView: (id)sender {
 	[notSyncingView setHidden:NO];
-	[[self tabBarItem] setBadgeValue: nil];
+	[syncStatusView setHidden:YES];
+	[syncStatusView removeFromSuperview];
+}
+
+// sync finished but you still want to see the report
+- (void) showSyncFinished {
+	[spinner setHidden:YES];
+	[okButton setHidden:NO];
+	[cancelButton setHidden:YES];
 }
 
 #pragma mark delegate callbacks
@@ -58,11 +70,13 @@
 	}
 	[syncThread release];
 	syncThread = nil;
+	[self showSyncFinished];
 }
 
 - (void) backgroundShell:(id)shell didProduceOutput:(NSString *) line {
 	dbg(@"SyncController got the output: %@", line);
 	[runningOutput setText: line];
+	//[runningOutput setText: [[runningOutput text] stringByAppendingString: line]];
 }
 
 @end

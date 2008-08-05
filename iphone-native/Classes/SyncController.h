@@ -16,4 +16,5 @@
 }
 - (IBAction) sync: (id) sender;
 - (IBAction) cancelSync: (id) sender;
+- (IBAction) hideSyncView: (id)sender;
 @end

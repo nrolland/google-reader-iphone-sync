@@ -6,7 +6,7 @@
 
 - (id) initWithShellCommand:(NSString *)cmd {
 	self = [super init];
-	command = cmd;
+	command = [cmd copy];
 	[self setPollTime: 0.5];
 	doSendOutput = NO;
 	return self;
@@ -25,6 +25,7 @@
 
 #pragma mark callback methods that run in and communicate with other objects in the main thread
 - (void) notifyOfOutput: (id) output {
+	NSLog(@"notify output...");
 	if(doSendOutput) {
 		[delegate backgroundShell:self didProduceOutput:output];
 	}
@@ -36,19 +37,22 @@
 	}
 }
 
+#pragma mark the main polling loop
 - (void) main {
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	FILE *proc = [self startCommand];
 	BOOL success;
-	while(![self command:proc hasFinishedWithSuccess:&success]) {
-		[pool drain];
-		// and make a new one...
-		pool = [[NSAutoreleasePool alloc] init];
+	if(proc == NULL) {
+		NSLog("popen failed!");
+		success = false;
+	} else {
+		while(![self command:proc hasFinishedWithSuccess:&success]) {
+			[pool drain];
+			// and make a new one...
+			pool = [[NSAutoreleasePool alloc] init];
+		}
 	}
 	[self performSelectorOnMainThread:@selector(notifyOfCompletion:) withObject:[NSNumber numberWithBool:success] waitUntilDone:YES];
-	if([delegate respondsToSelector:@selector(backgroundShell:didFinishWithSuccess:)]) {
-		[delegate backgroundShell:self didFinishWithSuccess:success];
-	}
 	[pool release];
 }
 
@@ -57,7 +61,15 @@
 }
 
 - (FILE *) startCommand {
-	return popen([command cStringUsingEncoding:NSASCIIStringEncoding],"r");
+	FILE * proc;
+	if(command == nil) {
+		NSLog(@"command is nil. did you try to run it twice?");
+		return;
+	}
+	proc = popen([command cStringUsingEncoding:NSASCIIStringEncoding],"r");
+	[command release];
+	command = nil;
+	return proc;
 }
 
 
@@ -89,13 +101,14 @@
 			}
 		}
 		if(feof(proc)) {
-			*success = YES;
+			*success = pclose(proc) == 0;
 			return YES;
 		}
 	}
 	
 	if([[NSThread currentThread] isCancelled]) {
 		*success = NO;
+		// TODO: send SIGINT. might need to replace popen() with fork()/exec() etc... fun!
 		return YES;
 	}
 	return NO; // still more to go

@@ -14,6 +14,9 @@
 	
 	IBOutlet id tagListNavItem;
 	IBOutlet id stopEditingFeedsButton;
+
+	IBOutlet id accountNavItem;
+	IBOutlet id stopEditingAccountButton;
 }
 -(NSString *) docsPath;
 -(NSString *) email;
@@ -26,5 +29,5 @@
 - (IBAction) activatePasswordField:(id)sender;
 - (IBAction) deactivateBothFields:(id)sender;
 - (IBAction) textFieldDidEndEditing:(UITextField *)sender;
-
+- (IBAction) deactivateTagListField:(id) sender;
 @end
