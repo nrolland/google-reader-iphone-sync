@@ -10,6 +10,7 @@ CONFIG = {
 }
 
 OPTIONS = {
+	'do_output' :	True,
 	'output_path':   'entries',
 	'num_items':     300,
 	'no_download':   False,

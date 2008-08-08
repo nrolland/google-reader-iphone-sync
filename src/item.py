@@ -81,24 +81,27 @@ class Item:
 		self.content = soup.prettify()
 	
 	def save(self):
-		base = app_globals.OPTIONS['output_path'] + '/' + self.basename
+		if app_globals.OPTIONS['do_output']:
+			base = app_globals.OPTIONS['output_path'] + '/' + self.basename
 
-		render_object = {
-			'title_link':  '<a href="' + utf8(self.url) + '">' + utf8(self.title) + '</a>',
-			'title_html':  '<title>' + utf8(self.title) + '</title>',
-			'content':     utf8(self.content),
-			'via':        'from tag <b>'+ utf8(self.feed_name) +'</b>'
-		}
+			render_object = {
+				'title_link':  '<a href="' + utf8(self.url) + '">' + utf8(self.title) + '</a>',
+				'title_html':  '<title>' + utf8(self.title) + '</title>',
+				'content':     utf8(self.content),
+				'via':        'from tag <b>'+ utf8(self.feed_name) +'</b>'
+			}
 
-		# create the "via" link
-		try:
-			render_object['via'] += '<br /><em>' + re.sub('.*://([^/]+).*', '\\1', self.original_id) + '</em><br /><br />'
-		except:
-			pass
+			# create the "via" link
+			try:
+				render_object['via'] += '<br /><em>' + re.sub('.*://([^/]+).*', '\\1', self.original_id) + '</em><br /><br />'
+			except:
+				pass
 		
-		debug("rendering item to %s using template file %s" % (base + '.html', 'template/item.html'))
-		template.create(render_object, 'template/item.html', base + '.html')
-		
+			debug("rendering item to %s using template file %s" % (base + '.html', 'template/item.html'))
+			template.create(render_object, 'template/item.html', base + '.html')
+
+		else: 
+			debug("Not outputting any files")
 		self.add_to_db()
 	
 	def add_to_db(self):

@@ -12,10 +12,11 @@ from item import Item
 
 import sqlite3 as sqlite
 class DB:
-	def __init__(self, filename = 'entries.sqlite'):
+	def __init__(self, filename = 'items.sqlite'):
 		if app_globals.OPTIONS['test']:
 			filename = os.path.dirname(filename) + 'test_' + os.path.basename(filename)
-		self.filename = filename
+		self.filename = filename = os.path.join(app_globals.OPTIONS['output_path'], os.path.basename(filename))
+		print "db @ %s" % filename
 		self.db = sqlite.connect(filename)
 
 		# commit immediately after statements.
@@ -111,9 +112,12 @@ class DB:
 		item = {}
 		for i in range(len(row_as_tuple)):
 			val = row_as_tuple[i]
-			if 'BOOLEAN' in self.schema['columns'][i][1]:
+			col_description = self.schema['columns'][i][1]
+			if 'BOOLEAN' in col_description:
 				# convert to a python boolean
 				val = val == 1
+			else:
+				val = str(val)
 			item[self.cols[i]] = val
 		return Item(raw_data = item)
 	

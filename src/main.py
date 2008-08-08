@@ -3,7 +3,7 @@
 import sys, glob, urllib2
 
 # local includes
-from config import parse_options, load_config
+import config
 from db import DB
 from item import Item
 from misc import *
@@ -137,8 +137,9 @@ def main():
 	"""
 	Main program entry point - loads config, parses otions and kicks off the sync process
 	"""
-	load_config()
-	parse_options()
+	config.load()
+	config.parse_options()
+	config.check()
 	
 	if not app_globals.OPTIONS['template_only']:
 		execute()
