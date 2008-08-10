@@ -15,17 +15,6 @@ def danger(desc):
 		raise Exception("We should never get here!")
 	debug("Continuing...")
 
-def debug(s):
-	"""
-	print out things when verbose mode is enabled
-	"""
-	if not app_globals.OPTIONS['verbose']: return
-	print ' > ' + str(s)
-
-
-def line():
-	print '-' * 50
-
 def try_remove(elem, lst):
 	"""
 	Try to remove an element from a list. If it fails, nobody has to know...

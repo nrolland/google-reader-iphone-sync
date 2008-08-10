@@ -7,6 +7,7 @@ import config
 from db import DB
 from item import Item
 from misc import *
+from output import *
 from lib.GoogleReader import GoogleReader, CONST
 import app_globals
 import template
@@ -19,7 +20,7 @@ def reader_login():
 	Raises exception if authentication fails
 	"""
 	if app_globals.OPTIONS['test']:
-		print "using a mock google reader..."
+		info("using a mock google reader...")
 		return
 
 	app_globals.READER = GoogleReader()
@@ -49,7 +50,7 @@ def execute():
 	update_templates()
 
 	if app_globals.OPTIONS['no_download']:
-		print "not downloading any new items..."
+		info("not downloading any new items...")
 	else:
 		download_new_items()
 	app_globals.DATABASE.close()
@@ -81,7 +82,7 @@ def download_new_items():
 	Downloads new items from google reader
 	"""
 	for feed_tag in app_globals.OPTIONS['tag_list']:
-		print "Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], feed_tag)
+		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], feed_tag))
 		feed = app_globals.READER.get_feed(None,
 			CONST.ATOM_PREFIXE_LABEL + feed_tag,
 			count = app_globals.OPTIONS['num_items'],
@@ -94,11 +95,10 @@ def download_new_items():
 		
 			if entry is None:
 				app_globals.STATS['failed'] += 1
-				print " ** FAILED **"
+				puts(" ** FAILED **")
 				continue
 		
-			debug(entry.__repr__())
-			debug('-' * 50)
+			debug_verbose(entry.__repr__())
 		
 			item = Item(entry, feed_tag)
 			state = app_globals.DATABASE.is_read(item.google_id)
@@ -107,36 +107,37 @@ def download_new_items():
 			if state is None:
 				if not item.is_read:
 					try:
-						print "NEW: " + name
+						puts("NEW: " + item.title)
 						danger("About to output item")
 						item.process()
 						item.save()
 						app_globals.STATS['new'] += 1
 					except Exception,e:
-						print " ** FAILED **: " + str(e)
-						if app_globals.OPTIONS['verbose']:
+						puts(" ** FAILED **: " + str(e))
+						if in_debug_mode():
 							raise
 						app_globals.STATS['failed'] += 1
 			else:
 				if state == True or item.is_read:
 					# item has been read either online or offline
-					print "READ: " + name
+					pus("READ: " + name)
 					app_globals.STATS['read'] += 1
 					danger("About to delete item")
 					item.delete()
 		
 		line()
 	
-	print "%s NEW items" % app_globals.STATS['new']
-	print "%s items marked as read" % app_globals.STATS['read']
+	info("%s NEW items" % app_globals.STATS['new'])
+	info("%s items marked as read" % app_globals.STATS['read'])
 	if app_globals.STATS['failed'] > 0:
-		print "(%s items failed to parse)" % app_globals.STATS['failed']
+		puts("%s items failed to parse" % app_globals.STATS['failed'])
 
 
 def main():
 	"""
 	Main program entry point - loads config, parses otions and kicks off the sync process
 	"""
+	config.bootstrap()
 	config.load()
 	config.parse_options()
 	config.check()
@@ -144,8 +145,9 @@ def main():
 	if not app_globals.OPTIONS['template_only']:
 		execute()
 	else:
-		print "Updating templates for all existing items..."
+		info("Updating templates for all existing items...")
 		update_templates()
+	puts("Sync complete.")
 
 
 if __name__ == '__main__':

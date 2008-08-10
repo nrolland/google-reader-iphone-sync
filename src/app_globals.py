@@ -1,6 +1,8 @@
 # These are some defaults and other globals.
 # anything in OPTIONS can be overrided / extended by config.py in reaction to command-line or config.yml input
 
+import output
+
 CONFIG = {
 	'pickle_file': '.entries.pickle',
 	'user_config_file': 'config.yml',
@@ -10,16 +12,17 @@ CONFIG = {
 }
 
 OPTIONS = {
-	'do_output' :	True,
+	'do_output' :    True,
 	'output_path':   'entries',
 	'num_items':     300,
 	'no_download':   False,
-	'verbose':       False,
 	'cautious':      False,
 	'test':          False,
 	'screen_width':  320,
 	'screen_height': 480,
 	'template_only': False,
+	'flush_output':  False,
+	'verbosity':     output.lvl_default,
 }
 
 STATS = {

@@ -10,56 +10,98 @@ import yaml, sys
 
 # local imports
 from misc import *
+from output import *
 import app_globals
 
 
-required_keys = ['user','password', 'tag_list']	
+required_keys = ['user','password', 'tag_list']
+
+bootstrap_options = ('qvc:', ['verbose','quiet','config='])
+main_options = ("n:CdthT", [
+		'num-items=',
+		'cautious',
+		'no-download',
+		'test',
+		'help',
+		'template',
+		'user=',
+		'password=',
+		'tag=',
+		'output-path=',
+		'no-html',
+		'flush-output',
+		])
+all_options = (bootstrap_options[0] + main_options[0],
+               bootstrap_options[1] + main_options[1])
+
+def bootstrap(argv = None):
+	if argv is None:
+		argv = sys.argv[1:]
+
+	(opts, argv) = getopt(argv, *all_options)
+	for (key,val) in opts:
+		if key == '--verbose' or key == '-v':
+			set_opt('verbosity', app_globals.OPTIONS['verbosity'] + 1)
+		elif key == '--quiet' or key == '-q':
+			set_opt('verbosity', app_globals.OPTIONS['verbosity'] - 1)
+		elif key == '--config' or key == '-c':
+			set_opt('user_config_file', val)
+
 
 
 def parse_options(argv = None):
 	"""
 Usage:
   -n, --num-items=[val]  set the number of items to download (per feed)
-  -v, --verbose          verbose output
-  -c, --cautious         cautious mode - prompt before performing destructive actions
+  -v, --verbose          increase verbosity
+  -q, --quiet            decrease verbosity
+  -c, --config=[file]    load config from file (must be in yaml format)
   -d, --no-download      don't download new items, just tell google reader about read items
   -T, --template         just update the template used in existing downloaded items
   -t, --test             run in test mode. Don't notify google reader of anything, and clobber "test_entries" for output
+  -c, --cautious         cautious mode - prompt before performing destructive actions
   --user=[username]      set the username
   --password=[pass]      set password
   --tag=[tag_name]       add a tag to the list of tags to be downloaded. Can be used multiple times
   --output-path=[path]   set the base output path (where items and resources are saved)
+  --flush-output         flush stdout after printing each line
 """
 	tag_list = []
 	if argv is None:
 		argv = sys.argv[1:]
 		
-	(opts, argv) = getopt(argv, "n:vCdthT", ['num-items=','verbose','cautious','no-download','test', 'help', 'template','user=','password=','tag=','output-path=','no-output'])
+	(opts, argv) = getopt(argv, *all_options)
 	for (key,val) in opts:
-		if key == '-v' or key == '--verbose':
-			app_globals.OPTIONS['verbose'] = True
-			debug("Verbose mode enabled...")
+		if key in ['-q','--quiet','-v','--verbose', '-c','--config']:
+			# already processed
+			pass
+		
 		elif key == '-C' or key == '--cautious':
 			app_globals.OPTIONS['cautious'] = True
 			app_globals.OPTIONS['verbose']  = True
-			print "Cautious mode enabled..."
+			info("Cautious mode enabled...")
 		elif key == '-n' or key == '--num-items':
 			app_globals.OPTIONS['num_items'] = int(val)
-			print "Number of items set to %s" % app_globals.OPTIONS['num_items']
+			info("Number of items set to %s" % app_globals.OPTIONS['num_items'])
 		elif key == '-d' or key == '--no-download':
 			app_globals.OPTIONS['no_download'] = True
-			print "Downloading turned off.."
+			info("Downloading turned off..")
 		elif key == '-t' or key == '--test':
 			app_globals.OPTIONS['test'] = True
 			from lib.mock import Mock
 			app_globals.READER = Mock()
-			print "Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir']
+			info("Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir'])
 		elif key == '-T' or key == '--template':
 			app_globals.OPTIONS['template_only'] = True
 			print "Just updating item templates..."
 		elif key == '-h' or key == '--help':
 			print parse_options.__doc__
 			sys.exit(1)
+
+		elif key == '--no-html':
+			set_opt('do_output', False)
+		elif key == '--flush-output':
+			set_opt('flush_output', True)
 
 		# settings that are usually put in yaml...
 		elif key == '--user':
@@ -71,8 +113,6 @@ Usage:
 		elif key == '--tag':
 			tag_list.append(val)
 			set_opt('tag_list', tag_list)
-		elif key == '--no-output':
-			set_opt('do_output', False)
 		else:
 			print "unknown option: %s" % (key,)
 			print parse_options.__doc__
@@ -80,7 +120,7 @@ Usage:
 
 	if len(argv) > 0:
 		app_globals.OPTIONS['num_items'] = argv[0]
-		print "Number of items set to %s" % app_globals.OPTIONS['num_items']
+		info("Number of items set to %s" % app_globals.OPTIONS['num_items'])
 
 	if app_globals.OPTIONS['test']:
 		app_globals.OPTIONS['output_path'] = app_globals.CONFIG['test_output_dir']
@@ -89,8 +129,8 @@ Usage:
 
 
 def set_opt(key, val):
-#	print "setting %s = %s" % (key, val)
 	app_globals.OPTIONS[key] = val
+	debug("set option %s = %s" % (key, val))
 
 def load(filename = None):
 	"""
@@ -98,8 +138,8 @@ def load(filename = None):
 	"""
 	if filename is None:
 		filename = app_globals.CONFIG['user_config_file']
-	
-	print "Loading configuration from %s" % filename
+
+	info("Loading configuration from %s" % filename)
 
 	try:
 		f = file(filename,'r')
@@ -108,7 +148,7 @@ def load(filename = None):
 		for key,val in conf.items():
 			set_opt(key, val)
 	except Exception, e:
-		print "Config file failed to load: %s" % e
+		info("Config file %s not loaded: %s" % (filename,e))
 
 def check():
 	for k in required_keys:

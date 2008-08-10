@@ -1,6 +1,7 @@
 from lib.BeautifulSoup import BeautifulSoup
 import urllib2, re, os
 from misc import *
+from output import *
 
 ## processing modules:
 def insert_alt_text(soup):
@@ -33,20 +34,8 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 		# (make sure the file was downloaded from the correct URL:)
 		>>> process.download_file.call_args
 		((u'http://google.com/image.jpg?a=b&c=d', u'dest_folder/image.jpg'), {})
-		
-		# doesn't touch "dangerous" or empty file extensions
-		>>> download_images(BeautifulSoup('<img src="http://example/nasty.py"/>'), 'dest_folder', 'local_folder/')
-		<img src="http://example/nasty.py" />
-		>>> download_images(BeautifulSoup('<img src="http://example/empty"/>'), 'dest_folder', 'local_folder/')
-		<img src="http://example/empty" />
 	"""
 	images = soup.findAll('img',{'src':True})
-	
-	# only accept a whitelist of image extensions for locally downloading
-	# (to prevent accidental execution of image files that look like scripts, for example)
-	safe_image_matches = ['jpe?g','gif','png','gif','bmp']
-	re_safe_image_matches = [re.compile('\.' + x + '$', re.IGNORECASE) for x in safe_image_matches]
-	images = [img for img in images if matches_any_regex(img['src'].split('?')[0], re_safe_image_matches)]
 	
 	if len(images) > 0:
 		ensure_dir_exists(dest_folder)
@@ -62,8 +51,11 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 			output_filename = dest_folder + '/' + filename + '-' + str(i)
 			i += 1
 
-		download_file(href, output_filename)
-		img['src'] = urllib2.quote(href_prefix + filename)
+		try:
+			download_file(href, output_filename)
+			img['src'] = urllib2.quote(href_prefix + filename)
+		except Exception, e:
+			info("Image %s failed to download: %s" % (img['src'], e))
 	
 	return soup
 
@@ -110,6 +102,8 @@ def get_filename(url):
 
 import socket
 
+image_extensions = ['jpg','jpeg','gif','png','bmp']
+
 def download_file(url, outfile=None):
 	"""
 	Download an arbitrary URL. If outfile is given, contents are written to that file.
@@ -117,10 +111,29 @@ def download_file(url, outfile=None):
 	"""
 	# timeout in seconds
 	socket.setdefaulttimeout(30)
-	
+
 	debug("downloading file: " + url)
 	dl = urllib2.urlopen(url)
+	headers = dl.headers
+
+	filetype = None
+
+	try:
+		if headers.getmaintype().lower() == 'image':
+			filetype = headers.subtype
+	except: pass
+
+	if filetype is None:
+		try: filetype = outfile.split('.')[-1].lower()
+		except: pass
+	
+	if filetype not in image_extensions:
+		debug("not downloading image of type: %s" % filetype)
+		dl.close()
+		return
+	
 	contents = dl.read()
+	dl.close()
 
 	if outfile is not None:
 		out = open(outfile,'w')

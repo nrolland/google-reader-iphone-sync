@@ -81,7 +81,7 @@ class GoogleFeed(object) :
 				if 'content' not in entry :
 					entry['content'] = entry['summary']
 			except Exception,e:
-#				print "Exception retrieving entry: " + str(e)
+				print "Exception retrieving entry: " + str(e)
 				entry = None
 			yield entry
 			

@@ -3,6 +3,7 @@ import glob, time, os, re, urllib
 # local imports
 import app_globals
 from misc import *
+from output import *
 import template
 
 # processing modules
@@ -63,6 +64,7 @@ class Item:
 			self.safe_google_id + '||' )
 
 	def process(self):
+		debug("item %s -> process()" % self.title)
 		# setup:
 		soup = BeautifulSoup(self.content)
 		try:
@@ -132,7 +134,7 @@ class Item:
 			result = Item.google_do_with_id(action, self.google_id)
 			if not result:
 				msg = "Failed to apply function %s" % action
-				print msg
+				info(msg)
 				raise Exception(msg)
 		
 		self.is_dirty = False

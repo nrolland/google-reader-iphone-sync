@@ -8,6 +8,7 @@ from sets import Set
 # local imports
 import app_globals
 from misc import *
+from output import *
 from item import Item
 
 import sqlite3 as sqlite
@@ -16,7 +17,7 @@ class DB:
 		if app_globals.OPTIONS['test']:
 			filename = os.path.dirname(filename) + 'test_' + os.path.basename(filename)
 		self.filename = filename = os.path.join(app_globals.OPTIONS['output_path'], os.path.basename(filename))
-		print "db @ %s" % filename
+		debug("db @ %s" % filename)
 		self.db = sqlite.connect(filename)
 
 		# commit immediately after statements.
@@ -28,6 +29,7 @@ class DB:
 				('google_id','TEXT primary key'),
 				('date', 'TIMESTAMP'),
 				('url', 'TEXT'),
+				('original_id', 'TEXT'),
 				('title', 'TEXT'),
 				('content', 'TEXT'),
 				('feed_name', 'TEXT'),
@@ -117,7 +119,7 @@ class DB:
 				# convert to a python boolean
 				val = val == 1
 			else:
-				val = str(val)
+				val = unicode(val)
 			item[self.cols[i]] = val
 		return Item(raw_data = item)
 	
@@ -145,7 +147,7 @@ class DB:
 			return None
 	
 	def sync_to_google(self):
-		print "Syncing with google..."
+		puts("Syncing with google...")
 		for item in self.get_items('is_dirty = 1'):
 			debug('syncing item state \"%s\"' % item.title)
 			item.save_to_web()
@@ -164,7 +166,7 @@ class DB:
 
 		current_but_read = current_keys.difference(unread_keys)
 		if len(current_but_read) > 0:
-			print "Cleaning up %s old resource directories" % len(current_but_read)
+			puts("Cleaning up %s old resource directories" % len(current_but_read))
 			danger("remove %s old resource directories" % len(current_but_read))
 			for key in current_but_read:
 				rm_rf(res_prefix + key)
