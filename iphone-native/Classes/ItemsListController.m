@@ -17,19 +17,35 @@
 }
 
 - (IBAction) toggleOptions:(id)sender {
-	if(optionsAreVisible) {
-		[sender setTitle:@"Options"];
+	[self hideOptions] || [self showOptions];
+}
+
+- (BOOL) showOptions {
+	BOOL didShow = NO;
+	if(!optionsAreVisible) {
+		[showHideOptionsButton setTitle:@"Done"];
 		[optionsView setHidden:NO];
-		optionsAreVisible = NO;
-	} else {
-		[sender setTitle:@"Done"];
-		[optionsView setHidden:YES];
 		optionsAreVisible = YES;
+		didShow = YES;
 	}
+	return didShow;
+}
+
+- (BOOL) hideOptions {
+	BOOL didHide = NO;
+	if(optionsAreVisible) {
+		[showHideOptionsButton setTitle:@"Options"];
+		[optionsView setHidden:YES];
+		optionsAreVisible = NO;
+		[self refresh: self];
+		didHide = YES;
+	}
+	return didHide;
 }
 
 -(IBAction) refresh: (id) sender {
-	//TODO...
+	[self hideOptions];
+	[dataSource reloadItems];
 }
 
 @end

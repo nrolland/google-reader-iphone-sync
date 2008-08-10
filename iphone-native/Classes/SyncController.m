@@ -12,12 +12,27 @@
 	}
 	
 	id settings = [[[UIApplication sharedApplication] delegate] settings];
-	NSString * shellString = [NSString stringWithFormat:@"python '%@' --test --basedir='%@' --num-items='%d' --user='%@' --password='%@' 2>&1",
+	NSMutableString * tag_string = [NSMutableString string];
+	for(NSString * tag in [settings tagListArray]) {
+		dbg(@"tag = %@", tag);
+		tag = [tag stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+		if([tag length] > 0) {
+			[tag_string appendFormat: @" --tag='%@'", [tag stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"]];
+		}
+	}
+	if([tag_string length] == 0){
+		NSLog(@"no feeds! aborting...");
+		[self showSyncFinished];
+		return;
+	}
+			
+	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
 		[[settings docsPath] stringByAppendingPathComponent:@"src/main.py"],
 		[settings docsPath],
 		[settings itemsPerFeed],
 		[settings email],
-		[settings password]];
+		[settings password],
+		tag_string];
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
@@ -25,7 +40,7 @@
 	[spinner setAnimating:YES];
 	[spinner setHidden:NO];
 	[downloadProgrssBar setProgress:0.0];
-	[cancelButton setHidden:NO];
+	[cancelButton setHidden:YES];
 	[okButton setHidden:YES];
 	// now swap out the views
 	[notSyncingView setHidden:YES];
@@ -49,9 +64,13 @@
 }
 
 - (IBAction) hideSyncView: (id)sender {
+	[runningOutput setText: nil];
 	[notSyncingView setHidden:NO];
 	[syncStatusView setHidden:YES];
 	[syncStatusView removeFromSuperview];
+	
+	[db reload];
+	[itemsController refresh:self];
 }
 
 // sync finished but you still want to see the report
@@ -75,8 +94,9 @@
 
 - (void) backgroundShell:(id)shell didProduceOutput:(NSString *) line {
 	dbg(@"SyncController got the output: %@", line);
-	[runningOutput setText: line];
-	//[runningOutput setText: [[runningOutput text] stringByAppendingString: line]];
+	//[runningOutput setText: line];
+	[runningOutput setText: [[runningOutput text] stringByAppendingString: line]];
+	[runningOutput scrollRangeToVisible: NSMakeRange([[runningOutput text] length],1)];
 }
 
 @end

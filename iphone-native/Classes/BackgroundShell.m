@@ -25,7 +25,6 @@
 
 #pragma mark callback methods that run in and communicate with other objects in the main thread
 - (void) notifyOfOutput: (id) output {
-	NSLog(@"notify output...");
 	if(doSendOutput) {
 		[delegate backgroundShell:self didProduceOutput:output];
 	}
@@ -66,6 +65,7 @@
 		NSLog(@"command is nil. did you try to run it twice?");
 		return;
 	}
+	NSLog(@"running command: %@", command);
 	proc = popen([command cStringUsingEncoding:NSASCIIStringEncoding],"r");
 	[command release];
 	command = nil;
@@ -92,7 +92,6 @@
 	FD_SET(fd, &read_fds);
 	
 	ready = select(fd + 1, &read_fds, NULL, NULL, &waitTime);
-	
 	if(ready) {
 		char *output = fgets(line, sizeof(line), proc);
 		if(output) {

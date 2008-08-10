@@ -17,6 +17,8 @@
 
 	IBOutlet id accountNavItem;
 	IBOutlet id stopEditingAccountButton;
+	
+	IBOutlet id showReadItemsToggle;
 }
 -(NSString *) docsPath;
 -(NSString *) email;
@@ -25,6 +27,7 @@
 
 - (IBAction) itemsPerFeedDidChange: (id) sender;
 - (IBAction) stringValueDidChange:(id)sender;
+- (IBAction) switchValueDidChange:(id) sender;
 
 - (IBAction) activatePasswordField:(id)sender;
 - (IBAction) deactivateBothFields:(id)sender;

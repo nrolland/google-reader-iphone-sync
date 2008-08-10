@@ -14,10 +14,9 @@
 	NSFileManager * fileManager = [NSFileManager defaultManager];
 	NSString * path = nil;
 	NSArray * paths = [NSArray arrayWithObjects:
-		@"/Users/tim/Documents/Programming/Python/reader/working",
 		@"/var/mobile/GRiS",
-		@"/usr/local/etc/GRis",
 		@"/Users/tim/.GRiS",
+		@"/usr/local/etc/GRis",
 		[@"~/GRiS" stringByExpandingTildeInPath],
 		[@"~/.GRiS" stringByExpandingTildeInPath],
 		nil];
@@ -85,10 +84,7 @@
 	[super dealloc];
 }
 
-- (int) itemsPerFeedValue: (id) sender {
-	// - [UISlider value] just returns the UISlider object itself. How useful!
-	return (int)(([[sender valueForKey:@"value"] floatValue] / 5) + 0.5) * 5;
-}
+#pragma mark UI actions
 
 - (BOOL) textFieldShouldReturn:(UITextField *)sender{
 	[sender resignFirstResponder];
@@ -128,6 +124,74 @@
 	
 	return (*navItem && *btn);
 }
+
+
+- (void) setUIElements {
+	[emailField setText: [self email]];
+	[passwordField setText: [self password]];
+	[itemsPerFeedSlider setValue:[self itemsPerFeed]];
+	[itemsPerFeedLabel setText:[NSString stringWithFormat:@"%d", [self itemsPerFeed]]];
+	[tagListField setText: [self tagList]];
+	[showReadItemsToggle setOn: [self showReadItems]];
+}
+
+#pragma mark GETTING values
+- (int) itemsPerFeedValue: (id) sender {
+	// - [UISlider value] just returns the UISlider object itself. How useful!
+	return (int)(([[sender valueForKey:@"value"] floatValue] / 5) + 0.5) * 5;
+}
+
+
+- (NSString *) email     { return [plistData valueForKey:@"user"]; }
+- (NSString *) password  { return [plistData valueForKey:@"password"]; }
+- (NSString *) tagList   { return [plistData valueForKey:@"tagList"]; }
+- (BOOL)       showReadItems { return [[plistData valueForKey:@"showReadItems"] boolValue]; }
+- (int) itemsPerFeed     {
+	int val = [[plistData valueForKey:@"num_items"] intValue];
+	if(val) return val;
+	return 20; // default
+}
+
+- (NSArray *) tagListArray {
+	dbg(@"tagListArray returning: %@", [[self tagList] componentsSeparatedByString: @"\n"]);
+	return [[self tagList] componentsSeparatedByString: @"\n"];
+}
+
+
+#pragma mark SETTING values
+- (BOOL) setReadItems:(BOOL) newVal {
+	[plistData setValue: [NSNumber numberWithBool: newVal] forKey:@"showReadItems"];
+}
+
+
+// save string data
+- (IBAction) stringValueDidChange:(id)sender {
+	NSString * key;
+	if(sender == emailField) {
+		key = @"user";
+	} else if (sender == passwordField) {
+		key = @"password";
+	} else if (sender == tagListField) {
+		key = @"tagList";
+	} else {
+		NSLog(@"unknown item sent ApplicationSettings stringValueDidChange: %@", sender);
+		return;
+	}
+	dbg(@"setting %@ = %@", key, [sender text]);
+	[plistData setValue: [sender text] forKey:key];
+	dbg(@"plist is now %@", plistData);
+}
+
+- (IBAction) switchValueDidChange:(id) sender {
+	if(sender == showReadItemsToggle) {
+		[self setReadItems: [[sender valueForKey:@"on"] boolValue]];
+	} else {
+		dbg(@"unknown sender sent switchValueDidChange to ApplicationSettings");
+	}
+}
+
+
+#pragma mark event handlers
 
 // general handler for text view & text fields
 - (void) textElementDidFinishEditing:(id) sender {
@@ -170,46 +234,6 @@
 	[itemsPerFeedLabel setText: [NSString stringWithFormat: @"%d", itemsPerFeed]];
 	[plistData setValue:[NSNumber numberWithInt:itemsPerFeed] forKey:@"num_items"];
 	[sender setValue: itemsPerFeed];
-}
-
-// save string data
-- (IBAction) stringValueDidChange:(id)sender {
-	NSString * key;
-	if(sender == emailField) {
-		key = @"user";
-	} else if (sender == passwordField) {
-		key = @"password";
-	} else if (sender == tagListField) {
-		key = @"tagList";
-	} else {
-		NSLog(@"unknown item sent ApplicationSettings stringValueDidChange: %@", sender);
-		return;
-	}
-	dbg(@"setting %@ = %@", key, [sender text]);
-	[plistData setValue: [sender text] forKey:key];
-	dbg(@"plist is now %@", plistData);
-}
-
-- (void) setUIElements {
-	[emailField setText: [self email]];
-	[passwordField setText: [self password]];
-	[itemsPerFeedSlider setValue:[self itemsPerFeed]];
-	[itemsPerFeedLabel setText:[NSString stringWithFormat:@"%d", [self itemsPerFeed]]];
-	[tagListField setText: [self tagList]];
-}
-
-- (NSString *) email     { return [plistData valueForKey:@"user"]; }
-- (NSString *) password  { return [plistData valueForKey:@"password"]; }
-- (NSString *) tagList   { return [plistData valueForKey:@"tagList"]; }
-
-- (int) itemsPerFeed     {
-	int val = [[plistData valueForKey:@"num_items"] intValue];
-	if(val) return val;
-	return 20; // default
-}
-
-- (NSArray *) itemListArray {
-	return [[self tagList] componentsSeparatedByString: @"\n"];
 }
 
 @end

@@ -26,7 +26,7 @@ puts "SERVER = #{$ipod_server.inspect}"
 role :ipod, $ipod_server
 
 # general options
-$rsync_opts = "--recursive --delete --checksum --progress --links"
+$rsync_opts = "--recursive --delete --checksum --progress --copy-links"
 
 $remote_mac_path = "#{$mac_user}@#{$mac_server}:#{$mac_path}"
 $remote_ipod_path = "#{$ipod_user}@#{$ipod_server}:#{$ipod_path}"
@@ -144,12 +144,14 @@ end
 desc "update ipod code"
 task :update_code do
 	# sync it
-       local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
-       run "mkdir -p /var/mobile/GRiS"
-       local "rsync #{$rsync_opts} src #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
-       local "rsync #{$rsync_opts} template #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
-       run "ldid -S /Applications/GRiS.app/GRiS"
-       run "chown -R mobile.mobile /var/mobile/GRiS/"
+		local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
+		run "mkdir -p /var/mobile/GRiS"
+#		local "rsync #{$rsync_opts} src #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
+#		local "rsync #{$rsync_opts} template #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
+		local "rsync #{$rsync_opts} --exclude '*.sqlite' --exclude '*.plist' ~/.GRiS/ #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
+		run "ldid -S /Applications/GRiS.app/GRiS"
+		run "chown -R mobile.mobile /var/mobile/GRiS/"
+		run "killall SpringBoard"
 end
 
 def install_egg_file(file, location='eggs')

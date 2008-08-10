@@ -17,12 +17,17 @@
 	[cell setTextColor: textColor];
 	
 	UIImage * image;
-	if([item userHasMarkedAsUnread]) {
-		image = [item is_starred] ? [self readAndStarredImage] : [self readImage];
-	} else {
-		image = [item is_starred] ? [self starredImage] : nil;
-	}
+	image = [item is_starred] ? [self starredImage] : nil;
+	// if([item userHasMarkedAsUnread]) {
+	// 	image = [item is_starred] ? [self readAndStarredImage] : [self readImage];
+	// } else {
+	// 	image = [item is_starred] ? [self starredImage] : nil;
+	// }
 	[cell setImage: image];
+	
+	
+	UITableViewCellSelectionStyle selStyle = [item is_read]? UITableViewCellSelectionStyleGray : UITableViewCellSelectionStyleBlue;
+	[cell setSelectionStyle: selStyle];
 	
 	return cell;
 }
@@ -62,14 +67,11 @@
 
 - (id) itemAtIndexPath: (id) indexPath {
 	id item = [[self itemSet] objectAtIndex: [self itemIndexFromIndexPath: indexPath]];
-	dbg(@"item = %@", item);
 	return item;
 }
 
 - (NSUInteger) itemIndexFromIndexPath: (id) indexPath {
-	dbg(@"index path %@ length is %u", indexPath, [indexPath length]);
 	NSUInteger index = [indexPath indexAtPosition: [indexPath length] - 1];
-	dbg(@"returned index is %u", index);
 	return index;
 }
 
@@ -110,11 +112,27 @@
 - (id) itemSet {
 	// ensure it exists
 	if(itemSet == nil) {
-		dbg(@"allocating itemSet");
-		itemSet = [[[db allItems] allObjects] retain];
-		dbg(@"itemset is %@", itemSet);
+		[self setItemSet: [self getNewItemSet]];
 	}
 	return itemSet;
+}
+
+- (id) getNewItemSet {
+	id itemSet;
+	if([settings showReadItems]) {
+		itemSet = [[db allItems] allObjects];
+	} else {
+		itemSet = [[db unreadItems] allObjects];
+	}
+	return itemSet;
+}
+
+- (void) reloadItems {
+	[self setItemSet: [self getNewItemSet]];
+	dbg(@"reloading data...");
+	[listView reloadData];
+	// TODO: why is this not working?
+	[listView setNeedsDisplay]; // this shouldn't be necessary, surely...
 }
 
 - (int)tableView:(id)view numberOfRowsInSection:(id)section {

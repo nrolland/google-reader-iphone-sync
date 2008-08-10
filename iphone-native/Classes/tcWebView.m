@@ -19,7 +19,6 @@
 }
 
 - (void) setAllItems:(id) newSetOfItems {
-	dbg(@"setting allItems to: %@", newSetOfItems);
 	[allItems release];
 	currentItem = nil;
 	currentItemIndex = 0;
@@ -111,7 +110,7 @@
 	 [currentHTML release];
 	 */
 	currentHTML = newHTML;
-	[self loadHTMLString:currentHTML baseURL: [NSURL fileURLWithPath: @"/Users/tim/Documents/Programming/Python/reader/working/entries/"]];
+	[self loadHTMLString:currentHTML baseURL: [NSURL fileURLWithPath: [[appDelegate settings] docsPath]]];
 }
 
 - (void)dealloc {

@@ -43,9 +43,18 @@
 - (void) dealloc {
 	NSLog(@"db is being dealloc'd!");
 	[filename release];
+	[self close];
+	[super dealloc];
+}
+
+- (void) close {
 	[db close];
 	[db release];
-	[super dealloc];
+}
+
+- (void) reload {
+	[self close];
+	[self load];
 }
 
 - (BOOL) dbHadError {
@@ -67,14 +76,16 @@
 
 - (id) itemFromResultSet: (FMResultSet *)rs {
 	 return [[[tcItem alloc]
-			 initWithId:	[rs stringForColumn:@"google_id"]
-			 date:			[rs stringForColumn:@"date"]
-			 url:			[rs stringForColumn:@"url"]
-			 title:			[rs stringForColumn:@"title"]
-			 content:		[rs stringForColumn:@"content"]
-			 is_read:		[rs boolForColumn:@"is_read"]
-			 is_starred:	[rs boolForColumn:@"is_starred"]
-			 db: self]
+			initWithId:		[rs stringForColumn:@"google_id"]
+			originalId:		[rs stringForColumn:@"original_id"]
+			date:			[rs stringForColumn:@"date"]
+			url:			[rs stringForColumn:@"url"]
+			title:			[rs stringForColumn:@"title"]
+			content:		[rs stringForColumn:@"content"]
+			feedName:		[rs stringForColumn:@"feed_name"]
+			is_read:		[rs boolForColumn:@"is_read"]
+			is_starred:		[rs boolForColumn:@"is_starred"]
+			db: self]
 		autorelease];
 }
 
@@ -94,9 +105,9 @@
 - (NSEnumerator *) itemsMatchingCondition:(NSString *) condition {
 	NSString * query = @"select * from items";
 	if(condition != nil){
-		query = [query stringByAppendingFormat: @" where %@ order by date", condition];
+		query = [query stringByAppendingFormat: @" where %@", condition];
 	}
-	return [self enumeratorForQuery: query];
+	return [self enumeratorForQuery: [query stringByAppendingFormat: @" order by date"]];
 }
 
 #pragma mark convenience query methods

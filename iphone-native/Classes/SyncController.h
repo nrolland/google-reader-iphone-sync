@@ -13,6 +13,9 @@
 	IBOutlet id runningOutput;
 	BOOL syncRunning;
 	IBOutlet id window;
+	
+	IBOutlet id itemsController;
+	IBOutlet id db;
 }
 - (IBAction) sync: (id) sender;
 - (IBAction) cancelSync: (id) sender;
