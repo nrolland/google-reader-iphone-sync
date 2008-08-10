@@ -18,9 +18,6 @@ def remove_the_damn_html_entities(s):
 def esc(s):   return urllib.quote(string)
 def unesc(s): return urllib.unquote(s)
 
-def ascii(s): return s.encode('ascii','ignore') if isinstance(s, unicode) else s
-def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
-
 class Item:
 	"""
 	A wrapper around a GoogleReader item

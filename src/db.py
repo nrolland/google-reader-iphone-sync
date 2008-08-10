@@ -106,6 +106,14 @@ class DB:
 		for row_tuple in cursor:
 			yield self.item_from_row(row_tuple)
 	
+	def get_item_count(self, condition=None, args=None):
+		sql = "select count(*) from items"
+		if condition is not None:
+			sql += " where %s" % condition
+		cursor = self.sql(sql, args)
+		return cursor.next()[0]
+
+	
 	def get_items_list(self, *args, **kwargs):
 		return [x for x in self.get_items(*args, **kwargs)]
 
@@ -148,10 +156,16 @@ class DB:
 	
 	def sync_to_google(self):
 		puts("Syncing with google...")
+		status("SUBTASK_TOTAL", self.get_item_count('is_dirty = 1'))
+		item_number = 0
 		for item in self.get_items('is_dirty = 1'):
 			debug('syncing item state \"%s\"' % item.title)
 			item.save_to_web()
 			self.update_item(item)
+
+			item_number += 1
+			status("SUBTASK_PROGRESS",item_number)
+
 		for item in self.get_items('is_read = 1'):
 			debug('deleting item \"%s\"' % item.title)
 			item.delete()

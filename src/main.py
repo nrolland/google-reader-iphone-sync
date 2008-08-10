@@ -37,10 +37,15 @@ def execute():
 	"""
 	Logs in, syncs and downloads new items
 	"""
+	status("TASK_TOTAL",3)
+	status("TASK_PROGRESS", 0, "Authorizing")
+	
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	ensure_dir_exists(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['resources_path'])
 
 	reader_login()
+
+	status("TASK_PROGRESS", 1, "Syncing to google")
 
 	line()
 	app_globals.DATABASE = DB()
@@ -52,6 +57,7 @@ def execute():
 	if app_globals.OPTIONS['no_download']:
 		info("not downloading any new items...")
 	else:
+		status("TASK_PROGRESS", 2, "Downloading new items")
 		download_new_items()
 	app_globals.DATABASE.close()
 
@@ -81,6 +87,9 @@ def download_new_items():
 	"""
 	Downloads new items from google reader
 	"""
+	item_number = 0
+	feed_number = 0
+	status("SUBTASK_TOTAL", len(app_globals.OPTIONS['tag_list']) * app_globals.OPTIONS['num_items'])
 	for feed_tag in app_globals.OPTIONS['tag_list']:
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], feed_tag))
 		feed = app_globals.READER.get_feed(None,
@@ -89,13 +98,20 @@ def download_new_items():
 			exclude_target = CONST.ATOM_STATE_READ,	# get only unread items
 			order = CONST.ORDER_REVERSE)			# oldest first
 	
+		status("SUBTASK_PROGRESS", feed_number * app_globals.OPTIONS['num_items'])
+		feed_number += 1
+	
 		for entry in feed.get_entries():
+			item_number += 1
+			status("SUBTASK_PROGRESS", item_number)
+			
 			debug(" -- %s -- " % app_globals.STATS['items'])
 			app_globals.STATS['items'] += 1
 		
 			if entry is None:
 				app_globals.STATS['failed'] += 1
 				puts(" ** FAILED **")
+				debug("(entry is None)")
 				continue
 		
 			debug_verbose(entry.__repr__())
@@ -114,6 +130,7 @@ def download_new_items():
 						app_globals.STATS['new'] += 1
 					except Exception,e:
 						puts(" ** FAILED **: " + str(e))
+						log_error("Failed processing item: %s" % repr(item), e)
 						if in_debug_mode():
 							raise
 						app_globals.STATS['failed'] += 1
@@ -140,6 +157,7 @@ def main():
 	config.bootstrap()
 	config.load()
 	config.parse_options()
+	log_start()
 	config.check()
 	
 	if not app_globals.OPTIONS['template_only']:
@@ -148,6 +166,7 @@ def main():
 		info("Updating templates for all existing items...")
 		update_templates()
 	puts("Sync complete.")
+	log_end()
 
 
 if __name__ == '__main__':

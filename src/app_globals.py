@@ -23,6 +23,7 @@ OPTIONS = {
 	'template_only': False,
 	'flush_output':  False,
 	'verbosity':     output.lvl_default,
+	'show_status':   False,
 }
 
 STATS = {

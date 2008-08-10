@@ -16,7 +16,7 @@ import app_globals
 
 required_keys = ['user','password', 'tag_list']
 
-bootstrap_options = ('qvc:', ['verbose','quiet','config='])
+bootstrap_options = ('qvc:s', ['verbose','quiet','config=','show-status'])
 main_options = ("n:CdthT", [
 		'num-items=',
 		'cautious',
@@ -46,8 +46,8 @@ def bootstrap(argv = None):
 			set_opt('verbosity', app_globals.OPTIONS['verbosity'] - 1)
 		elif key == '--config' or key == '-c':
 			set_opt('user_config_file', val)
-
-
+		elif key == '--show-status' or key == '-s':
+			set_opt('show_status', True)
 
 def parse_options(argv = None):
 	"""
@@ -72,7 +72,7 @@ Usage:
 		
 	(opts, argv) = getopt(argv, *all_options)
 	for (key,val) in opts:
-		if key in ['-q','--quiet','-v','--verbose', '-c','--config']:
+		if key in ['-q','--quiet','-v','--verbose', '-c','--config','-s','--show-status']:
 			# already processed
 			pass
 		

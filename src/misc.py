@@ -96,7 +96,6 @@ def slashify_single_quotes(s):
 	"""
 	return s.replace('\\','\\\\').replace("'","\\'")
 
-
 def write_file(filename, content):
 	f = file(filename, 'w')
 	f.write(content)
