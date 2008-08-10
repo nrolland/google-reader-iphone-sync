@@ -1,6 +1,5 @@
 #import "tcHelpers.h"
 
-
 @implementation tcHelpers
 + (BOOL) ensureDirectoryExists:(NSString *)path {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -25,6 +24,5 @@
 		initWithTitle:title message: msg delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil]
 			autorelease] show];
 }
-
 
 @end

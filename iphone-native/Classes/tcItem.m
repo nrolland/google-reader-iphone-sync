@@ -103,12 +103,12 @@
 					<h1 id='title'>                                                                         \n\
 						<a href='%@'>%@</a><!-- url, title -->                                              \n\
 					</h1>                                                                                   \n\
-					<div class='date'>Posted %@</div>                      <!-- date -->                    \n\
+					<div class='date'>Posted %@, tag <b>%@</b></div>       <!-- date, feed_name -->         \n\
 					<div class='via'>                                                                       \n\
-						from tag <b>%@</b> // %@<br /><br />               <!-- feed_name, domainName -->   \n\
+						on <em>%@</em>                                     <!-- domainName -->              \n\
 					</div>                                                                                  \n\
 				</div>                                                                                      \n\
-				<div id='content'><p>                                                                       \n\
+				<div class='content'><p>                                                                    \n\
 					%@                                                     <!-- content -->                 \n\
 				</div>                                                                                      \n\
 			</body>                                                                                         \n\

@@ -8,14 +8,20 @@
 	IBOutlet id cancelButton;
 	IBOutlet id okButton;
 	IBOutlet id spinner;
-	IBOutlet id downloadProgrssBar;
+	
 	BackgroundShell * syncThread;
-	IBOutlet id runningOutput;
 	BOOL syncRunning;
 	IBOutlet id window;
 	
 	IBOutlet id itemsController;
 	IBOutlet id db;
+	
+	IBOutlet id status_currentTask;
+	IBOutlet id status_taskProgress;
+	IBOutlet id status_mainProgress;
+	
+	int totalTasks;
+	int totalStepsInCurrentTask;
 }
 - (IBAction) sync: (id) sender;
 - (IBAction) cancelSync: (id) sender;

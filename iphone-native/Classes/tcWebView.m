@@ -45,7 +45,6 @@
 	}
 
 	[buttonPrev setEnabled:[self canGoPrev]];
-	[buttonNext setEnabled:[self canGoNext]];
 
 	[self loadItem: currentItem];
 	[self setButtonStates];
@@ -66,7 +65,6 @@
 
 - (void) showCurrentItemInItemList: (id) itemList {
 	if(allItems && currentItem) {
-		dbg(@"selectingItem from %@", allItems);
 		[itemList selectItemWithID: [currentItem google_id] inItemSet: allItems];
 	} else {
 		dbg(@"no item to showCurrentItemInItemList");
@@ -74,9 +72,6 @@
 }
 
 - (void) deactivate {
-	if(!([self canGoNext] && [self canGoPrev])) {
-		[currentItem userDidScrollPast];
-	}
 	[self setAllItems: nil];
 	[self loadHTMLString:@""];
 }
@@ -84,7 +79,12 @@
 - (IBAction) goForward{
 	NSLog(@"FWD");
 	[currentItem userDidScrollPast];
-	[self loadItemAtIndex:currentItemIndex + 1];
+	if([self canGoNext]){
+		[self loadItemAtIndex:currentItemIndex + 1];
+	} else {
+		dbg(@"showing navigation");
+		[[[UIApplication sharedApplication] delegate] showNavigation: self];
+	}
 }
 
 - (IBAction) goBack{
@@ -132,8 +132,12 @@
 	[buttonRead setSelected: [currentItem toggleReadState]];
 }
 
-// TODO...
-- (IBAction) emailCurrentItem:(id) sender {}
+- (IBAction) emailCurrentItem:(id) sender {
+	NSString * emailURL = [NSString stringWithFormat:@"mailto:gfxmonk@gmail.com?subject=A link for you!&body=%@",[currentItem url]];
+	dbg(@"email url: %@ app=%@", emailURL, [UIApplication sharedApplication]);
+	BOOL emailed = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:emailURL]];
+	dbg(@"email %s", emailed?"worked":"failed");
+}
 
 
 

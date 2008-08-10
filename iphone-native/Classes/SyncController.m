@@ -26,7 +26,7 @@
 		return;
 	}
 			
-	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
+	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --show-status --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
 		[[settings docsPath] stringByAppendingPathComponent:@"src/main.py"],
 		[settings docsPath],
 		[settings itemsPerFeed],
@@ -39,7 +39,6 @@
 	// visuals
 	[spinner setAnimating:YES];
 	[spinner setHidden:NO];
-	[downloadProgrssBar setProgress:0.0];
 	[cancelButton setHidden:YES];
 	[okButton setHidden:YES];
 	// now swap out the views
@@ -47,7 +46,11 @@
 	[syncStatusView setHidden:NO];
 	[window addSubview: syncStatusView];
 	[syncStatusView setFrame: [window frame]];
-	[runningOutput setText: @"starting up...\n"];
+	[status_currentTask setText: @"Loading..."];
+	[status_mainProgress setProgress: 0.0];
+	[status_taskProgress setProgress: 0.0];
+	[status_taskProgress setHidden:NO];
+	[status_mainProgress setHidden:NO];
 
 	// ..and go!
 	[syncThread start];
@@ -64,7 +67,6 @@
 }
 
 - (IBAction) hideSyncView: (id)sender {
-	[runningOutput setText: nil];
 	[notSyncingView setHidden:NO];
 	[syncStatusView setHidden:YES];
 	[syncStatusView removeFromSuperview];
@@ -75,6 +77,9 @@
 
 // sync finished but you still want to see the report
 - (void) showSyncFinished {
+	[status_taskProgress setHidden:YES];
+	[status_mainProgress setHidden:YES];
+
 	[spinner setHidden:YES];
 	[okButton setHidden:NO];
 	[cancelButton setHidden:YES];
@@ -84,8 +89,10 @@
 - (void) backgroundShell:(id)shell didFinishWithSuccess:(BOOL) success {
 	if(!success) {
 		dbg(@"failed...");
+		[status_currentTask setText:@"Sync aborted"];
 	} else {
 		dbg(@"sync completed successfully");
+		[status_currentTask setText:@"Sync complete"];
 	}
 	[syncThread release];
 	syncThread = nil;
@@ -93,10 +100,39 @@
 }
 
 - (void) backgroundShell:(id)shell didProduceOutput:(NSString *) line {
-	dbg(@"SyncController got the output: %@", line);
-	//[runningOutput setText: line];
-	[runningOutput setText: [[runningOutput text] stringByAppendingString: line]];
-	[runningOutput scrollRangeToVisible: NSMakeRange([[runningOutput text] length],1)];
+	dbg(@"sync output: %@", line);
+	int numStatusComponents;
+
+	if([line hasPrefix:@"STAT:"]){
+		NSArray * statusComponents = [line componentsSeparatedByString:@":"];
+		numStatusComponents = [statusComponents count];
+		if(numStatusComponents > 1) {
+			@try{
+				NSString * type = [statusComponents objectAtIndex:1];
+				if(       [type isEqualToString:@"TASK_TOTAL"]){
+					// total number of tasks
+					totalTasks = [[statusComponents objectAtIndex:2] integerValue];
+				} else if([type isEqualToString:@"TASK_PROGRESS"]){
+					// new sub-task, with optional description
+					if(numStatusComponents > 3) {
+						[status_currentTask setText: [statusComponents objectAtIndex:3]];
+					}
+					[status_mainProgress setProgress: ([[statusComponents objectAtIndex:2] floatValue] / (float)totalTasks )];
+					[status_taskProgress setProgress: 0.0];
+				} else if([type isEqualToString:@"SUBTASK_TOTAL"]){
+					// total number of steps for current subtask
+					totalStepsInCurrentTask = [[statusComponents objectAtIndex:2] integerValue];
+				} else if([type isEqualToString:@"SUBTASK_PROGRESS"]){
+					// progress for current subtask
+					[status_taskProgress setProgress: ( [[statusComponents objectAtIndex:2] floatValue] / (float)totalStepsInCurrentTask ) ];
+				} else {
+					dbg(@"unknown status type: %@", type);
+				}
+			} @catch(NSException *e) {
+				dbg(@"error occurred:\n%@", e);
+			}
+		}
+	}
 }
 
 @end

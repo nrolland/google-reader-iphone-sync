@@ -107,7 +107,8 @@
 	if(condition != nil){
 		query = [query stringByAppendingFormat: @" where %@", condition];
 	}
-	return [self enumeratorForQuery: [query stringByAppendingFormat: @" order by date"]];
+	// TODO: better pagination
+	return [self enumeratorForQuery: [query stringByAppendingFormat: @" order by date limit 400"]];
 }
 
 #pragma mark convenience query methods

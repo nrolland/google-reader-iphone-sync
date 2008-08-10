@@ -15,7 +15,11 @@
 - (id) settings { return appSettings; }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
-	// Add the tab bar controller's current view as a subview of the window
+	#ifndef DEBUG
+		// redirect stderr to a logfile if we're not in debugging mode
+		NSString *logPath = [[[self settings] docsPath] stringByAppendingPathComponent: @"GRiS.native.log"];
+		freopen([logPath fileSystemRepresentation], "w", stderr);
+	#endif
 	dbg(@"Loaded...");
 
 	[window setBackgroundColor: [UIColor groupTableViewBackgroundColor]];
@@ -24,7 +28,7 @@
 }
 
 - (void) loadItemAtIndex: (int) index fromSet:(id) items {
-	dbg(@"appdelegate - loading item at index: %d from set %@", index, items);
+	//dbg(@"appdelegate - loading item at index: %d from set %@", index, items);
 	[[browseController webView] loadItemAtIndex: index fromSet:items];
 	[self showViewer:self];
 }

@@ -1,4 +1,5 @@
 #import "ItemsListController.h"
+#import "tcHelpers.h"
 
 @implementation ItemsListController
 - (void) setItemSet: (id) set {
@@ -43,9 +44,15 @@
 	return didHide;
 }
 
+- (void) redraw{
+	dbg(@"redrawing listview");
+	[listView reloadData];
+}
+
 -(IBAction) refresh: (id) sender {
 	[self hideOptions];
 	[dataSource reloadItems];
+	[self redraw];
 }
 
 @end

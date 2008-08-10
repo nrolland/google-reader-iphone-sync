@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 
+typedef long pid;
 
 @interface BackgroundShell : NSThread {
 	id delegate;
@@ -8,6 +9,7 @@
 	BOOL doSendOutput;
 	SEL outputCallback;
 	id outputDelegate;
+	pid shellPid;
 }
 
 - (id) initWithShellCommand:(NSString *)cmd;

@@ -25,7 +25,6 @@
 	// }
 	[cell setImage: image];
 	
-	
 	UITableViewCellSelectionStyle selStyle = [item is_read]? UITableViewCellSelectionStyleGray : UITableViewCellSelectionStyleBlue;
 	[cell setSelectionStyle: selStyle];
 	

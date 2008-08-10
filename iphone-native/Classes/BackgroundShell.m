@@ -1,6 +1,9 @@
 #import "BackgroundShell.h"
+#import <signal.h>
 
 #define dbg NSLog
+
+static FILE * my_popen (char * command, const char * type, pid * tid);
 
 @implementation BackgroundShell
 
@@ -57,16 +60,21 @@
 
 - (void) cancel {
 	[super cancel];
+	// kill the worker thread:
+	if(killpg(shellPid, SIGTERM) != 0) {
+		dbg(@"Cancel failed to kill pid %d", shellPid);
+	}
+	wait(NULL);
 }
 
 - (FILE *) startCommand {
 	FILE * proc;
 	if(command == nil) {
 		NSLog(@"command is nil. did you try to run it twice?");
-		return;
+		return NULL;
 	}
 	NSLog(@"running command: %@", command);
-	proc = popen([command cStringUsingEncoding:NSASCIIStringEncoding],"r");
+	proc = my_popen([command cStringUsingEncoding:NSASCIIStringEncoding],"r", &shellPid);
 	[command release];
 	command = nil;
 	return proc;
@@ -76,8 +84,6 @@
 
 #import <sys/select.h>
 #import <sys/time.h>
-// ugh, this is a fun one... we need to use select() to make sure we check the
-// cancelled status at least twice a second
 -(BOOL) command:(FILE *) proc hasFinishedWithSuccess:(BOOL *)success {
 	char line[1024];
 	int ready;
@@ -107,9 +113,64 @@
 	
 	if([[NSThread currentThread] isCancelled]) {
 		*success = NO;
-		// TODO: send SIGINT. might need to replace popen() with fork()/exec() etc... fun!
 		return YES;
 	}
 	return NO; // still more to go
 }
 @end
+
+
+
+
+// modified from: http://www.tek-tips.com/viewthread.cfm?qid=1373233&page=6
+static FILE * my_popen (char * command, const char * type, pid * tid){
+	int     p[2];
+	FILE *  fp;
+
+	if (*type != 'r' && *type != 'w')
+		return NULL;
+
+	if (pipe(p) < 0)
+		return NULL;
+
+	if ((*tid = fork()) > 0) { /* then we are the parent */
+		if (*type == 'r') {
+			close(p[1]);
+			fp = fdopen(p[0], type);
+		} else {
+			close(p[0]);
+			fp = fdopen(p[1], type);
+		}
+		/* make child thread id the process group leader */
+		setpgid(*tid, *tid);
+		//NSLog(@"parent: my pid is %d, the childs pid is %d and MY groupID is %d and the child's is %d", getpid(), *tid, getpgrp(), getpgid(*tid));
+		return fp;
+	} else if (*tid == 0) {  /* we're the child */
+		
+		if (*type == 'r') {
+			fflush(stdout);
+			fflush(stderr);
+			close(1);
+			if (dup(p[1]) < 0)
+				perror("dup of write side of pipe failed");
+			close(2);
+			if (dup(p[1]) < 0)
+			perror("dup of write side of pipe failed");
+		} else {
+			close(0);
+			if (dup(p[0]) < 0)
+				perror("dup of read side of pipe failed");
+		}
+
+		close(p[0]); /* close since we dup()'ed what we needed */
+		close(p[1]);
+		system(command);
+		printf("exiting...");
+		_exit(0);
+	} else {		   /* we're having major problems... */
+		close(p[0]);
+		close(p[1]);
+		printf("my_popen(): fork() failure!\n");
+	}
+	return NULL;
+}

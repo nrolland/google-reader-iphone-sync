@@ -159,7 +159,7 @@
 
 
 #pragma mark SETTING values
-- (BOOL) setReadItems:(BOOL) newVal {
+- (void) setReadItems:(BOOL) newVal {
 	[plistData setValue: [NSNumber numberWithBool: newVal] forKey:@"showReadItems"];
 }
 

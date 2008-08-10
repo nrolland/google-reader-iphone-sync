@@ -6,8 +6,10 @@ body {
 	font-family: helvetica, sans-serif;
 	color:white !important;
 	background:#333;
-	line-height: 1.3em;
-	font-size:0.97em;
+	line-height: 1.4em;
+	font-size:1.6em;
+	margin:0;
+	padding:0;
 }
 
 a{ color:#acF; }
@@ -15,11 +17,39 @@ a{ color:#acF; }
 h1, h2, h3, h4, h5, h6 {
 	color:#acF !important;
 	text-decoration:none;
+	padding:5px;
 }
 
 h1{
-	font-size:1.8em;
-	line-height:1.4em
+	font-size:1.4em;
+	line-height:1.0em;
+	padding:0;
+	margin:3px 0;
+	margin-bottom:10px;
+}
+
+h1 a{
+	text-decoration:none;
+}
+
+.post-info, .content {
+	padding:10px;
+}
+
+.post-info {
+	width:100%;
+	background:#111;
+	border-bottom:1px solid #888;
+	color:#777;
+}
+
+.post-info b, .post-info em{
+	font-style:normal;
+	color:#ddd;
+}
+
+.content {
+	margin-bottom:10px;
 }
 
 

@@ -15,8 +15,7 @@ $mac_user = config['mac_user'] || `whoami`.chomp!
 $mac_server = `hostname`.chomp!
 
 # servers & paths
-$ipod_path = '/var/mobile/Media/' + config['iphone_destination_path']
-$mac_path	= `pwd`.chomp! + "/entries/"
+$ipod_path = "/var/mobile/GRiS/"
 
 $ipod_server = ENV['IP'] || config['iphone_hostname']
 puts "IP = #{ENV['IP'].inspect}"
@@ -49,29 +48,6 @@ desc "use --dry-run only (no actual filesystem changes)"
 task :fake do $dry = true; $rsync_opts += " --dry-run" end
 # -----------------------------------------
 
-desc "Copy files to iPod"
-task :push do
-	check_folder($ipod_path, true)
-	local "rsync #{$rsync_opts} #{$mac_path} #{$remote_ipod_path}"
-end
-
-task :pull_without_web do
-	check_folder($mac_path)
-	local "rsync #{$rsync_opts} #{$remote_ipod_path} #{$mac_path}"
-end
-
-desc "Copy files from iPod"
-task :pull do pull_without_web ; pause("push read items info to google"); push_web end
-
-desc "sync to the web (mark as read; get new items)"
-task :sync_web do do_sync end
-
-desc "just mark-as-read on the web (don't download new stuff)"
-task :push_web do do_sync('--no-download') end
-	
-desc "update templates on downloaded items"
-task :template do do_sync('--template') end
-	
 desc "flush the dns cache"
 task :dns do `sudo dscacheutil -flushcache` end
 
@@ -85,9 +61,6 @@ task :nose do
 	end
 	system("nosetests -c nose.cfg #{where}")
 end
-
-desc "Do a full sync"
-task :all do pull_without_web; pause("sync with google"); sync_web; pause("push files to ipod"); push; push_template end
 
 $only_one = true
 task :many do $only_one = false end
@@ -104,8 +77,12 @@ task :pause do $run_opts[:pause] = true end
 
 desc "Copy the template files (buttons, styles) to iPod"
 task :push_template do
-	check_folder($ipod_path + '/../', true)
-	local "rsync #{$rsync_opts} --exclude='*.psd' '#{$mac_path}/../template' '#{$remote_ipod_path}/../'"
+	local "rsync #{$rsync_opts} --exclude='*.psd' 'template' '#{$remote_ipod_path}'"
+end
+
+desc "copy python code to iPod"
+task :push_python_code do
+	local "rsync #{$rsync_opts} --exclude='*.psd' 'src' '#{$remote_ipod_path}'"
 end
 
 desc "copy ~/.ssh/id_rsa.pub to ipod / iphone"
@@ -114,57 +91,60 @@ task :ssh_auth do
 	run "cat '~/.ssh_id_#{$mac_user}' >> '~/.ssh/authorrized_keys'"
 end
 
-task :lighttpd do
-	check_folder('/var/mobile/Media/.dirlist/', true)
-	check_folder('/usr/local/etc/', true)
-	dest_dir = "#{$remote_ipod}/var/mobile/Media/.dirlist/"
-	current_dir = `pwd`.chomp!
-	src = "#{current_dir}/lighttpd"
-	local "rsync #{$rsync_opts} '#{src}/dirlist/' '#{dest_dir}'"
-	local "rsync #{$rsync_opts} '#{src}/lighttpd.conf' '#{$remote_ipod}/usr/local/etc/'"
-	local "rsync #{$rsync_opts} '#{src}/com.sysprosoft.gfxmonk.lighttpd.startup.plist' '#{$remote_ipod}/System/Library/LaunchDaemons/'"
-end
-
-desc "install required files on your iPod / iPhone"
-task :install do
-	lighttpd
-	push_template
-	run("mkdir -p '#{$ipod_path}'")
-	puts "All set up!"
-end
-
 
 # installing & running the code on your iPhone
-desc "install code on iPod"
-task :install_code do
+desc "build & install code on iPod"
+task :install do
 		install_eggs
-		update_code
+		install_app
+		push_python_code
 end
 
-desc "update ipod code"
-task :update_code do
-	# sync it
-		local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
-		run "mkdir -p /var/mobile/GRiS"
-#		local "rsync #{$rsync_opts} src #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
-#		local "rsync #{$rsync_opts} template #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
-		local "rsync #{$rsync_opts} --exclude '*.sqlite' --exclude '*.plist' ~/.GRiS/ #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
-		run "ldid -S /Applications/GRiS.app/GRiS"
-		run "chown -R mobile.mobile /var/mobile/GRiS/"
-		run "killall SpringBoard"
+desc "build the native iPhone version"
+task :build do
+	local "xcodebuild -project iphone-native/GRiS.xcodeproj -configuration #{ENV['build'] || "Release"}"
 end
 
-def install_egg_file(file, location='eggs')
-	path = location + '/' + file
-	python_plugin_path = '/usr/lib/python2.5/site-packages/'
-	system "scp '#{path}' '#{$ipod_user}@#{$ipod_server}:#{python_plugin_path}'" or loud_error("couldn't copy egg file: #{path}")
-	run "cd '#{python_plugin_path}' && unzip -uo '#{file}' && rm '#{file}'"
+desc "create a cydia package"
+task :package do
+	build
+	local "mkdir -p cydia"
+	
 end
 
 task :install_eggs do
 	install_egg_file('PyYAML-3.05-py2.5.egg')
 end
 
+task :install_app do
+	build
+	run "mkdir -p /var/mobile/GRiS"
+	# sync it
+	local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
+	local "rsync #{$rsync_opts} src #{$ipod_user}@#{$ipod_server}:#{$settings_path}"
+	push_template
+	#	local "rsync #{$rsync_opts} --exclude '*.sqlite' --exclude '*.plist' ~/.GRiS/ #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
+	run "ldid -S /Applications/GRiS.app/GRiS"
+	run "chown -R mobile.mobile /var/mobile/GRiS/"
+	run "killall SpringBoard"
+end
+
+
+def install_egg_file(file, location='eggs', force = false)
+	path = location + '/' + file
+	python_plugin_path = '/usr/lib/python2.5/site-packages/'
+	# returning false (non-zero) from a remote shell throws an exception with capistrano.. so we'll use that:
+	begin
+		remote("test -d '#{python_plugin_path}#{File.basename(file,'.egg')}")
+		raise "dummy" if force
+	rescue
+		system "scp '#{path}' '#{$ipod_user}@#{$ipod_server}:#{python_plugin_path}'" or loud_error("couldn't copy egg file: #{path}")
+		run "cd '#{python_plugin_path}' && unzip -uo '#{file}' && rm '#{file}'"
+	end
+end
+
+
+# ----------- helpers -------------
 
 # make sure that folder is empty, aside from files matching allowed_patterns
 # (when it's a remote directory, it only ensures the directory exists)

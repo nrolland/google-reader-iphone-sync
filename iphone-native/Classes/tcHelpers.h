@@ -1,9 +1,7 @@
-#define DEBUG
-
 #ifdef DEBUG
 	#define dbg NSLog
 #else
-	#define dbg( ... ) {}
+	#define dbg NSLog /*( ... ) {}*/
 #endif
 
 @interface tcHelpers : NSObject {
