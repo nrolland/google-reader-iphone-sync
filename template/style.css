@@ -21,7 +21,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1{
-	font-size:1.4em;
+	font-size:1.25em;
 	line-height:1.0em;
 	padding:0;
 	margin:3px 0;
@@ -41,6 +41,7 @@ h1 a{
 	background:#111;
 	border-bottom:1px solid #888;
 	color:#777;
+	line-height:1.3em;
 }
 
 .post-info b, .post-info em{
@@ -51,50 +52,3 @@ h1 a{
 .content {
 	margin-bottom:10px;
 }
-
-
-#nav_bottom{
-	padding-top:30px;
-	padding-bottom:100px;
-}
-
-#nav_top{
-	padding-top:10px;
-	padding-bottom:80px;
-}
-
-.nav a, .nav div.sep{
-	display:block;
-	width:  77px;
-	height: 77px;
-	margin: 0;
-	color:transparent;
-	float:left;
-}
-
-.nav a {
-	background-color: transparent;
-	background-position: top left;
-	background-repeat: no-repeat;
-}
-.nav a:hover { background-position: 0px -78px;   }
-
-.nav a.next         { background-image: url(img/next.png);    }
-.nav a.prev         { background-image: url(img/prev.png);    }
-.nav a.up           { background-image: url(img/up.png);      }
-.nav a.delete       { background-image: url(img/del.png);     }
-.nav a.email        { background-image: url(img/fwd.png);     }
-.nav a.star         { background-image: url(img/star.png);    }
-.nav a.star_on      { background-image: url(img/star_on.png); }
-
-
-.nav div.sep{
-	width:3px;
-	background: transparent url(img/sep.png) no-repeat top left;
-}
-
-.nav a.sep:first, .nav a.sep:last{
-	display:none;
-}
-
-
