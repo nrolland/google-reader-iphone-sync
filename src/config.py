@@ -6,7 +6,7 @@ parse_options()
 load_config()
 """
 from getopt import getopt
-import yaml, sys
+import sys
 
 # local imports
 from misc import *
@@ -143,6 +143,7 @@ def load(filename = None):
 
 	try:
 		f = file(filename,'r')
+		import yaml
 		conf = yaml.load(f)
 	
 		for key,val in conf.items():
