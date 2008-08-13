@@ -144,9 +144,11 @@ task :do_package do
 	if config['deb_dest']
 		dest = config['deb_dest']
 		local "cp '#{build_dir}/#{app}.deb' '#{dest}'"
-		local "cd '#{dest}' && dpkg-scanpackages . /dev/null >Packages"
-		puts "Package file: #{dest}/Packages"
+		local "cd '#{dest}' && dpkg-scanpackages . /dev/null > Packages"
+		local "cd '#{dest}' && gzip -c Packages > Packages.gz"
+		puts "Package file: #{dest}/Packages.gz"
 		puts "DEB file:     #{dest}/#{app}.deb"
+		puts "all files:\n '#{dest}/Packages.gz' '#{dest}/Packages' '#{dest}/#{app}.deb'"
 	else
 		puts "set deb_dest in config.yml to generate a package file automatically"
 		puts "DEB file:     #{build_dir}/#{app}.deb"
