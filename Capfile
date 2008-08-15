@@ -59,7 +59,10 @@ task :nose do
 		puts " (add file=src/<module>.py to test a single module)"
 		where = '--where=src'
 	end
-	system("nosetests -c nose.cfg #{where}")
+	packages = Dir['src/*.py'].collect {|p| p.gsub(/\.py$/i, '').gsub('/','.') }
+	packages.reject! {|p| p =~ /__init__/ }
+	puts "nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}'"
+	system("nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}'")
 end
 
 $only_one = true

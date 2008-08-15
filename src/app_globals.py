@@ -8,7 +8,6 @@ CONFIG = {
 	'user_config_file': 'config.yml',
 	'test_output_dir': 'test_entries',
 	'resources_path': '_resources',
-	'convert_to_pdf': False,
 }
 
 OPTIONS = {
@@ -38,5 +37,3 @@ STATS = {
 READER = None
 DATABASE = None
 
-def file_extension():
-	return 'pdf' if CONFIG['convert_to_pdf'] else 'html'

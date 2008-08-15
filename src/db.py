@@ -12,6 +12,44 @@ from output import *
 from item import Item
 
 import sqlite3 as sqlite
+
+# to support data migration, we currently have all versions / modifications to the schema
+# hopefully this won't become too ungainly
+schema_history = [
+	'CREATE TABLE items(google_id TEXT primary key, date TIMESTAMP, url TEXT, original_id TEXT, title TEXT, content TEXT, feed_name TEXT, is_read BOOLEAN, is_starred BOOLEAN, is_dirty BOOLEAN default 0)',
+	'CREATE UNIQUE INDEX item_id_index on items(google_id)',
+	'ALTER TABLE items ADD COLUMN had_errors BOOLEAN default 0',
+	]
+
+class VersionDB:
+	@staticmethod
+	def version(db):
+		version = 0
+		tables = map(first, db.execute('select tbl_name from sqlite_master').fetchall())
+		if 'db_version' in tables:
+			version = int(first(db.execute('select version from db_version').fetchone()))
+		else:
+			db.execute('CREATE TABLE db_version(version INT)')
+			db.execute('INSERT INTO db_version(version) VALUES (0)')
+		return version
+
+	@staticmethod
+	def migrate(db, schema_history):
+		version = VersionDB.version(db)
+		unapplied_schema_steps = schema_history[version:]
+		if len(unapplied_schema_steps) > 0:
+			info("Your database is at version %s, the latest is version %s. Upgrading" % (version, len(schema_history)))
+			print unapplied_schema_steps
+			for step in unapplied_schema_steps:
+				info("Appling the following query to your database:\n%s" % (step,))
+				db.execute(step)
+				version += 1
+				db.execute('update db_version set version = ?', (version,))
+			debug("database is up to date! (version %s)" % len(schema_history))
+			db.commit()
+		return len(unapplied_schema_steps)
+
+
 class DB:
 	def __init__(self, filename = 'items.sqlite'):
 		if app_globals.OPTIONS['test']:
@@ -36,6 +74,7 @@ class DB:
 				('is_read', 'BOOLEAN'),
 				('is_starred', 'BOOLEAN'),
 				('is_dirty', 'BOOLEAN default 0'),
+				('had_errors', 'BOOLEAN default 0'),
 			],
 			'indexes' : [ ('item_id_index', 'items(google_id)') ]
 		}
@@ -62,7 +101,7 @@ class DB:
 	def erase(self):
 		if not app_globals.OPTIONS['test']:
 			raise Exception("erase() called, but we're not in test mode...")
-		self.sql('drop table if exists items')
+		self.sql('delete from items')
 
 	def reset(self):
 		self.erase()
@@ -72,27 +111,17 @@ class DB:
 		return [row[0] for row in self.db.execute('select name from sqlite_master where type = "table"')]
 
 	def setup_db(self):
-		# "if not exists" is broken in subtle and weird ways in pysqlite - this would be ideal:
-		#col_str = 'create table if not exists items(' < code as below... > ')'
+		global schema_history
+		if VersionDB.migrate(self.db, schema_history) > 0:
+			self.reload()
 		
-		# so we just use this:
-		col_str = 'create table items('
-		col_str += ', '.join(' '.join(x) for x in self.schema['columns'])
-		col_str += ')'
-
-		# and catch the exception if it fails
-		try:
-			self.db.execute(col_str)
-		except sqlite.OperationalError:
-			pass
-		
-		index_strs = ['create unique index if not exists %s on %s;' % (col, typestr) for (col, typestr) in self.schema['indexes']]
-		for index_str in index_strs:
-			self.sql(index_str)
-
 	def add_item(self, item):
 		self.sql("insert into items (%s) values (%s)" % (', '.join(self.cols), ', '.join(['?'] * len(self.cols))),
 			[getattr(item, attr) for attr in self.cols])
+	
+	def remove_item(self, item):
+		google_id = item.google_id
+		self.sql("delete from items where google_id = ?", (google_id,))
 
 	def update_item(self, item):
 		self.sql("update items set is_read=?, is_starred=?, is_dirty=? where google_id=?",
@@ -113,6 +142,8 @@ class DB:
 		cursor = self.sql(sql, args)
 		return cursor.next()[0]
 
+	def get_items_that_had_errors(self):
+		return self.get_items(condition='had_errors = 1')
 	
 	def get_items_list(self, *args, **kwargs):
 		return [x for x in self.get_items(*args, **kwargs)]

@@ -23,6 +23,7 @@ class Item:
 	A wrapper around a GoogleReader item
 	"""
 	def __init__(self, feed_item = None, feed_name = '(unknown)', raw_data = None):
+		self.had_errors = False
 		if feed_item is not None:
 			try: self.feed_name = feed_item['feed_name']
 			except:
@@ -60,53 +61,48 @@ class Item:
 			filter(lambda x: x not in '"\':#!+/$\\?*', ascii(remove_the_damn_html_entities(self.title)))[:120] + ' .||' +
 			self.safe_google_id + '||' )
 
+	def soup_setup(self):
+		self.soup = BeautifulSoup(self.content)
+		try:
+			self.base = url_dirname(self.original_id)
+		except:
+			self.base = None
+	
+	def soup_teardown(self):
+		self.soup 
+		self.content = self.soup.prettify()
+		
 	def process(self):
 		debug("item %s -> process()" % self.title)
-		# setup:
-		soup = BeautifulSoup(self.content)
-		try:
-			base = url_dirname(self.original_id)
-		except:
-			base = None
+		self.soup_setup()
 
 		# process
-		soup = process.insert_alt_text(soup)
-		soup = process.download_images(soup,
-			dest_folder = self.resources_path,
-			href_prefix = app_globals.CONFIG['resources_path'] + '/' + self.safe_google_id + '/',
-			base_href = base)
+		process.insert_alt_text(self.soup)
+		self.download_images(need_soup = False)
 		
 		# save changes back as content
-		self.content = soup.prettify()
+		self.soup_teardown()
+	
+	def download_images(self, need_soup=True):
+		self.had_errors = False
+		if need_soup:
+			self.soup_setup()
+		
+		success = process.download_images(self.soup,
+			dest_folder = self.resources_path,
+			href_prefix = app_globals.CONFIG['resources_path'] + '/' + self.safe_google_id + '/',
+			base_href = self.base)
+		if not success:
+			self.had_errors = True
+
+		if need_soup:
+			self.soup_teardown()
 	
 	def save(self):
-		if app_globals.OPTIONS['do_output']:
-			base = app_globals.OPTIONS['output_path'] + '/' + self.basename
-
-			render_object = {
-				'title_link':  '<a href="' + utf8(self.url) + '">' + utf8(self.title) + '</a>',
-				'title_html':  '<title>' + utf8(self.title) + '</title>',
-				'content':     utf8(self.content),
-				'via':        'from tag <b>'+ utf8(self.feed_name) +'</b>'
-			}
-
-			# create the "via" link
-			try:
-				render_object['via'] += '<br /><em>' + re.sub('.*://([^/]+).*', '\\1', self.original_id) + '</em><br /><br />'
-			except:
-				pass
-		
-			debug("rendering item to %s using template file %s" % (base + '.html', 'template/item.html'))
-			template.create(render_object, 'template/item.html', base + '.html')
-
-		else: 
-			debug("Not outputting any files")
-		self.add_to_db()
-	
-	def add_to_db(self):
 		app_globals.DATABASE.add_item(self)
 
 	def delete(self):
+		app_globals.DATABASE.remove_item(self)
 		for f in glob.glob(app_globals.OPTIONS['output_path'] + '/*.' + self.safe_google_id + '.*'):
 			rm_rf(f)
 		rm_rf(self.resources_path)

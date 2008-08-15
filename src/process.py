@@ -7,15 +7,17 @@ from output import *
 def insert_alt_text(soup):
 	"""
 	insert bolded image title text after any image on the page
-	
-		>>> insert_alt_text( BeautifulSoup('<p><img src="blah" title="some texts" /></p>') )
+		>>> soup = BeautifulSoup('<p><img src="blah" title="some texts" /></p>')
+		>>> insert_alt_text( soup )
+		True
+		>>> soup
 		<p><img src="blah" title="some texts" /><p><b>( some texts )</b></p></p>
 	"""
 	images = soup.findAll('img',{'title':True})
 	for img in images:
 		desc = BeautifulSoup('<p><b>( %s )</b></p>' % img['title'])
 		img.append(desc)
-	return soup
+	return True
 
 def download_images(soup, dest_folder, href_prefix, base_href = None):
 	"""
@@ -29,6 +31,8 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 
 		>>> soup = BeautifulSoup('<img src="http://google.com/image.jpg?a=b&c=d"/>')
 		>>> download_images(soup, 'dest_folder', 'local_folder/')
+		True
+		>>> soup
 		<img src="local_folder/image.jpg" />
 	
 		# (make sure the file was downloaded from the correct URL:)
@@ -36,6 +40,7 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 		((u'http://google.com/image.jpg?a=b&c=d', u'dest_folder/image.jpg'), {})
 	"""
 	images = soup.findAll('img',{'src':True})
+	success = True
 	
 	if len(images) > 0:
 		ensure_dir_exists(dest_folder)
@@ -56,8 +61,9 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 			img['src'] = urllib2.quote(href_prefix + filename)
 		except Exception, e:
 			info("Image %s failed to download: %s" % (img['src'], e))
+			success = False
 	
-	return soup
+	return success
 
 
 

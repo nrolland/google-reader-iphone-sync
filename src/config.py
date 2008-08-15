@@ -17,13 +17,12 @@ import app_globals
 required_keys = ['user','password', 'tag_list']
 
 bootstrap_options = ('qvc:s', ['verbose','quiet','config=','show-status'])
-main_options = ("n:CdthT", [
+main_options = ("n:Cdth", [
 		'num-items=',
 		'cautious',
 		'no-download',
 		'test',
 		'help',
-		'template',
 		'user=',
 		'password=',
 		'tag=',
@@ -57,7 +56,6 @@ Usage:
   -q, --quiet            decrease verbosity
   -c, --config=[file]    load config from file (must be in yaml format)
   -d, --no-download      don't download new items, just tell google reader about read items
-  -T, --template         just update the template used in existing downloaded items
   -t, --test             run in test mode. Don't notify google reader of anything, and clobber "test_entries" for output
   -c, --cautious         cautious mode - prompt before performing destructive actions
   --user=[username]      set the username
@@ -91,9 +89,6 @@ Usage:
 			from lib.mock import Mock
 			app_globals.READER = Mock()
 			info("Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir'])
-		elif key == '-T' or key == '--template':
-			app_globals.OPTIONS['template_only'] = True
-			print "Just updating item templates..."
 		elif key == '-h' or key == '--help':
 			print parse_options.__doc__
 			sys.exit(1)

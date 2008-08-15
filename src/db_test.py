@@ -1,6 +1,8 @@
 # the tested module
 from db import *
 from item import Item
+from output import *
+import os
 
 # test helpers
 import test_helper
@@ -16,15 +18,78 @@ def fake_item(**kwargs):
 		'google_id' : 'sample_id',
 		'title' : 'title',
 		'url' : 'http://example.com/post/1',
+		'original_id': 'http://www.exampleblog.com/post/1',
 		'is_read' : False,
 		'is_dirty' : False,
 		'is_starred' : False,
 		'feed_name' : 'feedname',
 		'date' : 'date',
-		'content' : '<h1>content!</h1>'
+		'content' : '<h1>content!</h1>',
+		'had_errors' : False
 		}
 	args.update(kwargs)
 	return OpenStruct(**args)
+
+class VersionDBTest(unittest.TestCase):
+	def setUp(self):
+		self.output_folder = test_helper.init_output_folder()
+		self.db = sqlite.connect(':memory:')
+		assert self.tables() == []
+	
+	def tearDown(self):
+		self.db.close()
+		self.db = None
+		
+	def tables(self):
+		return map(first, self.db.execute('select name from sqlite_master where type = \'table\'').fetchall())
+	
+	def test_migrated_persistance(self):
+		self.db.close()
+		fname = '/tmp/items.sqlite'
+		schema = ['create table items(id TEXT)', 'create table items2(id TEXT)']
+		try:
+			os.remove(fname)
+		except:
+			pass # that's ok...
+		self.db = sqlite.connect(fname)
+		assert VersionDB.migrate(self.db, schema) == 2 # 2 steps applied
+		self.db.close()
+		
+		self.db = sqlite.connect(fname)
+		assert VersionDB.migrate(self.db, schema) == 0
+
+	
+	def test_zero_migration(self):
+		assert VersionDB.migrate(self.db, []) == 0
+		assert self.tables() == ['db_version']
+		assert VersionDB.version(self.db) == 0
+		assert self.tables() == ['db_version']
+
+	def test_zero_up_migration(self):
+		assert VersionDB.migrate(self.db, ['create table items(id TEXT)', 'create table items2(id TEXT)']) == 2 # 2 steps applied
+		assert sorted(self.tables()) == ['db_version', 'items', 'items2']
+		assert VersionDB.version(self.db) == 2
+
+		# make sure it's idempotent
+		assert VersionDB.migrate(self.db, ['create table items(id TEXT)', 'create table items2(id TEXT)']) == 0 # 0 steps applied
+		assert sorted(self.tables()) == ['db_version', 'items', 'items2']
+		assert VersionDB.version(self.db) == 2
+	
+	def test_nonzero_migration(self):
+		schema = ['create table items(id TEXT)']
+		assert VersionDB.migrate(self.db, schema) == 1 # 1 step applied
+		assert sorted(self.tables()) == ['db_version', 'items']
+		assert VersionDB.version(self.db) == 1
+
+		schema.append('create table items2(id TEXT)')
+		assert VersionDB.migrate(self.db, schema) == 1 # 1 more step applied
+		assert sorted(self.tables()) == ['db_version', 'items', 'items2']
+		assert VersionDB.version(self.db) == 2
+	
+	def test_invalid_migration(self):
+		schema = ['create_table items(id TEXT)']
+		self.assertRaises(sqlite.OperationalError, VersionDB.migrate, self.db, ['clearly this is invalid sql'])
+		assert VersionDB.version(self.db) == 0
 
 
 class DBTest(unittest.TestCase):
@@ -33,17 +98,17 @@ class DBTest(unittest.TestCase):
 		self.output_folder = test_helper.init_output_folder()
 
 		# initialise the DB
-		app_globals.DATABASE = self.db = DB()
+		app_globals.DATABASE = self.db = DB('test.sqlite')
 		print "running db reset: %r" % self.db
 		self.db.reset()
-		assert self.db.tables() == ['items']
+		self.assertEqual( sorted(self.db.tables()), ['db_version','items'] )
 		
 	def tearDown(self):
 		self.db.close()
 		rm_rf(self.output_folder)
 	
 	# ------------------------------------------------------------------
-
+	
 	def test_adding_items(self):
 		# add to DB
 		input_item = fake_item()
@@ -65,6 +130,20 @@ class DBTest(unittest.TestCase):
 		assert len(items) == 1
 		item = items[0]
 		assert item.is_read == True
+
+	def test_deleting_an_item(self):
+		a = fake_item(google_id = 'a')
+		b = fake_item(google_id = 'b')
+		self.db.add_item(a)
+		self.db.add_item(b)
+		items = list(self.db.get_items())
+		assert len(items) == 2
+		
+		# now remove it
+		self.db.remove_item(a)
+		items = list(self.db.get_items())
+		assert len(items) == 1
+		assert items[0].google_id == 'b'
 
 	
 	def test_is_read(self):

@@ -10,7 +10,7 @@ import unittest
 import config
 
 def init_output_folder():
-	config.parse_options(['--test','--num-items=3','--verbose'])
+	config.parse_options(['--test','--num-items=3','--verbose','--verbose'])
 
 	output_folder = 'test_entries'
 	assert app_globals.OPTIONS['output_path'] == output_folder

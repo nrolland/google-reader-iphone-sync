@@ -46,30 +46,5 @@ class ItemTest(unittest.TestCase):
 		item = Item(sample_item, 'feed-name')
 		assert item.basename == '20080624110009 Assembly Fail .||tag%3Agoogle.com%2C2005%3Areader%2Fitem%2Fdcb79527f18794d0||'
 	
-	def test_output(self):
-		# setup mocks
-		import template
-		template_mock = template.create = Mock()
-		import process
-		process_mock = process.download_images = Mock()
-		
-		# make the item
-		item = Item(sample_item, 'feed-name')
-		item.save()
-		
-		print len(template_mock.call_args_list)
-		assert len(template_mock.call_args_list) == 1 # called once
-		create_call = template_mock.call_args[0]
-		print repr(create_call)
-		assert create_call[1] == 'template/item.html' # template file
-		assert create_call[2] == 'test_entries/' + item.basename + '.html' # output file
-		template_content = create_call[0]
-		assert template_content == { 'content': sample_item['content'],
-									 'title_html': '<title>Assembly Fail</title>',
-									 'title_link': '<a href="http://feeds.feedburner.com/~r/failblog/~3/318806514/">Assembly Fail</a>',
-									 'via': u'from tag <b>feed-name</b><br /><em>failblog.wordpress.com</em><br /><br />' }
-		
-		assert ('add_item', (item,), {}) in self.mock_db.method_calls
-	
 	def test_read(self):
 		item = Item(sample_item, 'feed-name')

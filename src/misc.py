@@ -1,4 +1,5 @@
 import app_globals
+from output import *
 
 import os, re, sys, shutil, pickle
 
@@ -133,3 +134,19 @@ def load_pickle(filename):
 	obj = pickle.load(f)
 	f.close()
 	return obj
+
+
+def first(l):
+	"""
+	get the first element in a list/tuple, or return the original element if it's not subscriptable
+	>>> first([1,2])
+	1
+	>>> first("bob")
+	'b'
+	>>> first(23)
+	23
+	"""
+	try:
+		return l[0]
+	except TypeError, e:
+		return l
