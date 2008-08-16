@@ -30,6 +30,25 @@ def fake_item(**kwargs):
 	args.update(kwargs)
 	return OpenStruct(**args)
 
+def test_migrated_persistance():
+	# make sure the migrations actually get saved to disk.
+	# You might not think this would be a necessary test, but you'd be surprised...
+	fname = '/tmp/test_items.sqlite'
+	schema = ['create table items(id TEXT)', 'create table items2(id TEXT)']
+	try:
+		os.remove(fname)
+	except:
+		pass # that's ok...
+	db = sqlite.connect(fname)
+	assert VersionDB.migrate(db, schema) == 2 # 2 steps applied
+	db.close()
+	
+	db = sqlite.connect(fname)
+	assert VersionDB.migrate(db, schema) == 0
+	
+	db.close()
+	os.remove(fname)
+
 class VersionDBTest(unittest.TestCase):
 	def setUp(self):
 		self.output_folder = test_helper.init_output_folder()
@@ -42,22 +61,6 @@ class VersionDBTest(unittest.TestCase):
 		
 	def tables(self):
 		return map(first, self.db.execute('select name from sqlite_master where type = \'table\'').fetchall())
-	
-	def test_migrated_persistance(self):
-		self.db.close()
-		fname = '/tmp/items.sqlite'
-		schema = ['create table items(id TEXT)', 'create table items2(id TEXT)']
-		try:
-			os.remove(fname)
-		except:
-			pass # that's ok...
-		self.db = sqlite.connect(fname)
-		assert VersionDB.migrate(self.db, schema) == 2 # 2 steps applied
-		self.db.close()
-		
-		self.db = sqlite.connect(fname)
-		assert VersionDB.migrate(self.db, schema) == 0
-
 	
 	def test_zero_migration(self):
 		assert VersionDB.migrate(self.db, []) == 0
