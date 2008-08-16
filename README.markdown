@@ -1,11 +1,20 @@
 # google-reader-iphone-sync
 
-This is a small command-line tool which allows you to sync your Google
-Reader feed items to your iPhone or iPod Touch for offline reading. It
-handles pre-downloading of images, and includes a lighttpd module for
-viewing and navigating your feed items directly in MobileSafari.
+GRis (Google Reader iPhone Sync) is an RSS feed reader for the iPhone. There are already a few available, but this one features:
 
-## Dependencies:
+* It syncs with Google Reader. So items you read will be marked as read, and you can star items to come back to them later.
+* It saves images in feeds for offline viewing. Surprisingly few iPhone RSS readers do this, which sucks if (like me) you own an iPod Touch, the sans-3G bastard son of an iPhone.
+* It's free
+* ... and it's entirely open source (the best kind of free).
+
+## Using it:
+The best way to install is via my cydia repository at [gfxmonk.sysprosoft.com/cydia/](http://gfxmonk.sysprosoft.com/cydia/)
+
+If you want to install a modified package, you should update the `cydia/control` file so that it won't clash with official versions. Then, run `cap package`. Copy this package file to your iPhone and run `dpkg -i GRiS.deb`
+
+See [saurik's tutorial](http://www.saurik.com/id/7) for instructions on creating your own repository.
+
+## Build Dependencies:
 Since the tool is thrown together with what I had around, its
 dependencies are a bit all over the place:
 
@@ -17,41 +26,11 @@ dependencies are a bit all over the place:
 On your iPhone / iPod Touch, you will need:
 
 * To be jailbroken, for starters.
-* OpenSSH
-* lighttpd
 * python
-
-## Setup:
-
-Open "config_example.yml", fill it in with your details and preferences,
-and save it as "config.yml".
-
-Then run "install.command". You will probably then need to restart your ipod for these settings to take effect.
-
-## Using:
-Run sync.command. This will
-
-* grab any unread items off your iPhone
-* mark items that have been deleted (since your last sync) as "read" on Google Reader
-* fetch unread entries on Google Reader (the max number of items to fetch is changeable in config.yml)
-* push them out to your iPhone, ready for reading on-the-go
-
-To read your items, go to the following address (on your iPhone)
-http://127.0.0.1/RSS/
-(or the appropriate path, if you change `iphone\_destination\_path` in config.yml)
-
-To mark an item as read on google reader, you just delete the file from your iPhone.
-Google reader will be updated when you next run the sync command.
-
-_**power users**: you can run subsets of tasks (like just pushing or pulling items to/from your iPhone,_
-_as well as syncing to google-reader without downloading any new items._
-_Run `cap -T` from the base directory to see what's available._
-
+* OpenSSH (to transfer a modified program)
 
 ## Thanks:
 
 * [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/)
 * [pyrfeed](http://code.google.com/p/pyrfeed/)
-* [lighttpd](http://www.lighttpd.net/)
-* [dirlist](http://modmyifone.com/forums/native-iphone-ipod-touch-app-launches/52021-pdf-chm-doc-xls-photo-viewer-all-one-safari-lighttpd-based-complete-instruct.html)
 
