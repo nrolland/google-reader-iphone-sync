@@ -114,22 +114,42 @@ task :package do
 end
 
 build_dir = "GRiS.pkg-build"
-task :do_package do
-	app = "GRiS"
-	app_dir = "#{build_dir}/#{app}"
+app = "GRiS"
+app_dir = "#{build_dir}/#{app}"
 
-	local "rm -rf #{app_dir}"
-	local "mkdir -p #{app_dir}"
-	local "mkdir -p #{app_dir}/Applications"
-	local "mkdir -p #{app_dir}/var/mobile/GRiS"
-	local "mkdir -p #{app_dir}/DEBIAN"
-	
+task :build_repository do
+	if config['deb_dest']
+		dest = config['deb_dest']
+		local "cp '#{build_dir}/#{app}.deb' '#{dest}'"
+		local "cd '#{dest}' && dpkg-scanpackages . /dev/null | sed -e's/^name/Name/' -e's/^author/Author/' -e's/^homepage/Homepage/' > Packages"
+		
+		local "cd '#{dest}' && gzip -c Packages > Packages.gz"
+		puts "Package file: #{dest}/Packages.gz"
+		puts "DEB file:     #{dest}/#{app}.deb"
+		puts "all files:\n '#{dest}/Packages.gz' '#{dest}/Packages' '#{dest}/#{app}.deb'"
+	else
+		puts "set deb_dest in config.yml to generate a package file automatically"
+		puts "DEB file:     #{build_dir}/#{app}.deb"
+	end
+end
+
+task :code_sign do
 	# sign the code
 	# (man, this is hacky...)
 	local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app/GRiS #{$ipod_user}@#{$ipod_server}:/tmp"
 	run "ldid -S /tmp/GRiS"
 	local "rsync #{$rsync_opts} #{$ipod_user}@#{$ipod_server}:/tmp/GRiS iphone-native/build/Release-iphoneos/GRiS.app/"
 	run "rm /tmp/GRiS"
+end
+
+task :do_package do
+	local "rm -rf #{app_dir}"
+	local "mkdir -p #{app_dir}"
+	local "mkdir -p #{app_dir}/Applications"
+	local "mkdir -p #{app_dir}/var/mobile/GRiS"
+	local "mkdir -p #{app_dir}/DEBIAN"
+
+	code_sign
 
 	# file heirarchy
 	local "cp -r iphone-native/build/Release-iphoneos/GRiS.app #{app_dir}/Applications/"
@@ -143,19 +163,8 @@ task :do_package do
 	local "cd #{build_dir} && dpkg-deb -b #{app}"
 
 	puts "-"*50
-	
-	if config['deb_dest']
-		dest = config['deb_dest']
-		local "cp '#{build_dir}/#{app}.deb' '#{dest}'"
-		local "cd '#{dest}' && dpkg-scanpackages . /dev/null > Packages"
-		local "cd '#{dest}' && gzip -c Packages > Packages.gz"
-		puts "Package file: #{dest}/Packages.gz"
-		puts "DEB file:     #{dest}/#{app}.deb"
-		puts "all files:\n '#{dest}/Packages.gz' '#{dest}/Packages' '#{dest}/#{app}.deb'"
-	else
-		puts "set deb_dest in config.yml to generate a package file automatically"
-		puts "DEB file:     #{build_dir}/#{app}.deb"
-	end
+	build_repository
+
 end
 
 task :clean do
