@@ -44,12 +44,16 @@
 	// now swap out the views
 	[syncStatusView setHidden:NO];
 	[window addSubview: syncStatusView];
+	[syncStatusView setAlpha: 1.0];
 	[syncStatusView setFrame: [window frame]];
 	[status_currentTask setText: @"Loading..."];
 	[status_mainProgress setProgress: 0.0];
 	[status_taskProgress setProgress: 0.0];
 	[status_taskProgress setHidden:NO];
 	[status_mainProgress setHidden:NO];
+	
+	// animate!
+	[syncStatusView animateFadeIn];
 
 	// ..and go!
 	[syncThread start];
@@ -65,10 +69,13 @@
 	[cancelButton setHidden:YES];
 }
 
-- (IBAction) hideSyncView: (id)sender {
+- (void) syncViewIsGone{
 	[syncStatusView setHidden:YES];
 	[syncStatusView removeFromSuperview];
-	
+}
+
+- (IBAction) hideSyncView: (id)sender {
+	[syncStatusView animateFadeOutThenTell:self withSelector:@selector(syncViewIsGone)];
 	[db reload];
 	[itemsController refresh:self];
 }

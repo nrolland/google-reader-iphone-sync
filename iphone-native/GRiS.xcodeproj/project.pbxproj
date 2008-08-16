@@ -12,6 +12,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		222CA6C60E568C0300146D8E /* StripedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6C50E568C0300146D8E /* StripedView.m */; };
+		222CA7150E56B0A900146D8E /* TCViewExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 222CA7140E56B0A900146D8E /* TCViewExtensions.m */; };
 		22425F350E43F02D00252E7A /* ItemsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22425F340E43F02D00252E7A /* ItemsListController.m */; };
 		22425F970E44098700252E7A /* emblem_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F940E44098700252E7A /* emblem_read.png */; };
 		22425F980E44098700252E7A /* emblem_read_and_starred.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F950E44098700252E7A /* emblem_read_and_starred.png */; };
@@ -78,6 +79,8 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		222CA6C40E568C0300146D8E /* StripedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StripedView.h; sourceTree = "<group>"; };
 		222CA6C50E568C0300146D8E /* StripedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StripedView.m; sourceTree = "<group>"; };
+		222CA7130E56B0A900146D8E /* TCViewExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCViewExtensions.h; path = ../TCViewExtensions.h; sourceTree = "<group>"; };
+		222CA7140E56B0A900146D8E /* TCViewExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCViewExtensions.m; path = ../TCViewExtensions.m; sourceTree = "<group>"; };
 		22425F330E43F02D00252E7A /* ItemsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemsListController.h; sourceTree = "<group>"; };
 		22425F340E43F02D00252E7A /* ItemsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemsListController.m; sourceTree = "<group>"; };
 		22425F940E44098700252E7A /* emblem_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_read.png; path = button_images/emblem_read.png; sourceTree = "<group>"; };
@@ -162,6 +165,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				222CA7130E56B0A900146D8E /* TCViewExtensions.h */,
+				222CA7140E56B0A900146D8E /* TCViewExtensions.m */,
 				22DB0D460E45C8BE008CD8C7 /* ApplicationSettings.h */,
 				22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */,
 				22DB0D480E45C8BE008CD8C7 /* BackgroundShell.h */,
@@ -393,6 +398,7 @@
 				22DB0D4A0E45C8BE008CD8C7 /* ApplicationSettings.m in Sources */,
 				22DB0D4B0E45C8BE008CD8C7 /* BackgroundShell.m in Sources */,
 				222CA6C60E568C0300146D8E /* StripedView.m in Sources */,
+				222CA7150E56B0A900146D8E /* TCViewExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

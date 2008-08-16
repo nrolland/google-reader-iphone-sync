@@ -26,17 +26,22 @@
 	if(!optionsAreVisible) {
 		[showHideOptionsButton setTitle:@"Done"];
 		[optionsView setHidden:NO];
+		[optionsView animateFadeIn];
 		optionsAreVisible = YES;
 		didShow = YES;
 	}
 	return didShow;
 }
 
+- (BOOL) optionsDidFadeOut {
+	[optionsView setHidden:YES];
+}
+
 - (BOOL) hideOptions {
 	BOOL didHide = NO;
 	if(optionsAreVisible) {
 		[showHideOptionsButton setTitle:@"Options"];
-		[optionsView setHidden:YES];
+		[optionsView animateFadeOutThenTell:self withSelector:@selector(optionsDidFadeOut)];
 		optionsAreVisible = NO;
 		[self refresh: self];
 		didHide = YES;
