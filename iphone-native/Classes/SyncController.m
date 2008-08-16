@@ -42,7 +42,6 @@
 	[cancelButton setHidden:YES];
 	[okButton setHidden:YES];
 	// now swap out the views
-	[notSyncingView setHidden:YES];
 	[syncStatusView setHidden:NO];
 	[window addSubview: syncStatusView];
 	[syncStatusView setFrame: [window frame]];
@@ -67,7 +66,6 @@
 }
 
 - (IBAction) hideSyncView: (id)sender {
-	[notSyncingView setHidden:NO];
 	[syncStatusView setHidden:YES];
 	[syncStatusView removeFromSuperview];
 	

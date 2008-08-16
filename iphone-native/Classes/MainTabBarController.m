@@ -12,6 +12,18 @@
 	[itemList redraw];
 }
 
+-(BOOL) itemListIsActive{
+	return [self selectedIndex] == 0;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+	if([self itemListIsActive]) {
+		return YES;
+	}
+	return interfaceOrientation == UIInterfaceOrientationPortrait;
+}
+
 - (void) deactivate {
 	dbg(@"%@ deactivating", self);
 	[[self view] removeFromSuperview];

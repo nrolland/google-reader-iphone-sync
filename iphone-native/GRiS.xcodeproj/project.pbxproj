@@ -11,6 +11,7 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		222CA6C60E568C0300146D8E /* StripedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6C50E568C0300146D8E /* StripedView.m */; };
 		22425F350E43F02D00252E7A /* ItemsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22425F340E43F02D00252E7A /* ItemsListController.m */; };
 		22425F970E44098700252E7A /* emblem_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F940E44098700252E7A /* emblem_read.png */; };
 		22425F980E44098700252E7A /* emblem_read_and_starred.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F950E44098700252E7A /* emblem_read_and_starred.png */; };
@@ -75,6 +76,8 @@
 		1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feeds2AppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* GRiS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GRiS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		222CA6C40E568C0300146D8E /* StripedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StripedView.h; sourceTree = "<group>"; };
+		222CA6C50E568C0300146D8E /* StripedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StripedView.m; sourceTree = "<group>"; };
 		22425F330E43F02D00252E7A /* ItemsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemsListController.h; sourceTree = "<group>"; };
 		22425F340E43F02D00252E7A /* ItemsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemsListController.m; sourceTree = "<group>"; };
 		22425F940E44098700252E7A /* emblem_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_read.png; path = button_images/emblem_read.png; sourceTree = "<group>"; };
@@ -187,6 +190,8 @@
 				1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */,
 				22DF94CF0E3ABEE20052AAAB /* tcItemDB.h */,
 				22DF94D00E3ABEE20052AAAB /* tcItemDB.m */,
+				222CA6C40E568C0300146D8E /* StripedView.h */,
+				222CA6C50E568C0300146D8E /* StripedView.m */,
 				225D84990E43376A00BFE7D1 /* MainTabBarController.h */,
 				225D849A0E43376A00BFE7D1 /* MainTabBarController.m */,
 			);
@@ -387,6 +392,7 @@
 				22425F350E43F02D00252E7A /* ItemsListController.m in Sources */,
 				22DB0D4A0E45C8BE008CD8C7 /* ApplicationSettings.m in Sources */,
 				22DB0D4B0E45C8BE008CD8C7 /* BackgroundShell.m in Sources */,
+				222CA6C60E568C0300146D8E /* StripedView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
