@@ -3,6 +3,7 @@
 config.yml
 *.app
 *.sqlite
+GRiS.pkg-build
 iphone-native/GRiS.xcodeproj/*.mode1v3
 iphone-native/GRiS.xcodeproj/*.pbxuser
 iphone-native/GRiS.xcodeproj/*.tm_build_errors

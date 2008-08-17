@@ -206,7 +206,7 @@ class DB:
 		for item in self.get_items('is_read = 1'):
 			debug('deleting item \"%s\"' % item.title)
 			item.delete()
-		danger("about to delete items from db")
+		danger("about to delete %s read items from db" % self.get_item_count('is_read = 1'))
 		self.sql('delete from items where is_read = 1')
 	
 	def cleanup_resources_directory(self):
