@@ -122,6 +122,12 @@ class DB:
 	def remove_item(self, item):
 		google_id = item.google_id
 		self.sql("delete from items where google_id = ?", (google_id,))
+	
+	def delete_items_older_than(self, item):
+		item_count = self.get_item_count('date < ?', (item.date,))
+		debug("Deleting %s items from the database" % item_count)
+		danger("Delete %s items from the database" % item_count)
+		self.sql('delete from items where date < ?', (item.date,))
 
 	def update_item(self, item):
 		self.sql("update items set is_read=?, is_starred=?, is_dirty=? where google_id=?",

@@ -37,7 +37,7 @@ def execute():
 	"""
 	Logs in, syncs and downloads new items
 	"""
-	status("TASK_TOTAL",4)
+	status("TASK_TOTAL",5)
 	status("TASK_PROGRESS", 0, "Authorizing")
 	
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
@@ -50,17 +50,19 @@ def execute():
 	line()
 	app_globals.DATABASE = DB()
 	app_globals.DATABASE.sync_to_google()
-	app_globals.DATABASE.cleanup() # remove old _resources files
 	
 	if app_globals.OPTIONS['no_download']:
 		info("not downloading any new items...")
 	else:
 		status("TASK_PROGRESS", 2, "Downloading new items")
 		download_new_items()
+
+	status("TASK_PROGRESS", 3, "Cleaning up old resources")
+	app_globals.DATABASE.cleanup() # remove old _resources files
 	app_globals.DATABASE.close()
 
 def retry_failed_items():
-	status("TASK_PROGRESS", 3, "Re-trying failed feeds")
+	status("TASK_PROGRESS", 4, "Re-trying failed feeds")
 	for item in app_globals.DATABASE.get_items_that_had_errors():
 		info("trying to re-download images for item: %s" % (item['title'],))
 		item.download_images()
@@ -72,66 +74,68 @@ def download_new_items():
 	"""
 	item_number = 0
 	feed_number = 0
-	status("SUBTASK_TOTAL", len(app_globals.OPTIONS['tag_list']) * app_globals.OPTIONS['num_items'] * 2)
+	status("SUBTASK_TOTAL", len(app_globals.OPTIONS['tag_list']) * app_globals.OPTIONS['num_items'])
 	for feed_tag in app_globals.OPTIONS['tag_list']:
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], feed_tag))
-		feed_unread_items = app_globals.READER.get_feed(None,
+
+		feed = app_globals.READER.get_feed(None,
 			CONST.ATOM_PREFIXE_LABEL + feed_tag,
 			count = app_globals.OPTIONS['num_items'],
 			exclude_target = CONST.ATOM_STATE_READ,	# get only unread items
 			order = CONST.ORDER_REVERSE)			# oldest first
 
-		feed_read_items = app_globals.READER.get_feed(None,
-			CONST.ATOM_PREFIXE_LABEL + feed_tag,
-			count = app_globals.OPTIONS['num_items'],
-			exclude_target = CONST.ATOM_STATE_UNREAD,	# get only read items
-			order = CONST.ORDER_REVERSE)				# newest first
+		item_number = feed_number * app_globals.OPTIONS['num_items']
+		status("SUBTASK_PROGRESS", item_number)
+		feed_number += 1
+		
+		first_item = True
 
-		for feed in [feed_read_items, feed_unread_items]:
-			item_number = feed_number * app_globals.OPTIONS['num_items']
+		for entry in feed.get_entries():
+			item_number += 1
 			status("SUBTASK_PROGRESS", item_number)
-			feed_number += 1
-
-			for entry in feed.get_entries():
-				item_number += 1
-				status("SUBTASK_PROGRESS", item_number)
+		
+			debug(" -- %s -- " % app_globals.STATS['items'])
+			app_globals.STATS['items'] += 1
+	
+			if entry is None:
+				app_globals.STATS['failed'] += 1
+				puts(" ** FAILED **")
+				debug("(entry is None)")
+				continue
 			
-				debug(" -- %s -- " % app_globals.STATS['items'])
-				app_globals.STATS['items'] += 1
-		
-				if entry is None:
-					app_globals.STATS['failed'] += 1
-					puts(" ** FAILED **")
-					debug("(entry is None)")
-					continue
-		
-				debug_verbose(entry.__repr__())
-		
-				item = Item(entry, feed_tag)
-				state = app_globals.DATABASE.is_read(item.google_id)
-				name = item.basename
-		
-				if state is None:
-					if not item.is_read:
-						try:
-							puts("NEW: " + item.title)
-							danger("About to output item")
-							item.process()
-							item.save()
-							app_globals.STATS['new'] += 1
-						except Exception,e:
-							puts(" ** FAILED **: " + str(e))
-							log_error("Failed processing item: %s" % repr(item), e)
-							if in_debug_mode():
-								raise
-							app_globals.STATS['failed'] += 1
-				else:
-					if state == True or item.is_read:
-						# item has been read either online or offline
-						pus("READ: " + name)
-						app_globals.STATS['read'] += 1
-						danger("About to delete item")
-						item.delete()
+			debug_verbose(entry.__repr__())
+	
+			item = Item(entry, feed_tag)
+			
+			if first_item:
+				info("Deleting items older than %s" % (item.date,))
+				app_globals.DATABASE.delete_items_older_than(item)
+				first_item = False
+			
+			state = app_globals.DATABASE.is_read(item.google_id)
+			name = item.basename
+	
+			if state is None:
+				if not item.is_read:
+					try:
+						puts("NEW: " + item.title)
+						danger("About to output item")
+						item.process()
+						item.save()
+						app_globals.STATS['new'] += 1
+					except Exception,e:
+						puts(" ** FAILED **: " + str(e))
+						log_error("Failed processing item: %s" % repr(item), e)
+						if in_debug_mode():
+							raise
+						app_globals.STATS['failed'] += 1
+			else:
+				if state == True or item.is_read:
+					# item has been read either online or offline
+					pus("READ: " + name)
+					app_globals.STATS['read'] += 1
+					danger("About to delete item")
+					item.delete()
 		
 		line()
 	
