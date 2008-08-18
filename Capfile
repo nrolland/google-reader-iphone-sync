@@ -156,11 +156,11 @@ task :do_package do
 	local "cp -r template #{app_dir}/var/mobile/GRiS/"
 	local "cp -r src #{app_dir}/var/mobile/GRiS/"
 
-	# control file
-	local "cp -r cydia/control #{build_dir}/#{app}/DEBIAN/"
+	# control file, install scripts
+	local "cp -r cydia/* #{build_dir}/#{app}/DEBIAN/"
 	
 	# package it up
-	local "cd #{build_dir} && dpkg-deb -b #{app}"
+	local "cd #{build_dir} && export COPY_EXTENDED_ATTRIBUTES_DISABLE=1 && dpkg-deb -b #{app}"
 
 	puts "-"*50
 	build_repository
