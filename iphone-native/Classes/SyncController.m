@@ -36,12 +36,12 @@
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
-	// visuals
+	// set up the views
 	[spinner setAnimating:YES];
 	[spinner setHidden:NO];
 	[cancelButton setHidden:YES];
 	[okButton setHidden:YES];
-	// now swap out the views
+
 	[syncStatusView setHidden:NO];
 	[window addSubview: syncStatusView];
 	[syncStatusView setAlpha: 1.0];
@@ -54,7 +54,11 @@
 	
 	// animate!
 	[syncStatusView animateFadeIn];
-
+	
+	// reset output
+	[last_output_line release];
+	last_output_line = nil;
+	
 	// ..and go!
 	[syncThread start];
 }
@@ -65,6 +69,7 @@
 		return;
 	}
 	NSLog(@"cancelling thread...");
+	last_output_line = @"Cancelled."
 	[syncThread cancel];
 	[cancelButton setHidden:YES];
 }
@@ -94,11 +99,10 @@
 - (void) backgroundShell:(id)shell didFinishWithSuccess:(BOOL) success {
 	if(!success) {
 		dbg(@"failed...");
-		[status_currentTask setText:@"Sync aborted"];
 	} else {
 		dbg(@"sync completed successfully");
-		[status_currentTask setText:@"Sync complete"];
 	}
+	[status_currentTask setText:last_output_line];
 	[syncThread release];
 	syncThread = nil;
 	[self showSyncFinished];
@@ -137,6 +141,10 @@
 				dbg(@"error occurred:\n%@", e);
 			}
 		}
+	} else {
+		[last_output_line release];
+		last_output_line = [line retain];
+		dbg(@"last output line: %@", last_output_line);
 	}
 }
 

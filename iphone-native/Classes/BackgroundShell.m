@@ -165,7 +165,6 @@ static FILE * my_popen (char * command, const char * type, pid * tid){
 		close(p[0]); /* close since we dup()'ed what we needed */
 		close(p[1]);
 		system(command);
-		printf("exiting...");
 		_exit(0);
 	} else {		   /* we're having major problems... */
 		close(p[0]);

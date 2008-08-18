@@ -22,6 +22,7 @@
 	
 	int totalTasks;
 	int totalStepsInCurrentTask;
+	NSString * last_output_line;
 }
 - (IBAction) sync: (id) sender;
 - (IBAction) cancelSync: (id) sender;

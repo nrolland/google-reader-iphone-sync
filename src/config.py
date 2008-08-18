@@ -151,3 +151,8 @@ def check():
 		if not k in app_globals.OPTIONS:
 			print repr(app_globals.OPTIONS)
 			raise Exception("Required setting \"%s\" is not set." % (k,))
+	try:
+		if len(app_globals.OPTIONS['tag_list']) == 0:
+			raise Exception()
+	except:
+		print "No tags to download"
