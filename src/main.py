@@ -28,7 +28,10 @@ def reader_login():
 		app_globals.OPTIONS['user'],
 		app_globals.OPTIONS['password'])
 	
-	if not app_globals.READER.login():
+	try:
+		if not app_globals.READER.login():
+			raise Exception("Login failed")
+	except:
 		raise Exception("Login failed")
 
 
@@ -44,6 +47,7 @@ def execute():
 	ensure_dir_exists(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['resources_path'])
 
 	reader_login()
+	check_for_valid_tags()
 
 	status("TASK_PROGRESS", 1, "Syncing to google")
 
@@ -67,6 +71,17 @@ def retry_failed_items():
 		info("trying to re-download images for item: %s" % (item['title'],))
 		item.download_images()
 		item.save()
+
+def check_for_valid_tags():
+	"""
+	Raise an error if any tag (in config) does not exist in your google account
+	"""
+	user_tags = app_globals.OPTIONS['tag_list']
+	google_tags = app_globals.READER.get_tag_list()['tags']
+	google_tags = [tag['id'].split('/')[-1] for tag in google_tags]
+	for utag in user_tags:
+		if utag not in google_tags:
+			raise Exception("No such tag: %s" % (utag,))
 
 def download_new_items():
 	"""
@@ -145,16 +160,18 @@ def download_new_items():
 		puts("%s items failed to parse" % app_globals.STATS['failed'])
 
 
-def main():
-	"""
-	Main program entry point - loads config, parses otions and kicks off the sync process
-	"""
+def setup():
 	config.bootstrap()
 	config.load()
 	config.parse_options()
 	log_start()
 	config.check()
-	
+
+def main():
+	"""
+	Main program entry point - loads config, parses otions and kicks off the sync process
+	"""
+	setup()
 	execute()
 	puts("Sync complete.")
 	log_end()

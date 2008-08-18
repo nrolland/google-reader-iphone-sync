@@ -69,7 +69,7 @@
 		return;
 	}
 	NSLog(@"cancelling thread...");
-	last_output_line = @"Cancelled."
+	last_output_line = @"Cancelled.";
 	[syncThread cancel];
 	[cancelButton setHidden:YES];
 }
