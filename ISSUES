@@ -1,0 +1,15 @@
+(listed roughly in order of priority)
+
+==== BUGS ====
+>> Spaces don't work in tags
+   Check escaping when we run the background shell task.
+
+>> Import error - "glob" module not found.
+   No idea why this could be.
+
+==== IMPROVEMENTS ====
+
+>> A proper tags picker in the "feeds" tab.
+>> allow an "all items" pseudo-tag
+>> Multi-level picker (drill-down via tag). This would probably be in a seperate tab from the "all items" tab, for simplicity.
+>> Orientation. It's wiggidy-whack. But this might not be easy to fix, as the API is quite limited
