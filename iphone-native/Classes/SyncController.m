@@ -144,7 +144,6 @@
 	} else {
 		[last_output_line release];
 		last_output_line = [line retain];
-		dbg(@"last output line: %@", last_output_line);
 	}
 }
 
