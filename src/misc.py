@@ -108,6 +108,7 @@ def write_file_lines(filename, content):
 	f.close()
 
 def touch_file(name):
+	ensure_dir_exists(os.path.dirname(name))
 	write_file(name, '\n')
 	
 def save_pickle(obj, filename):

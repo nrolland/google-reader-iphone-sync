@@ -10,9 +10,9 @@ import unittest
 import config
 
 def init_output_folder():
-	config.parse_options(['--test','--num-items=3','--verbose','--verbose'])
-
 	output_folder = '/tmp/GRiS/test_entries'
+	config.parse_options(['--test','--num-items=3','--verbose','--verbose', '--output-path=%s' % output_folder])
+
 	assert app_globals.OPTIONS['output_path'] == output_folder
 	assert type(app_globals.READER) == Mock
 

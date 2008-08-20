@@ -102,7 +102,7 @@ Usage:
 		elif key == '--user':
 			set_opt('user', val);
 		elif key == '--password':
-			set_opt('password',val);
+			set_opt('password',val, disguise = True);
 		elif key == '--output-path':
 			set_opt('output_path',val)
 		elif key == '--tag':
@@ -117,15 +117,9 @@ Usage:
 		app_globals.OPTIONS['num_items'] = argv[0]
 		info("Number of items set to %s" % app_globals.OPTIONS['num_items'])
 
-	if app_globals.OPTIONS['test']:
-		app_globals.OPTIONS['output_path'] = app_globals.CONFIG['test_output_dir']
-		try_shell('rm -rf \'%s\'' % app_globals.CONFIG['test_output_dir'])
-		try_shell('mkdir -p \'%s\'' % app_globals.CONFIG['test_output_dir'])
-
-
-def set_opt(key, val):
+def set_opt(key, val, disguise = False):
 	app_globals.OPTIONS[key] = val
-	debug("set option %s = %s" % (key, val))
+	debug("set option %s = %s" % (key, val if disguise is False else "*****"))
 
 def load(filename = None):
 	"""

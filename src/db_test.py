@@ -104,6 +104,7 @@ class DBTest(unittest.TestCase):
 		self.output_folder = test_helper.init_output_folder()
 
 		# initialise the DB
+		touch_file(self.output_folder + '/test.sqlite')
 		app_globals.DATABASE = self.db = DB('test.sqlite')
 		print "running db reset: %r" % self.db
 		self.db.reset()
