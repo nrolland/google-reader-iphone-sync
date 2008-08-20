@@ -73,7 +73,7 @@ static FILE * my_popen (char * command, const char * type, pid * tid);
 		NSLog(@"command is nil. did you try to run it twice?");
 		return NULL;
 	}
-	NSLog(@"running command: %@", command);
+	NSLog(@"BGShell: running command.");
 	proc = my_popen([command cStringUsingEncoding:NSASCIIStringEncoding],"r", &shellPid);
 	[command release];
 	command = nil;
