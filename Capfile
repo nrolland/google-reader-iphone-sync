@@ -18,7 +18,7 @@ $mac_server = `hostname`.chomp!
 $ipod_path = "/var/mobile/GRiS/"
 
 ipod_ip = ENV['ip']
-ipod_ip = "192.168.1.#{ipod_ip}" + ipod_ip if ipod_ip =~ /^[0-9]+$/ # shortcut
+ipod_ip = "192.168.1.#{ipod_ip}" if ipod_ip =~ /^[0-9]+$/ # shortcut
 puts "IP = #{ipod_ip.inspect}"
 puts "HOSNTAME = #{config['iphone_hostname'].inspect}"
 puts "SERVER = #{$ipod_server.inspect}"
