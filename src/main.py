@@ -81,6 +81,7 @@ def check_for_valid_tags():
 	google_tags = [tag['id'].split('/')[-1] for tag in google_tags]
 	for utag in user_tags:
 		if utag not in google_tags:
+			print "Valid tags are: %s" %(google_tags,)
 			raise Exception("No such tag: %s" % (utag,))
 
 def get_feed_from_tag(feed_tag):
@@ -176,10 +177,12 @@ def download_new_items():
 		puts("%s items failed to parse" % app_globals.STATS['failed'])
 
 
-def setup():
-	config.bootstrap()
+def setup(opts=None):
+	if opts is None:
+		opts = sys.argv[1:]
+	config.bootstrap(opts)
 	config.load()
-	config.parse_options()
+	config.parse_options(opts)
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	log_start()
 	config.check()

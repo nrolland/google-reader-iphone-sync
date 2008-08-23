@@ -99,14 +99,15 @@ class GoogleReader(object) :
 		""" 'get_feed' returns a GoogleFeed, giving either an 'url' or a 'feed' internal name.
 			other arguments may be any keys of CONST.ATOM_ARGS keys
 			"""
-		if feed == None :
-			feed = CONST.ATOM_STATE_READING_LIST
-		else:
-			feed = urllib.quote_plus(feed)
 		if url != None :
-			feed = CONST.ATOM_GET_FEED + urllib.quote_plus(url)
-
-		feedurl = CONST.URI_PREFIXE_ATOM + feed
+			feedurl = CONST.ATOM_GET_FEED + urllib.quote_plus(url)
+		if feed == None :
+			feedurl = CONST.ATOM_STATE_READING_LIST
+		else:
+			feedurl = urllib.quote(feed)
+		
+		feedurl = CONST.URI_PREFIXE_ATOM + feedurl
+		
 		urlargs = {}
 		kwargs['client'] = CONST.AGENT
 		kwargs['timestamp'] = self.get_timestamp()
