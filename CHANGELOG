@@ -1,3 +1,8 @@
+0.1.5:
+	- Added save/restore of currently viewed item
+	  (to persist the currently viewed item across sessions)
+	- "Email this item" button now works
+
 0.1.4:
 	- Fixed bug preventing sync of tags with spaces in them
 	- Sync "all items" when tags list is empty
