@@ -1,3 +1,9 @@
 #!/bin/sh
 
+if [ -d '/var/mobile/GRiS.bak' ]; then
+	if [ ! -d '/var/mobile/GRiS' ]; then
+		cp -R /var/mobile/GRiS.bak /var/mobile/GRiS || exit 1
+	fi
+	rm -rf /var/mobile/GRiS.bak
+fi
 chown -R mobile.mobile /var/mobile/GRiS

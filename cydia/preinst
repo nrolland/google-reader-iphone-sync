@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ -d '/var/mobile/GRiS' ]; then
+	cp -R /var/mobile/GRiS /var/mobile/GRiS.bak
+fi
