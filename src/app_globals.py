@@ -23,6 +23,7 @@ OPTIONS = {
 	'flush_output':  False,
 	'verbosity':     output.lvl_default,
 	'show_status':   False,
+	'tag_list':      [],
 }
 
 STATS = {

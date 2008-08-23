@@ -14,7 +14,7 @@ from output import *
 import app_globals
 
 
-required_keys = ['user','password', 'tag_list']
+required_keys = ['user','password']
 
 bootstrap_options = ('qvc:s', ['verbose','quiet','config=','show-status'])
 main_options = ("n:Cdth", [
@@ -145,8 +145,3 @@ def check():
 		if not k in app_globals.OPTIONS:
 			print repr(app_globals.OPTIONS)
 			raise Exception("Required setting \"%s\" is not set." % (k,))
-	try:
-		if len(app_globals.OPTIONS['tag_list']) == 0:
-			raise Exception()
-	except:
-		print "No tags to download"

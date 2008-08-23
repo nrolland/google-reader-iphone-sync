@@ -20,12 +20,6 @@
 			[tag_string appendFormat: @" --tag='%@'", [tag stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"]];
 		}
 	}
-	if([tag_string length] == 0){
-		NSLog(@"no feeds! aborting...");
-		[self showSyncFinished];
-		return;
-	}
-			
 	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --show-status --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
 		[[settings docsPath] stringByAppendingPathComponent:@"src/main.py"],
 		[settings docsPath],

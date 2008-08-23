@@ -84,15 +84,17 @@ def check_for_valid_tags():
 			raise Exception("No such tag: %s" % (utag,))
 
 def get_feed_from_tag(feed_tag):
+	if feed_tag is not None:
+		feed_tag = CONST.ATOM_PREFIXE_LABEL + feed_tag
+	
 	return app_globals.READER.get_feed(None,
-		CONST.ATOM_PREFIXE_LABEL + feed_tag,
+		feed_tag,
 		count = app_globals.OPTIONS['num_items'],
 		exclude_target = CONST.ATOM_STATE_READ,	# get only unread items
 		order = CONST.ORDER_REVERSE)			# oldest first
-			
 
 first_item = True
-def download_feed(feed, feed_number=0):
+def download_feed(feed, feed_tag, feed_number=0):
 	global first_item
 	item_number = feed_number * app_globals.OPTIONS['num_items']
 	status("SUBTASK_PROGRESS", item_number)
@@ -149,20 +151,21 @@ def download_new_items():
 	Downloads new items from google reader across all feeds
 	"""
 	feed_number = 0
-	status("SUBTASK_TOTAL", len(app_globals.OPTIONS['tag_list']) * app_globals.OPTIONS['num_items'])
+	tag_list = app_globals.OPTIONS['tag_list']
 
 	# special case: no tags specified so we download the global set
-	if len(app_globals.OPTIONS['tag_list']) == 0:
-		puts("Fetching maximum %s items from [all items]" % (app_globals.OPTIONS['num_items'],))
-		feed = None ## TODO!
-		download_feed(feed)
+	if len(tag_list) == 0:
+		tag_list = [None]
 	
-	for feed_tag in app_globals.OPTIONS['tag_list']:
+	status("SUBTASK_TOTAL", len(tag_list) * app_globals.OPTIONS['num_items'])
+
+	
+	for feed_tag in tag_list:
 		line()
-		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], feed_tag))
-		
+		_feed_tag = "[all items]" if feed_tag is None else feed_tag
+		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], _feed_tag))
 		feed = get_feed_from_tag(feed_tag)
-		download_feed(feed, feed_number)
+		download_feed(feed, _feed_tag, feed_number)
 		feed_number += 1
 		
 	line()
@@ -177,6 +180,7 @@ def setup():
 	config.bootstrap()
 	config.load()
 	config.parse_options()
+	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	log_start()
 	config.check()
 
