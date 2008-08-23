@@ -60,4 +60,27 @@
 	[self redraw];
 }
 
+- (IBAction) markAllItemsAsRead:   (id) sender { [self markAllItemsWithReadState: YES]; }
+- (IBAction) markAllItemsAsUnread: (id) sender { [self markAllItemsWithReadState: NO];  }
+
+- (void) markAllItemsWithReadState: (BOOL) read {
+	alertWasForMarkingAsRead = read;
+	markAsReadAlert = [[UIAlertView alloc]
+		initWithTitle: [NSString stringWithFormat: @"Mark as %@",read ? @"read":@"unread"]
+		message: [NSString stringWithFormat:@"Do you really want to mark ALL items as %@?", read ? @"read":@"unread"]
+		delegate: self
+		cancelButtonTitle: @"Cancel"
+		otherButtonTitles: @"OK", nil];
+	[markAsReadAlert show];
+}
+
+- (void) alertView:(id)view clickedButtonAtIndex:(NSInteger) index {
+	dbg(@"answer: %d", index);
+	if(index == 1 && view == markAsReadAlert) {
+		[dataSource setAllItemsReadState: alertWasForMarkingAsRead];
+		[dataSource reloadItems];
+		[self hideOptions];
+	}
+}
+
 @end

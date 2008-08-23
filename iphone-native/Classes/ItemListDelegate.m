@@ -121,6 +121,10 @@
 	itemSet = [newItemSet retain];
 }
 
+- (void) setAllItemsReadState: (BOOL) readState {
+	[db setAllItemsReadState: readState];
+}
+
 - (id) itemSet {
 	// ensure it exists
 	if(itemSet == nil) {

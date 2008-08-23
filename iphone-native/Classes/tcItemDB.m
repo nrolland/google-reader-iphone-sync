@@ -122,6 +122,11 @@
 	return [self itemFromResultSet: [db executeQuery: @"select * from items where google_id = ?", google_id]];
 }
 
+- (void) setAllItemsReadState: (BOOL) readState {
+	dbg(@"DB: marking all items as %s", read ? "read" : "unread");
+	[db executeUpdate: @"update items set is_read=?", [NSNumber numberWithBool: readState]];
+	if_error [NSException raise:@"UpdateFailed" format:@"updating marking all items as %s failed", readState ? "read":"unread"];
+}
 @end
 
 @implementation tcItemEnumerator : NSEnumerator

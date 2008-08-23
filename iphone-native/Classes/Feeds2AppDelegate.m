@@ -62,7 +62,6 @@
 	}
 }
 
-
 - (NSString *) currentItemID {
 	NSString * itemID = nil;
 	if(inItemViewMode) {
