@@ -81,6 +81,7 @@
 		[dataSource reloadItems];
 		[self hideOptions];
 	}
+	[view release];
 }
 
 @end
