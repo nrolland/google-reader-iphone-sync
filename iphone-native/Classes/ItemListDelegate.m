@@ -78,6 +78,19 @@
 	[[[UIApplication sharedApplication] delegate] loadItemAtIndex: [self itemIndexFromIndexPath:indexPath] fromSet: itemSet];
 }
 
+- (void) loadItemWithID:(NSString *) google_id {
+	int index;
+	id items = [self itemSet];
+	id item;
+	for(index == 0; index < [items count]; index++) {
+		item = [items objectAtIndex:index];
+		if([[item google_id] isEqualToString: google_id]) {
+			[[[UIApplication sharedApplication] delegate] loadItemAtIndex: index fromSet: itemSet];
+			return;
+		}
+	}
+}
+
 - (void) deleteItemCache {
 	[itemSet release];
 	itemSet = nil;

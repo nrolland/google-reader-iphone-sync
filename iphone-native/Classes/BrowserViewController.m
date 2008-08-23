@@ -8,6 +8,10 @@
 
 - (id) webView { return webView; }
 
+- (id) currentItemID {
+	return [webView currentItemID];
+}
+
 - (void) activate {
 	[topLevelWindow addSubview:[self view]];
 	// TODO: stop being underneath the statusbar. it does this for us when the screen rotates, so we must be able to do it somehow...

@@ -136,12 +136,14 @@
 	NSString * emailURL = [NSString stringWithFormat:@"mailto:?subject=%@&body=%@",
 		[@"A link for you!" stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding],
 		[[currentItem url]  stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]
-		];//,[currentItem url]];
+	];
 	dbg(@"email url: %@ app=%@", emailURL, [UIApplication sharedApplication]);
 	BOOL emailed = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:emailURL]];
 	dbg(@"email %s", emailed?"worked":"failed");
 }
 
-
+- (NSString *) currentItemID {
+	return [currentItem google_id];
+}
 
 @end

@@ -10,6 +10,7 @@
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<integer value="350"/>
 			<integer value="439"/>
+			<integer value="231"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1521,6 +1522,14 @@
 					</object>
 					<int key="connectionID">480</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">itemListDelegate</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="421261942"/>
+					</object>
+					<int key="connectionID">486</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -2223,7 +2232,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">485</int>
+			<int key="maxID">486</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2342,6 +2351,7 @@
 							<string>appSettings</string>
 							<string>browseController</string>
 							<string>db</string>
+							<string>itemListDelegate</string>
 							<string>mainController</string>
 							<string>window</string>
 						</object>
@@ -2349,6 +2359,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>id</string>
 							<string>BrowserViewController</string>
+							<string>id</string>
 							<string>id</string>
 							<string>MainTabBarController</string>
 							<string>UIWindow</string>

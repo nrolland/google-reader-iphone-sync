@@ -8,6 +8,8 @@
 	IBOutlet BrowserViewController * browseController;
 	IBOutlet MainTabBarController * mainController;
 	IBOutlet id appSettings;
+	IBOutlet id itemListDelegate;
+	BOOL inItemViewMode;
 }
 
 @property (nonatomic, retain) UIWindow *window;

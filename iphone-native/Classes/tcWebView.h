@@ -26,6 +26,7 @@
 - (BOOL) canGoNext;
 - (BOOL) canGoPrev;
 - (void) loadItemAtIndex:(int) index;
+- (NSString *) currentItemID;
 
 - (IBAction) toggleStarForCurrentItem:(id) sender;
 - (IBAction) toggleReadForCurrentItem:(id) sender;

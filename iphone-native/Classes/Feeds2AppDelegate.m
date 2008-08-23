@@ -8,8 +8,8 @@
 
 - (void) applicationWillTerminate:(id) sender {
 	dbg(@"teminating...");
-	[db dealloc];
 	[appSettings dealloc];
+	[db dealloc];
 }
 
 - (id) settings { return appSettings; }
@@ -23,8 +23,7 @@
 	dbg(@"Loaded...");
 
 	[window setBackgroundColor: [UIColor groupTableViewBackgroundColor]];
-	//[self showViewer: self];
-	[self showNavigation: self];
+	[self loadFirstView];
 }
 
 - (void) loadItemAtIndex: (int) index fromSet:(id) items {
@@ -37,12 +36,14 @@
 	dbg(@"Navigation!");
 	[[browseController webView] showCurrentItemInItemList: [mainController itemList]];
 	[browseController deactivate];
+	inItemViewMode = NO;
 	[mainController activate];
 }
 
 - (void)showViewer: (id) sender {
 	dbg(@"Viewer!");
 	[mainController deactivate];
+	inItemViewMode = YES;
 	[browseController activate];
 }
 
@@ -50,6 +51,25 @@
 	[window release];
 	[browseController release];
 	[super dealloc];
+}
+
+- (void) loadFirstView {
+	NSString * itemID = [appSettings getLastViewedItem];
+	dbg(@"last viewed item = %@", itemID);
+	[self showNavigation: self];
+	if(!(itemID == nil || [itemID length] == 0)) {
+		[itemListDelegate loadItemWithID:itemID];
+	}
+}
+
+
+- (NSString *) currentItemID {
+	NSString * itemID = nil;
+	if(inItemViewMode) {
+		dbg(@"item view is currently active");
+		itemID = [browseController currentItemID];
+	}
+	return itemID;
 }
 
 @end

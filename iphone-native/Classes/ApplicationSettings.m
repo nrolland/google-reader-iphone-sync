@@ -44,11 +44,14 @@
 }
 
 - (void) save {
+	[self setLastViewedItem];
 	BOOL success = [plistData writeToFile:[docsPath stringByAppendingPathComponent: plistName] atomically:YES];
 	if(!success) {
 		NSLog(@"FAILED saving plist");
 	} else {
-		dbg(@"saved data: %@ to file: %@", plistData, [docsPath stringByAppendingPathComponent: plistName]);
+		#ifdef DEBUG
+			dbg(@"saved data: %@ to file: %@", plistData, [docsPath stringByAppendingPathComponent: plistName]);
+		#endif
 	}
 }
 
@@ -157,12 +160,18 @@
 	return [[self tagList] componentsSeparatedByString: @"\n"];
 }
 
-
+- (NSString *) getLastViewedItem {
+	return [plistData valueForKey:@"lastItemID"];
+}
+	
 #pragma mark SETTING values
 - (void) setReadItems:(BOOL) newVal {
 	[plistData setValue: [NSNumber numberWithBool: newVal] forKey:@"showReadItems"];
 }
 
+- (void) setLastViewedItem {
+	[plistData setValue: [[[UIApplication sharedApplication] delegate] currentItemID] forKey:@"lastItemID"];
+}
 
 // save string data
 - (IBAction) stringValueDidChange:(id)sender {
