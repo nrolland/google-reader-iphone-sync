@@ -1,0 +1,6 @@
+0.1.4:
+	- Fixed bug preventing sync of tags with spaces in them
+	- Sync "all items" when tags list is empty
+
+0.1.3:
+	- First public release

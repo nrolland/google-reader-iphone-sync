@@ -1,11 +1,12 @@
 Package: com.sysprosoft.gfxmonk.gris
 Name: GRiS
-Version: 0.1.3-2
+Version: 0.1.4-1
 Architecture: iphoneos-arm
 Depends: python
 Description:
  Google Reader iPhone Sync - RSS client for Google Reader featuring image caching for true offline viewing.
-Homepage: http://gfxmonk.sysprosoft.com/?action=gris
+Icon: file:///Applications/GRiS.app/Icon.png
+Homepage: http://code.google.com/p/gris/
 Maintainer: Tim Cuthbertson <tim3d.junk+gris@gmail.com>
 Author: Tim Cuthbertson (gfxmonk) <tim3d.junk+gris@gmail.com>
 Section: Entertainment

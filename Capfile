@@ -17,10 +17,13 @@ $mac_server = `hostname`.chomp!
 # servers & paths
 $ipod_path = "/var/mobile/GRiS/"
 
-$ipod_server = ENV['IP'] || config['iphone_hostname']
-puts "IP = #{ENV['IP'].inspect}"
+ipod_ip = ENV['ip']
+ipod_ip = "192.168.1.#{ipod_ip}" + ipod_ip if ipod_ip =~ /^[0-9]+$/ # shortcut
+puts "IP = #{ipod_ip.inspect}"
 puts "HOSNTAME = #{config['iphone_hostname'].inspect}"
 puts "SERVER = #{$ipod_server.inspect}"
+
+$ipod_server = ipod_ip || config['iphone_hostname']
 
 role :ipod, $ipod_server
 
@@ -96,7 +99,11 @@ end
 
 
 # installing & running the code on your iPhone
-desc "build & install code on iPod"
+build_dir = "GRiS.pkg-build"
+app = "GRiS"
+app_dir = "#{build_dir}/#{app}"
+
+desc "build & install code directly on iPod"
 task :install do
 		install_app
 		push_python_code
@@ -107,68 +114,75 @@ task :build do
 	local "xcodebuild -project iphone-native/GRiS.xcodeproj -configuration #{ENV['build'] || "Release"}"
 end
 
-desc "create a cydia package"
-task :package do
-	build
-	do_package
-end
-
-build_dir = "GRiS.pkg-build"
-app = "GRiS"
-app_dir = "#{build_dir}/#{app}"
-
-task :build_repository do
-	if config['deb_dest']
-		dest = config['deb_dest']
-		local "cp '#{build_dir}/#{app}.deb' '#{dest}'"
-		local "cd '#{dest}' && dpkg-scanpackages . /dev/null | sed -e's/^name/Name/' -e's/^author/Author/' -e's/^homepage/Homepage/' > Packages"
-		
-		local "cd '#{dest}' && gzip -c Packages > Packages.gz"
-		puts "Package file: #{dest}/Packages.gz"
-		puts "DEB file:     #{dest}/#{app}.deb"
-		puts "all files:\n '#{dest}/Packages.gz' '#{dest}/Packages' '#{dest}/#{app}.deb'"
-	else
-		puts "set deb_dest in config.yml to generate a package file automatically"
-		puts "DEB file:     #{build_dir}/#{app}.deb"
+namespace :package do
+	desc "create a cydia package"
+	task :default do
+		build
+		do_package
 	end
-end
 
-task :code_sign do
-	# sign the code
-	# (man, this is hacky...)
-	local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app/GRiS #{$ipod_user}@#{$ipod_server}:/tmp"
-	run "ldid -S /tmp/GRiS"
-	local "rsync #{$rsync_opts} #{$ipod_user}@#{$ipod_server}:/tmp/GRiS iphone-native/build/Release-iphoneos/GRiS.app/"
-	run "rm /tmp/GRiS"
-end
+	task :install do
+		package unless File.exists? "#{build_dir}/#{app}.deb"
+		local "scp #{build_dir}/#{app}.deb #{$ipod_user}@#{$ipod_server}:/tmp"
+		sudo "dpkg -i /tmp/#{app}.deb"
+		run "rm /tmp/#{app}.deb"
+	end
 
-task :do_package do
-	local "rm -rf #{app_dir}"
-	local "mkdir -p #{app_dir}"
-	local "mkdir -p #{app_dir}/Applications"
-	local "mkdir -p #{app_dir}/var/mobile/GRiS"
-	local "mkdir -p #{app_dir}/DEBIAN"
+	task :build_repository do
+		if config['deb_dest']
+			dest = config['deb_dest']
+			local "cp '#{build_dir}/#{app}.deb' '#{dest}'"
+		
+			# my dpkg-deb seems to be broken. I know not why, or how to fix it. So i run it though sed instead:
+			local "cd '#{dest}' && dpkg-scanpackages . /dev/null | sed -e's/^name/Name/' -e's/^author/Author/' -e's/icon/Icon/' -e's/^homepage/Homepage/' > Packages"
+		
+			local "cd '#{dest}' && gzip -c Packages > Packages.gz"
+			puts "Package file: #{dest}/Packages.gz"
+			puts "DEB file:     #{dest}/#{app}.deb"
+			puts "all files:\n '#{dest}/Packages.gz' '#{dest}/Packages' '#{dest}/#{app}.deb'"
+		else
+			puts "set deb_dest in config.yml to generate a package file automatically"
+			puts "DEB file:     #{build_dir}/#{app}.deb"
+		end
+	end
 
-	code_sign
+	task :code_sign do
+		# sign the code
+		# (man, this is hacky...)
+		local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app/GRiS #{$ipod_user}@#{$ipod_server}:/tmp"
+		run "ldid -S /tmp/GRiS"
+		local "rsync #{$rsync_opts} #{$ipod_user}@#{$ipod_server}:/tmp/GRiS iphone-native/build/Release-iphoneos/GRiS.app/"
+		run "rm /tmp/GRiS"
+	end
 
-	# file heirarchy
-	local "cp -r iphone-native/build/Release-iphoneos/GRiS.app #{app_dir}/Applications/"
-	local "cp -r template #{app_dir}/var/mobile/GRiS/"
-	local "cp -r src #{app_dir}/var/mobile/GRiS/"
+	task :do_package do
+		local "rm -rf #{app_dir}"
+		local "mkdir -p #{app_dir}"
+		local "mkdir -p #{app_dir}/Applications"
+		local "mkdir -p #{app_dir}/var/mobile/GRiS"
+		local "mkdir -p #{app_dir}/DEBIAN"
 
-	# control file, install scripts
-	local "cp -r cydia/* #{build_dir}/#{app}/DEBIAN/"
+		code_sign
+
+		# file heirarchy
+		local "cp -r iphone-native/build/Release-iphoneos/GRiS.app #{app_dir}/Applications/"
+		local "cp -r template #{app_dir}/var/mobile/GRiS/"
+		local "cp -r src #{app_dir}/var/mobile/GRiS/"
+
+		# control file, install scripts
+		local "cp -r cydia/* #{build_dir}/#{app}/DEBIAN/"
 	
-	# package it up
-	local "cd #{build_dir} && export COPY_EXTENDED_ATTRIBUTES_DISABLE=1 && dpkg-deb -b #{app}"
+		# package it up
+		local "cd #{build_dir} && export COPY_EXTENDED_ATTRIBUTES_DISABLE=1 && dpkg-deb -b #{app}"
 
-	puts "-"*50
-	build_repository
+		puts "-"*50
+		build_repository
 
-end
+	end
 
-task :clean do
-	local "rm -rf #{build_dir}"
+	task :clean do
+		local "rm -rf #{build_dir}"
+	end
 end
 
 task :install_eggs do
