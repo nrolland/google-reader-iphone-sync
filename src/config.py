@@ -36,7 +36,6 @@ all_options = (bootstrap_options[0] + main_options[0],
 def bootstrap(argv = None):
 	if argv is None:
 		argv = sys.argv[1:]
-
 	(opts, argv) = getopt(argv, *all_options)
 	for (key,val) in opts:
 		if key == '--verbose' or key == '-v':
@@ -67,6 +66,7 @@ Usage:
 	tag_list = []
 	if argv is None:
 		argv = sys.argv[1:]
+	debug("argv is: %s" % (argv,))
 		
 	(opts, argv) = getopt(argv, *all_options)
 	for (key,val) in opts:
@@ -75,17 +75,17 @@ Usage:
 			pass
 		
 		elif key == '-C' or key == '--cautious':
-			app_globals.OPTIONS['cautious'] = True
-			app_globals.OPTIONS['verbose']  = True
+			set_opt('cautious', True)
+			set_opt('verbose', True)
 			info("Cautious mode enabled...")
 		elif key == '-n' or key == '--num-items':
-			app_globals.OPTIONS['num_items'] = int(val)
+			set_opt('num_items', int(val))
 			info("Number of items set to %s" % app_globals.OPTIONS['num_items'])
 		elif key == '-d' or key == '--no-download':
-			app_globals.OPTIONS['no_download'] = True
+			set_opt('no_download', True)
 			info("Downloading turned off..")
 		elif key == '-t' or key == '--test':
-			app_globals.OPTIONS['test'] = True
+			set_opt('test', True)
 			from lib.mock import Mock
 			app_globals.READER = Mock()
 			info("Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir'])
@@ -114,7 +114,7 @@ Usage:
 			sys.exit(1)
 
 	if len(argv) > 0:
-		app_globals.OPTIONS['num_items'] = argv[0]
+		set_opt('num_items', int(argv[0]))
 		info("Number of items set to %s" % app_globals.OPTIONS['num_items'])
 
 def set_opt(key, val, disguise = False):

@@ -83,76 +83,89 @@ def check_for_valid_tags():
 		if utag not in google_tags:
 			raise Exception("No such tag: %s" % (utag,))
 
+def get_feed_from_tag(feed_tag):
+	return app_globals.READER.get_feed(None,
+		CONST.ATOM_PREFIXE_LABEL + feed_tag,
+		count = app_globals.OPTIONS['num_items'],
+		exclude_target = CONST.ATOM_STATE_READ,	# get only unread items
+		order = CONST.ORDER_REVERSE)			# oldest first
+			
+
+first_item = True
+def download_feed(feed, feed_number=0):
+	global first_item
+	item_number = feed_number * app_globals.OPTIONS['num_items']
+	status("SUBTASK_PROGRESS", item_number)
+
+	for entry in feed.get_entries():
+		item_number += 1
+		status("SUBTASK_PROGRESS", item_number)
+	
+		debug(" -- %s -- " % app_globals.STATS['items'])
+		app_globals.STATS['items'] += 1
+
+		if entry is None:
+			app_globals.STATS['failed'] += 1
+			puts(" ** FAILED **")
+			debug("(entry is None)")
+			continue
+		
+		debug_verbose(entry.__repr__())
+
+		item = Item(entry, feed_tag)
+		
+		if first_item:
+			info("Deleting items older than %s" % (item.date,))
+			app_globals.DATABASE.delete_items_older_than(item)
+			first_item = False
+		
+		state = app_globals.DATABASE.is_read(item.google_id)
+		name = item.basename
+
+		if state is None:
+			if not item.is_read:
+				try:
+					puts("NEW: " + item.title)
+					danger("About to output item")
+					item.process()
+					item.save()
+					app_globals.STATS['new'] += 1
+				except Exception,e:
+					puts(" ** FAILED **: " + str(e))
+					log_error("Failed processing item: %s" % repr(item), e)
+					if in_debug_mode():
+						raise
+					app_globals.STATS['failed'] += 1
+		else:
+			if state == True or item.is_read:
+				# item has been read either online or offline
+				pus("READ: " + name)
+				app_globals.STATS['read'] += 1
+				danger("About to delete item")
+				item.delete()
+
 def download_new_items():
 	"""
-	Downloads new items from google reader
+	Downloads new items from google reader across all feeds
 	"""
-	item_number = 0
 	feed_number = 0
 	status("SUBTASK_TOTAL", len(app_globals.OPTIONS['tag_list']) * app_globals.OPTIONS['num_items'])
+
+	# special case: no tags specified so we download the global set
+	if len(app_globals.OPTIONS['tag_list']) == 0:
+		puts("Fetching maximum %s items from [all items]" % (app_globals.OPTIONS['num_items'],))
+		feed = None ## TODO!
+		download_feed(feed)
+	
 	for feed_tag in app_globals.OPTIONS['tag_list']:
+		line()
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], feed_tag))
-
-		feed = app_globals.READER.get_feed(None,
-			CONST.ATOM_PREFIXE_LABEL + feed_tag,
-			count = app_globals.OPTIONS['num_items'],
-			exclude_target = CONST.ATOM_STATE_READ,	# get only unread items
-			order = CONST.ORDER_REVERSE)			# oldest first
-
-		item_number = feed_number * app_globals.OPTIONS['num_items']
-		status("SUBTASK_PROGRESS", item_number)
+		
+		feed = get_feed_from_tag(feed_tag)
+		download_feed(feed, feed_number)
 		feed_number += 1
 		
-		first_item = True
-
-		for entry in feed.get_entries():
-			item_number += 1
-			status("SUBTASK_PROGRESS", item_number)
-		
-			debug(" -- %s -- " % app_globals.STATS['items'])
-			app_globals.STATS['items'] += 1
-	
-			if entry is None:
-				app_globals.STATS['failed'] += 1
-				puts(" ** FAILED **")
-				debug("(entry is None)")
-				continue
-			
-			debug_verbose(entry.__repr__())
-	
-			item = Item(entry, feed_tag)
-			
-			if first_item:
-				info("Deleting items older than %s" % (item.date,))
-				app_globals.DATABASE.delete_items_older_than(item)
-				first_item = False
-			
-			state = app_globals.DATABASE.is_read(item.google_id)
-			name = item.basename
-	
-			if state is None:
-				if not item.is_read:
-					try:
-						puts("NEW: " + item.title)
-						danger("About to output item")
-						item.process()
-						item.save()
-						app_globals.STATS['new'] += 1
-					except Exception,e:
-						puts(" ** FAILED **: " + str(e))
-						log_error("Failed processing item: %s" % repr(item), e)
-						if in_debug_mode():
-							raise
-						app_globals.STATS['failed'] += 1
-			else:
-				if state == True or item.is_read:
-					# item has been read either online or offline
-					pus("READ: " + name)
-					app_globals.STATS['read'] += 1
-					danger("About to delete item")
-					item.delete()
-		
-		line()
+	line()
 	
 	info("%s NEW items" % app_globals.STATS['new'])
 	info("%s items marked as read" % app_globals.STATS['read'])

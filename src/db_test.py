@@ -170,7 +170,7 @@ class DBTest(unittest.TestCase):
 		self.db.delete_items_older_than(new_1)
 		print google_ids(self.db.get_items_list())
 		
-		self.assertEqual(google_ids(self.db.get_items_list()), google_ids(new_items))
+		self.assertEqual(sorted(google_ids(self.db.get_items_list())), sorted(google_ids(new_items)))
 		print google_ids(self.db.get_items_list())
 	
 	def test_is_read(self):
