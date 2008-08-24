@@ -123,6 +123,7 @@ namespace :package do
 		local "scp #{build_dir}/#{app}.deb #{$ipod_user}@#{$ipod_server}:/tmp"
 		sudo "dpkg -i /tmp/#{app}.deb"
 		run "rm /tmp/#{app}.deb"
+		sudo "killall SpringBoard"
 	end
 
 	task :build_repository do

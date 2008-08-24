@@ -15,9 +15,10 @@
 - (id) settings { return appSettings; }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
-	#ifndef DEBUG
-		// redirect stderr to a logfile if we're not in debugging mode
+	#ifndef SIMULATOR
+		// redirect stderr to a logfile if we're not on the simulator
 		NSString *logPath = [[[self settings] docsPath] stringByAppendingPathComponent: @"GRiS.native.log"];
+		dbg(@"opening logfile at: %@", logPath);
 		freopen([logPath fileSystemRepresentation], "w", stderr);
 	#endif
 	dbg(@"Loaded...");

@@ -2,6 +2,29 @@
 #import "tcHelpers.h"
 #import <stdio.h>
 
+// and for proxy stuff:
+#import <CoreFoundation/CoreFoundation.h>
+#import <CFNetwork/CFProxySupport.h>
+
+
+#ifdef SIMULATOR
+	// the following function is not defined for the simulator. dammit.
+	NSDictionary * CFNetworkCopySystemProxySettings(void){ return NULL; };
+	NSArray * fakeProxySettings ( void * a, void * b) {
+		dbg(@"returning a fake proxy setting");
+		NSDictionary * dict = [NSDictionary dictionaryWithObject: kCFProxyTypeNone forKey: kCFProxyTypeKey];
+		// NSDictionary * dict = [NSDictionary
+		// 				dictionaryWithObjects: [NSArray arrayWithObjects: kCFProxyTypeHTTP, @"fake-proxy.example.com", nil]
+		// 				forKeys:               [NSArray arrayWithObjects: kCFProxyTypeKey,  kCFProxyHostNameKey,  nil]];
+		return [[NSArray arrayWithObject: dict] retain];
+	}
+	#define CFNetworkCopyProxiesForURL fakeProxySettings
+	#warning "using hacky, faked proxy settings for the iphone simulator"
+#else
+	#define DEBUG
+#endif
+
+
 @implementation SyncController
 
 - (IBAction) sync: (id) sender {
@@ -27,6 +50,12 @@
 		[settings email],
 		[settings password],
 		tag_string];
+	
+	NSString * proxy = [self proxySettings];
+	if(proxy) {
+		shellString = [NSString stringWithFormat:@"export http_proxy='%@';export https_proxy='%@';%@", proxy, proxy, shellString];
+	}
+	dbg(@"shell command: %@", shellString);
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
@@ -71,6 +100,40 @@
 - (void) syncViewIsGone{
 	[syncStatusView setHidden:YES];
 	[syncStatusView removeFromSuperview];
+}
+
+- (NSString *) proxySettings {
+	NSString * settings = nil;
+	dbg(@"grabbing all proxy settings");
+	CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
+	NSURL * url = [NSURL URLWithString: @"http://google.com"];
+	
+	NSArray * proxyConfigs = CFNetworkCopyProxiesForURL(url, proxySettings);
+	
+	dbg(@"proxies: %@", proxyConfigs);
+	if([proxyConfigs count] > 0) {
+		NSDictionary * bestProxy = [proxyConfigs objectAtIndex: 0];
+		NSString * proxyType = [bestProxy objectForKey:kCFProxyTypeKey];
+		if( proxyType && proxyType != kCFProxyTypeNone) {
+			dbg(@"best proxy found: %@ @ %d", bestProxy, bestProxy);
+			NSString * host = [bestProxy valueForKey:kCFProxyHostNameKey];
+			NSString * port = [bestProxy valueForKey:kCFProxyPortNumberKey];
+			NSString * user = [bestProxy valueForKey:kCFProxyUsernameKey];
+			NSString * pass = [bestProxy valueForKey:kCFProxyPasswordKey];
+		
+			settings = [NSString stringWithFormat:@"%@%s%@%s%@%s%@",
+				user ? [user stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding] : @"",
+				pass ? ":":"",
+				pass ? [pass stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding] : @"",
+				user ? "@":"",
+				host,
+				port ? ":":"",
+				port ? port : @""];
+		}
+	}
+	
+	[proxyConfigs release];
+	return settings;
 }
 
 - (IBAction) hideSyncView: (id)sender {
