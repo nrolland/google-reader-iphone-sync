@@ -122,7 +122,7 @@ namespace :package do
 	end
 
 	task :install do
-		package unless File.exists? "#{build_dir}/#{app}.deb"
+		default
 		local "scp #{build_dir}/#{app}.deb #{$ipod_user}@#{$ipod_server}:/tmp"
 		sudo "dpkg -i /tmp/#{app}.deb"
 		run "rm /tmp/#{app}.deb"
