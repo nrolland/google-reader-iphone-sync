@@ -15,6 +15,7 @@ $mac_user = config['mac_user'] || `whoami`.chomp!
 $mac_server = `hostname`.chomp!
 
 $branch = `git-branch | grep '^\\*' | cut -b 3-`.chomp
+$deploy_branches = ['master', 'iphone-native']
 
 # servers & paths
 $ipod_path = "/var/mobile/GRiS/"
@@ -105,12 +106,6 @@ build_dir = "GRiS.pkg-build"
 app = "GRiS"
 app_dir = "#{build_dir}/#{app}"
 
-desc "build & install code directly on iPod"
-task :install do
-		install_app
-		push_python_code
-end
-
 desc "build the native iPhone version"
 task :build do
 	local "xcodebuild -project iphone-native/GRiS.xcodeproj -configuration #{ENV['build'] || "Release"}"
@@ -191,20 +186,6 @@ task :install_eggs do
 	install_egg_file('PyYAML-3.05-py2.5.egg')
 end
 
-task :install_app do
-	build
-	run "mkdir -p /var/mobile/GRiS"
-	# sync it
-	local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app #{$ipod_user}@#{$ipod_server}:/Applications/"
-	local "rsync #{$rsync_opts} src #{$ipod_user}@#{$ipod_server}:#{$settings_path}"
-	push_template
-	#	local "rsync #{$rsync_opts} --exclude '*.sqlite' --exclude '*.plist' ~/.GRiS/ #{$ipod_user}@#{$ipod_server}:/var/mobile/GRiS/"
-	run "ldid -S /Applications/GRiS.app/GRiS"
-	run "chown -R mobile.mobile /var/mobile/GRiS/"
-	run "killall SpringBoard"
-end
-
-
 def install_egg_file(file, location='eggs', force = false)
 	path = location + '/' + file
 	python_plugin_path = '/usr/lib/python2.5/site-packages/'
@@ -221,28 +202,9 @@ end
 
 # ----------- helpers -------------
 
-# make sure that folder is empty, aside from files matching allowed_patterns
-# (when it's a remote directory, it only ensures the directory exists)
-def check_folder(path, remote = false)
-	cmd = "mkdir -p \"#{path}\""
-	if remote
-		run(cmd)
-	else
-		local(cmd)
-		allowed_patterns = [/\.pdf$/, /\.pickle$/, /\.html$/,/^./]
-		Dir[path + '/*'].each do |f|
-#			puts f
-			unless allowed_patterns.any? { |pattern| f =~ pattern }
-				loud_error("ERROR: The destination folder contains non-generated files:\n#{path}\n" +
-					"Please clean out this folder or pick a different destination folder in config.yml")
-			end
-		end
-	end
-end
-
-def pause(desc = "something")
+def pause(desc = " (do something)")
 	if $run_opts[:pause]
-		puts("About do #{desc}...")
+		puts("About to #{desc}...")
 		puts("  [press return to continue]")
 		$stdin.gets
 	end
