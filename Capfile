@@ -14,6 +14,8 @@ set :password, config['iphone_password'] if config['iphone_password']
 $mac_user = config['mac_user'] || `whoami`.chomp!
 $mac_server = `hostname`.chomp!
 
+$branch = `git-branch | grep '^\\*' | cut -b 3-`.chomp
+
 # servers & paths
 $ipod_path = "/var/mobile/GRiS/"
 
