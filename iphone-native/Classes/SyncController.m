@@ -5,14 +5,23 @@
 // and for proxy stuff:
 #import <CoreFoundation/CoreFoundation.h>
 #import <CFNetwork/CFProxySupport.h>
-// full logging even in release mode
-#define DEBUG
 
 
-// the following function is not defined for the simulator. dammit.
-#if __arch__ != arm
-	void * _CFNetworkCopySystemProxySettings(void){ return NULL; }
-	#error "testing"
+#ifdef SIMULATOR
+	// the following function is not defined for the simulator. dammit.
+	NSDictionary * CFNetworkCopySystemProxySettings(void){ return NULL; };
+	NSArray * fakeProxySettings ( void * a, void * b) {
+		dbg(@"returning a fake proxy setting");
+		NSDictionary * dict = [NSDictionary dictionaryWithObject: kCFProxyTypeNone forKey: kCFProxyTypeKey];
+		// NSDictionary * dict = [NSDictionary
+		// 				dictionaryWithObjects: [NSArray arrayWithObjects: kCFProxyTypeHTTP, @"fake-proxy.example.com", nil]
+		// 				forKeys:               [NSArray arrayWithObjects: kCFProxyTypeKey,  kCFProxyHostNameKey,  nil]];
+		return [[NSArray arrayWithObject: dict] retain];
+	}
+	#define CFNetworkCopyProxiesForURL fakeProxySettings
+	#warning "using hacky, faked proxy settings for the iphone simulator"
+#else
+	#define DEBUG
 #endif
 
 
@@ -44,11 +53,9 @@
 	
 	NSString * proxy = [self proxySettings];
 	if(proxy) {
-		shellString = [NSString stringWithFormat:@"export http_proxy='%@';%@", proxy, shellString];
+		shellString = [NSString stringWithFormat:@"export http_proxy='%@';export https_proxy='%@';%@", proxy, proxy, shellString];
 	}
-	#ifdef DEBUG
-		dbg(@"shell command: %@", shellString);
-	#endif
+	dbg(@"shell command: %@", shellString);
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
@@ -97,6 +104,7 @@
 
 - (NSString *) proxySettings {
 	NSString * settings = nil;
+	dbg(@"grabbing all proxy settings");
 	CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
 	NSURL * url = [NSURL URLWithString: @"http://google.com"];
 	
@@ -104,9 +112,10 @@
 	
 	dbg(@"proxies: %@", proxyConfigs);
 	if([proxyConfigs count] > 0) {
-		NSDictionary * bestProxy = CFArrayGetValueAtIndex(proxyConfigs, 1);
-		if([bestProxy valueForKey:kCFProxyTypeKey] != kCFProxyTypeNone) {
-			dbg(@"best proxy found: %@", bestProxy);
+		NSDictionary * bestProxy = [proxyConfigs objectAtIndex: 0];
+		NSString * proxyType = [bestProxy objectForKey:kCFProxyTypeKey];
+		if( proxyType && proxyType != kCFProxyTypeNone) {
+			dbg(@"best proxy found: %@ @ %d", bestProxy, bestProxy);
 			NSString * host = [bestProxy valueForKey:kCFProxyHostNameKey];
 			NSString * port = [bestProxy valueForKey:kCFProxyPortNumberKey];
 			NSString * user = [bestProxy valueForKey:kCFProxyUsernameKey];
