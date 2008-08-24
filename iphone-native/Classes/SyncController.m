@@ -2,6 +2,20 @@
 #import "tcHelpers.h"
 #import <stdio.h>
 
+// and for proxy stuff:
+#import <CoreFoundation/CoreFoundation.h>
+#import <CFNetwork/CFProxySupport.h>
+// full logging even in release mode
+#define DEBUG
+
+
+// the following function is not defined for the simulator. dammit.
+#if __arch__ != arm
+	void * _CFNetworkCopySystemProxySettings(void){ return NULL; }
+	#error "testing"
+#endif
+
+
 @implementation SyncController
 
 - (IBAction) sync: (id) sender {
@@ -27,6 +41,14 @@
 		[settings email],
 		[settings password],
 		tag_string];
+	
+	NSString * proxy = [self proxySettings];
+	if(proxy) {
+		shellString = [NSString stringWithFormat:@"export http_proxy='%@';%@", proxy, shellString];
+	}
+	#ifdef DEBUG
+		dbg(@"shell command: %@", shellString);
+	#endif
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
@@ -71,6 +93,38 @@
 - (void) syncViewIsGone{
 	[syncStatusView setHidden:YES];
 	[syncStatusView removeFromSuperview];
+}
+
+- (NSString *) proxySettings {
+	NSString * settings = nil;
+	CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
+	NSURL * url = [NSURL URLWithString: @"http://google.com"];
+	
+	NSArray * proxyConfigs = CFNetworkCopyProxiesForURL(url, proxySettings);
+	
+	dbg(@"proxies: %@", proxyConfigs);
+	if([proxyConfigs count] > 0) {
+		NSDictionary * bestProxy = CFArrayGetValueAtIndex(proxyConfigs, 1);
+		if([bestProxy valueForKey:kCFProxyTypeKey] != kCFProxyTypeNone) {
+			dbg(@"best proxy found: %@", bestProxy);
+			NSString * host = [bestProxy valueForKey:kCFProxyHostNameKey];
+			NSString * port = [bestProxy valueForKey:kCFProxyPortNumberKey];
+			NSString * user = [bestProxy valueForKey:kCFProxyUsernameKey];
+			NSString * pass = [bestProxy valueForKey:kCFProxyPasswordKey];
+		
+			settings = [NSString stringWithFormat:@"%@%s%@%s%@%s%@",
+				user ? [user stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding] : @"",
+				pass ? ":":"",
+				pass ? [pass stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding] : @"",
+				user ? "@":"",
+				host,
+				port ? ":":"",
+				port ? port : @""];
+		}
+	}
+	
+	[proxyConfigs release];
+	return settings;
 }
 
 - (IBAction) hideSyncView: (id)sender {
