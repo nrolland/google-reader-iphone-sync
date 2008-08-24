@@ -106,8 +106,11 @@ build_dir = "GRiS.pkg-build"
 app = "GRiS"
 app_dir = "#{build_dir}/#{app}"
 
-desc "build the native iPhone version"
+desc "build the native iPhone app"
 task :build do
+	icon_suffix = 'test'
+	icon_suffix = 'release' if $deploy_branches.include? $branch
+	system("cp iphone-native/Icon_#{icon_suffix}.png iphone-native/Icon.png") or puts "Couldn't copy Icon_#{icon_suffix}.png\n" + "-" * 80
 	local "xcodebuild -project iphone-native/GRiS.xcodeproj -configuration #{ENV['build'] || "Release"}"
 end
 
@@ -182,24 +185,6 @@ namespace :package do
 		local "rm -rf #{build_dir}"
 	end
 end
-
-task :install_eggs do
-	install_egg_file('PyYAML-3.05-py2.5.egg')
-end
-
-def install_egg_file(file, location='eggs', force = false)
-	path = location + '/' + file
-	python_plugin_path = '/usr/lib/python2.5/site-packages/'
-	# returning false (non-zero) from a remote shell throws an exception with capistrano.. so we'll use that:
-	begin
-		remote("test -d '#{python_plugin_path}#{File.basename(file,'.egg')}")
-		raise "dummy" if force
-	rescue
-		system "scp '#{path}' '#{$ipod_user}@#{$ipod_server}:#{python_plugin_path}'" or loud_error("couldn't copy egg file: #{path}")
-		run "cd '#{python_plugin_path}' && unzip -uo '#{file}' && rm '#{file}'"
-	end
-end
-
 
 # ----------- helpers -------------
 

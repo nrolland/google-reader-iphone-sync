@@ -13,9 +13,6 @@
 	NSArray * fakeProxySettings ( void * a, void * b) {
 		dbg(@"returning a fake proxy setting");
 		NSDictionary * dict = [NSDictionary dictionaryWithObject: kCFProxyTypeNone forKey: kCFProxyTypeKey];
-		// NSDictionary * dict = [NSDictionary
-		// 				dictionaryWithObjects: [NSArray arrayWithObjects: kCFProxyTypeHTTP, @"fake-proxy.example.com", nil]
-		// 				forKeys:               [NSArray arrayWithObjects: kCFProxyTypeKey,  kCFProxyHostNameKey,  nil]];
 		return [[NSArray arrayWithObject: dict] retain];
 	}
 	#define CFNetworkCopyProxiesForURL fakeProxySettings
@@ -53,9 +50,12 @@
 	
 	NSString * proxy = [self proxySettings];
 	if(proxy) {
+		dbg(@"using proxy string: %@", proxy);
 		shellString = [NSString stringWithFormat:@"export http_proxy='%@';export https_proxy='%@';%@", proxy, proxy, shellString];
 	}
-	dbg(@"shell command: %@", shellString);
+	#ifdef DEBUG
+		dbg(@"shell command: %@", shellString);
+	#endif
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
@@ -107,7 +107,6 @@
 	dbg(@"grabbing all proxy settings");
 	CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
 	NSURL * url = [NSURL URLWithString: @"http://google.com"];
-	
 	NSArray * proxyConfigs = CFNetworkCopyProxiesForURL(url, proxySettings);
 	
 	dbg(@"proxies: %@", proxyConfigs);
@@ -154,11 +153,6 @@
 
 #pragma mark delegate callbacks
 - (void) backgroundShell:(id)shell didFinishWithSuccess:(BOOL) success {
-	if(!success) {
-		dbg(@"failed...");
-	} else {
-		dbg(@"sync completed successfully");
-	}
 	[status_currentTask setText:last_output_line];
 	[syncThread release];
 	syncThread = nil;

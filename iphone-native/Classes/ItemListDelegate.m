@@ -152,7 +152,6 @@
 }
 
 - (int)tableView:(id)view numberOfRowsInSection:(id)section {
-	dbg(@"how many items? %d!!", [[self itemSet] count]);
 	return [[self itemSet] count];
 }
 
