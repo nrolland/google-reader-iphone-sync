@@ -1,5 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
+# make sure settings don't go missing during rm
 if [ -d '/var/mobile/GRiS' ]; then
-	cp -R /var/mobile/GRiS /var/mobile/GRiS.bak
+	mkdir -p /var/mobile/GRiS.bak
+	cd /var/mobile/GRiS && cp -R config.plist items.sqlite src template /var/mobile/GRiS.bak/
 fi

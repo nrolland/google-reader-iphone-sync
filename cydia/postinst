@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -d '/var/mobile/GRiS.bak' ]; then
 	if [ ! -d '/var/mobile/GRiS' ]; then
-		cp -R /var/mobile/GRiS.bak /var/mobile/GRiS || exit 1
+		cp -R /var/mobile/GRiS.bak{config.plist,items.sqlite,src,template} /var/mobile/GRiS/ || exit 1
 	fi
 	rm -rf /var/mobile/GRiS.bak
 fi

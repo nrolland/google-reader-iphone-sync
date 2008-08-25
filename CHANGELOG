@@ -1,3 +1,7 @@
+0.1.7:
+	- Initial support for proxies.
+	- Fixed packaging issue which led to old (python) sources not being replaced.
+
 0.1.6:
 	- Added "mark as read / unread" buttons
 
