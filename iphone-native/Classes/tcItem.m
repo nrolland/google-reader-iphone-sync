@@ -52,9 +52,9 @@
 		domainRange.length = firstSlash.location;
 		domain = [domain substringWithRange: domainRange];
 	}
-	if([domain length] > 40) {
+	if([domain length] > 25) {
 		domainRange.location = 0;
-		domainRange.length = 40;
+		domainRange.length = 25;
 		domain = [[domain substringWithRange: domainRange] stringByAppendingString: @"..."];
 	}
 	return domain;
