@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# make sure settings don't go missing during rm
+# copy the settings to /tmp, in case this is part of a clean / reinstall
 if [ -d '/var/mobile/GRiS' ]; then
-	mkdir -p /var/mobile/GRiS.bak
-	cd /var/mobile/GRiS && cp -R config.plist items.sqlite src template /var/mobile/GRiS.bak/
+	mkdir -p /tmp/GRiS
+	cp /var/mobile/GRiS/config.plist /tmp/GRiS/
 fi

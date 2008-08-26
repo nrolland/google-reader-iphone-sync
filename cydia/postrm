@@ -2,6 +2,8 @@
 
 if [ "$1" = 'remove' -o "$1" == 'purge' ]; then
 	echo "removing ~mobile/GRiS"
-	rm -rf /var/mobile/GRiS
+	rm -rf /tmp/GRiS
+	mkdir -p /tmp/GRiS
+	mv /var/mobile/GRiS /tmp/GRiS
 	rm -rf /var/mobile/GRiS.bak
 fi
