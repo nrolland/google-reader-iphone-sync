@@ -107,6 +107,12 @@ def write_file_lines(filename, content):
 	f.writelines(content)
 	f.close()
 
+def read_file_lines(filename):
+	f = file(filename,'r')
+	ret = f.readlines()
+	f.close()
+	return ret
+
 def touch_file(name):
 	ensure_dir_exists(os.path.dirname(name))
 	write_file(name, '\n')

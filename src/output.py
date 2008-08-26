@@ -17,7 +17,7 @@ def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
 def puts_array(s, level=lvl_quiet):
 	global logfile
 	output_str = " ".join(map(ascii, s))
-	if logfile is not None:
+	if logfile is not None and (level < lvl_debug):
 		print >> logfile, output_str
 	if app_globals.OPTIONS['verbosity'] < level: return
 	print output_str
@@ -62,6 +62,13 @@ def log_start():
 	global logfile
 	logfile = open(os.path.join(app_globals.OPTIONS['output_path'], 'GRiS.log'), 'w')
 	debug("Log started at %s." % (time.ctime(),))
+	try:
+		vfile = file(os.path.join(app_globals.OPTIONS['output_path'], 'VERSION'), 'r')
+		version = vfile.readline()
+		vfile.close()
+		debug("app version: %s" % (version,))
+	except Exception,e:
+		log_error("Failed to find app version", e)
 
 def in_debug_mode():
 	return app_globals.OPTIONS['verbosity'] >= lvl_debug

@@ -4,6 +4,12 @@
 	#define dbg NSLog /*( ... ) {}*/
 #endif
 
+#ifdef SIMULATOR
+	#define dbg_s NSLog
+#else
+	#define dbg_s( ... ) {}
+#endif
+
 @interface tcHelpers : NSObject {
 }
 + (BOOL) ensureDirectoryExists:(NSString *)path;

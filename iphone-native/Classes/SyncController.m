@@ -25,7 +25,6 @@
 @implementation SyncController
 
 - (IBAction) sync: (id) sender {
-	dbg(@"syncing!");
 	if(syncThread && ![syncThread isFinished]) {
 		dbg(@"thread is still running!");
 		return;
@@ -53,9 +52,7 @@
 		dbg(@"using proxy string: %@", proxy);
 		shellString = [NSString stringWithFormat:@"export http_proxy='%@';export https_proxy='%@';%@", proxy, proxy, shellString];
 	}
-	#ifdef DEBUG
-		dbg(@"shell command: %@", shellString);
-	#endif
+	dbg_s(@"shell command: %@", shellString);
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
@@ -88,7 +85,7 @@
 
 - (IBAction) cancelSync: (id) sender {
 	if(!syncThread || [syncThread isFinished]) {
-		dbg(@"can't cancel - it's already finished!");
+		dbg(@"can't cancel sync - it's already finished!");
 		return;
 	}
 	NSLog(@"cancelling thread...");

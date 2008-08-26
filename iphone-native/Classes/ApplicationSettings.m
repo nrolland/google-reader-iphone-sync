@@ -1,8 +1,6 @@
 #import "ApplicationSettings.h"
 #import "tcHelpers.h"
 
-// TODO: add the list of tags to sync to these settings
-
 @implementation ApplicationSettings
 - (NSString *) docsPath{ return docsPath; }
 - (void) setDocsPath:newPath{
@@ -16,7 +14,6 @@
 	NSArray * paths = [NSArray arrayWithObjects:
 		@"/var/mobile/GRiS",
 		@"/Users/tim/.GRiS",
-		@"/usr/local/etc/GRis",
 		[@"~/GRiS" stringByExpandingTildeInPath],
 		[@"~/.GRiS" stringByExpandingTildeInPath],
 		nil];
@@ -25,9 +22,7 @@
 	BOOL isDir;
 	for(i=0; i<[paths count]; i++) {
 		testingPath = [paths objectAtIndex:i];
-		dbg(@"trying path: %@", testingPath);
 		if([fileManager fileExistsAtPath:testingPath isDirectory:&isDir] && isDir && [fileManager isWritableFileAtPath: testingPath]) {
-			dbg(@"found a useful path!");
 			path = testingPath;
 			break;
 		}
@@ -49,9 +44,7 @@
 	if(!success) {
 		NSLog(@"FAILED saving plist");
 	} else {
-		#ifdef DEBUG
-			dbg(@"saved data: %@ to file: %@", plistData, [docsPath stringByAppendingPathComponent: plistName]);
-		#endif
+		dbg_s(@"saved data: %@ to file: %@", plistData, [docsPath stringByAppendingPathComponent: plistName]);
 	}
 }
 
