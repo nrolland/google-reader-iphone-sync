@@ -126,7 +126,7 @@ namespace :package do
 		local "scp #{build_dir}/#{app}.deb #{$ipod_user}@#{$ipod_server}:/tmp"
 		sudo "dpkg -i /tmp/#{app}.deb"
 		run "rm /tmp/#{app}.deb"
-		sudo "killall SpringBoard"
+#		sudo "killall SpringBoard"
 	end
 
 	task :build_repository do
@@ -219,4 +219,8 @@ def loud_error(err)
 #{err}
 #{'*' * 80}
 EOF
+end
+
+task :end do
+	`growlnotify -m 'Completed' 'capistrano task'`
 end
