@@ -86,8 +86,6 @@ Usage:
 			info("Downloading turned off..")
 		elif key == '-t' or key == '--test':
 			set_opt('test', True)
-			from lib.mock import Mock
-			app_globals.READER = Mock()
 			info("Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir'])
 		elif key == '-h' or key == '--help':
 			print parse_options.__doc__

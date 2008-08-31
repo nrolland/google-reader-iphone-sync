@@ -11,6 +11,7 @@ from lib.OpenStruct import OpenStruct
 import unittest
 import config
 import app_globals
+from reader import Reader
 
 # These are (relatively) long running tests, which require an active google reader account and network connection.
 # They should be separated from the main tests for this reason, but currenly they aren't.
@@ -23,7 +24,7 @@ class GoogleReaderLiveTest(unittest.TestCase):
 		app_globals.OPTIONS['test'] = False
 		config.parse_options(['--output-path=/tmp/gris-test', '--num-items=1'])
 		config.check()
-		main.reader_login()
+		self.reader = app_globals.READER = Reader()
 		
 	def tearFown(self):
 		pass
@@ -31,11 +32,11 @@ class GoogleReaderLiveTest(unittest.TestCase):
 	
 	# these don't explicitly check anything, their acceptance is by virtue of not throwing any exceptions
 	def test_standard_tag(self):
-		main.download_feed(main.get_feed_from_tag('i-am-a-tag-without-spaces'))
+		main.download_feed(self.reader.get_tag_feed('i-am-a-tag-without-spaces'),'feed')
 		
 	def test_tag_with_spaces(self):
-		main.download_feed(main.get_feed_from_tag('i am a tag with lots of spaces'))
-
+		main.download_feed(self.reader.get_tag_feed('i am a tag with lots of spaces'),'feed')
+	
 	# FIXME: the below tests still fail
 	# def test_tag_with_all_manner_of_crazy_characters_except_spaces(self):
 	# 	main.download_feed(main.get_feed_from_tag('abc\'"~!@#$%^&*()-+_=,.<>?/\\'))

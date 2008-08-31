@@ -12,7 +12,7 @@ CONFIG = {
 
 OPTIONS = {
 	'do_output' :    True,
-	'output_path':   'entries',
+	'output_path':   '/tmp/GRiS_test',
 	'num_items':     300,
 	'no_download':   False,
 	'cautious':      False,

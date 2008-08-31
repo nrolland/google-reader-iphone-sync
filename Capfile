@@ -39,6 +39,8 @@ $remote_ipod = "#{$ipod_user}@#{$ipod_server}:"
 
 $run_opts = {}
 
+task :default do nose end
+
 # -----------------------------------------
 # application options
 $app_opts = []
@@ -223,4 +225,5 @@ end
 
 task :end do
 	`growlnotify -m 'Completed' 'capistrano task'`
+	`rm -rf '#{build_dir}'`
 end

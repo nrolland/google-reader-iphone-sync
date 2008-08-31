@@ -166,7 +166,7 @@ class DBTest(unittest.TestCase):
 		for the_item in all_items:
 			self.db.add_item(the_item)
 		
-		self.assertEqual(google_ids(self.db.get_items_list()), google_ids(all_items))
+		self.assertEqual(sorted(google_ids(self.db.get_items_list())), sorted(google_ids(all_items)))
 		self.db.delete_items_older_than(new_1)
 		print google_ids(self.db.get_items_list())
 		
@@ -182,7 +182,7 @@ class DBTest(unittest.TestCase):
 	
 	def test_google_sync(self):
 		# mock out the google reader
-		reader = app_globals.READER
+		reader = app_globals.READER.gr
 		reader.set_read.return_value = True
 		reader.add_star.return_value = True
 		reader.set_unread.return_value = True
@@ -206,7 +206,7 @@ class DBTest(unittest.TestCase):
 	
 	def test_google_sync_failures(self):
 		self.db.add_item(fake_item(google_id = 'b', is_read = True, is_dirty = True))
-		app_globals.READER.set_read.return_value = False
+		app_globals.READER.gr.set_read.return_value = False
 		self.assertRaises(Exception, self.db.sync_to_google)
 		
 		# item should still be marked as read

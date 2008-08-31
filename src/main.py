@@ -11,7 +11,7 @@ from output import *
 from lib.GoogleReader import GoogleReader, CONST
 import app_globals
 import template
-
+from reader import Reader
 
 def reader_login():
 	"""
@@ -45,9 +45,10 @@ def execute():
 	
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	ensure_dir_exists(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['resources_path'])
-
-	reader_login()
-	check_for_valid_tags()
+	
+	app_globals.READER = Reader()
+	app_globals.READER.save_tag_list()
+	app_globals.READER.validate_tag_list()
 
 	status("TASK_PROGRESS", 1, "Syncing to google")
 
@@ -71,28 +72,6 @@ def retry_failed_items():
 		info("trying to re-download images for item: %s" % (item['title'],))
 		item.download_images()
 		item.save()
-
-def check_for_valid_tags():
-	"""
-	Raise an error if any tag (in config) does not exist in your google account
-	"""
-	user_tags = app_globals.OPTIONS['tag_list']
-	google_tags = app_globals.READER.get_tag_list()['tags']
-	google_tags = [tag['id'].split('/')[-1] for tag in google_tags]
-	for utag in user_tags:
-		if utag not in google_tags:
-			print "Valid tags are: %s" %(google_tags,)
-			raise Exception("No such tag: %s" % (utag,))
-
-def get_feed_from_tag(feed_tag):
-	if feed_tag is not None:
-		feed_tag = CONST.ATOM_PREFIXE_LABEL + feed_tag
-	
-	return app_globals.READER.get_feed(None,
-		feed_tag,
-		count = app_globals.OPTIONS['num_items'],
-		exclude_target = CONST.ATOM_STATE_READ,	# get only unread items
-		order = CONST.ORDER_REVERSE)			# oldest first
 
 first_item = True
 def download_feed(feed, feed_tag, feed_number=0):
@@ -165,7 +144,7 @@ def download_new_items():
 		line()
 		_feed_tag = "[all items]" if feed_tag is None else feed_tag
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], _feed_tag))
-		feed = get_feed_from_tag(feed_tag)
+		feed = app_globals.READER.get_tag_feed(feed_tag)
 		download_feed(feed, _feed_tag, feed_number)
 		feed_number += 1
 		

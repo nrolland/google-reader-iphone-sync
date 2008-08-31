@@ -104,7 +104,10 @@ def write_file(filename, content):
 
 def write_file_lines(filename, content):
 	f = file(filename, 'w')
-	f.writelines(content)
+	for line in content:
+		f.write(line)
+		if not line.endswith("\n"):
+			f.write("\n")
 	f.close()
 
 def read_file_lines(filename):
