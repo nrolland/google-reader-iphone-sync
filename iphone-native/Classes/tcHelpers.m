@@ -25,4 +25,8 @@
 			autorelease] show];
 }
 
++ (NSUInteger) lastIndexInPath: (NSIndexPath *) indexPath {
+	return [indexPath indexAtPosition: [indexPath length] - 1];
+}
+
 @end

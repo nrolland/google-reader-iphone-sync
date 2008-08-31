@@ -1,9 +1,9 @@
 #!/bin/bash
 
-config="/tmp/GRiS/config.plist"
+config="/tmp/GRiS"
 if [ -f "$config" ]; then
 	echo "copying old config..."
-	cp "$config" /var/mobile/GRiS/ || exit 1
+	cp "$config/*" /var/mobile/GRiS/ || exit 1
 fi
 chown -R mobile.mobile /var/mobile/GRiS
 

@@ -6,8 +6,11 @@
 	IBOutlet id syncStatusView;
 	IBOutlet id notSyncingView;
 	IBOutlet id cancelButton;
+	IBOutlet id feedListSync;
 	IBOutlet id okButton;
 	IBOutlet id spinner;
+	IBOutlet id feedList;
+	IBOutlet id appSettings;
 	
 	BackgroundShell * syncThread;
 	BOOL syncRunning;

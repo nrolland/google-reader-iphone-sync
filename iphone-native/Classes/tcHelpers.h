@@ -14,4 +14,5 @@
 }
 + (BOOL) ensureDirectoryExists:(NSString *)path;
 + (void) alertCalled: (NSString *) title saying: (NSString *) msg;
++ (NSUInteger) lastIndexInPath: (NSIndexPath *) indexPath;
 @end

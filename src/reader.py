@@ -25,7 +25,7 @@ class Reader:
 			if not self.gr.login():
 				raise Exception("Login failed")
 		except:
-			raise
+			raise Exception("Login failed")
 		
 	def get_tag_list(self):
 		if self._tag_list is None:
@@ -52,11 +52,13 @@ class Reader:
 		if tag is not None:
 			tag = CONST.ATOM_PREFIXE_LABEL + tag
 		kwargs = {'exclude_target': CONST.ATOM_STATE_READ}
-		if count is not None:
-			kwargs['count'] = count
 		if oldest_first:
 			kwargs['order'] = CONST.ORDER_REVERSE
-		return self.gr.get_feed(None, tag, **kwargs)
+
+		if count is None:
+			count = app_globals.OPTIONS['num_items']
+
+		return self.gr.get_feed(None, tag, count=count, **kwargs)
 		
 	# pass-through methods
 	def passthrough(f):

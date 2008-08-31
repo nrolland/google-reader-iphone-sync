@@ -32,12 +32,15 @@
 	
 	id settings = [[[UIApplication sharedApplication] delegate] settings];
 	NSMutableString * tag_string = [NSMutableString string];
-	for(NSString * tag in [settings tagListArray]) {
+	for(NSString * tag in [settings activeTagList]) {
 		dbg(@"tag = %@", tag);
 		tag = [tag stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 		if([tag length] > 0) {
 			[tag_string appendFormat: @" --tag='%@'", [tag stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"]];
 		}
+	}
+	if(sender == feedListSync) {
+		tag_string = [tag_string stringByAppendingString: @" --no-download"];
 	}
 	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --show-status --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
 		[[settings docsPath] stringByAppendingPathComponent:@"src/main.py"],
@@ -146,6 +149,7 @@
 	[spinner setHidden:YES];
 	[okButton setHidden:NO];
 	[cancelButton setHidden:YES];
+	[appSettings reloadFeedList];
 }
 
 #pragma mark delegate callbacks
@@ -154,6 +158,9 @@
 	[syncThread release];
 	syncThread = nil;
 	[self showSyncFinished];
+	if([last_output_line hasPrefix:@"Sync complete."]) {
+		[self hideSyncView:self];
+	}
 }
 
 - (void) backgroundShell:(id)shell didProduceOutput:(NSString *) line {

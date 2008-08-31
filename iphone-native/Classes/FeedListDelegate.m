@@ -2,38 +2,72 @@
 #import "tcHelpers.h"
 
 @implementation FeedListDelegate
+- (void) dealloc {
+	[selectedFeedList release];
+	[feedList release];
+}
+
+- (void) setSelectedFeeds: feeds {
+	[selectedFeedList retain];
+	selectedFeedList = [[NSMutableArray alloc] initWithArray: feeds];
+}
+
+- (void) setFeedList: feeds {
+	[feedList release];
+	feedList = [[NSMutableArray alloc] initWithArray: feeds];;
+}
 
 - tableView:(id)view cellForRowAtIndexPath: (id) indexPath {
-	dbg(@"cellForRowAtPath: %@", indexPath);
-	UITableViewCell * cell = [view dequeueReusableCellWithIdentifier:@"itemCell"];
-	dbg(@"cell = %@", cell);
+	UITableViewCell * cell = [view dequeueReusableCellWithIdentifier:@"feedListCell"];
 	if(cell == nil) {
-		dbg(@"no cell - making one");
-		cell = [[UITableViewCell alloc] initWithFrame: CGRectMake(0,0,1,1) reuseIdentifier:@"itemCell"];
-		dbg(@"made one");
+		cell = [[UITableViewCell alloc] initWithFrame: CGRectMake(0,0,1,1) reuseIdentifier:@"feedListCell"];
+		[cell setSelectionStyle: UITableViewCellSelectionStyleNone];
 	}
 	NSUInteger indexes[[indexPath length]];
-	dbg(@"getting indexes");
 	[indexPath getIndexes:indexes];
-	dbg(@"indexes length = %u", [indexPath length]);
-	[cell setText:[NSString stringWithFormat: @"cell %u", indexes[[indexPath length] - 1]]];
-	dbg(@"returning %@", cell);
+	if(feedList) {
+		NSString * feedName = [feedList objectAtIndex: [tcHelpers lastIndexInPath:indexPath]];
+		[cell setText:feedName];
+		UIColor * textColor;
+		if([selectedFeedList containsObject: feedName]) {
+			[cell setAccessoryType: UITableViewCellAccessoryCheckmark];
+			textColor = [UIColor blackColor];
+		} else {
+			[cell setAccessoryType: UITableViewCellAccessoryNone];
+			textColor = [UIColor lightGrayColor];
+		}
+		
+		[cell setTextColor: textColor];
+	} else {
+		[cell setText:@"Unable to get feed list"];
+		[cell setAccessoryType: UITableViewCellAccessoryNone];
+	}
 	return cell;
 }
 
-- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-	if(sectionNames == nil){
-		sectionNames = [NSArray arrayWithObjects: @"Followed Feeds", @"Ignored Feeds", nil];
-	}
-	return sectionNames;
+- (int) numberOfSectionsInTableView:(id)view {
+	return 1;
 }
 
-- (int) numberOfSectionsInTableView:(id)view {
-	return 2;
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	if(feedList) {
+		NSString * selectedFeed = [feedList objectAtIndex: [tcHelpers lastIndexInPath:indexPath]];
+		if([selectedFeedList containsObject:selectedFeed]) {
+			[selectedFeedList removeObject:selectedFeed];
+		} else {
+			[selectedFeedList addObject: selectedFeed];
+		}
+	}
+	[tableView reloadData];
+	[appSettings setTagList: selectedFeedList];
 }
 
 - (int) tableView:(id)view numberOfRowsInSection:(id)section {
-	return 8;
+	if(!feedList) {
+		return 1;
+	} else {
+		return [feedList count];
+	}
 }
 
 @end

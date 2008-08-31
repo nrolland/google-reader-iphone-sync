@@ -6,6 +6,8 @@
 	NSMutableDictionary * plistData;
 	NSString * plistName;
 	
+	NSArray * possibleTags;
+	
 	IBOutlet id emailField;
 	IBOutlet id passwordField;
 	IBOutlet id tagListField;
@@ -19,6 +21,11 @@
 	IBOutlet id stopEditingAccountButton;
 	
 	IBOutlet id showReadItemsToggle;
+	
+	IBOutlet id feedList;
+	IBOutlet id noFeedsView;
+	IBOutlet id feedSelectionView;
+	IBOutlet id feedsPlaceholderView;
 }
 -(NSString *) docsPath;
 -(NSString *) email;

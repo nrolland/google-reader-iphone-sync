@@ -2,7 +2,10 @@
 #import <Foundation/Foundation.h>
 
 @interface FeedListDelegate : UITableViewController {
-	NSArray * sectionNames;
+	IBOutlet id appSettings;
+	NSArray * feedList;
+	NSArray * selectedFeedList;
+	IBOutlet id cell;
 }
 
 @end
