@@ -24,7 +24,7 @@
 
 @implementation SyncController
 
-- (IBAction) sync: (id) sender {
+- (void) syncWithFeeds:(BOOL) doFeeds {
 	if(syncThread && ![syncThread isFinished]) {
 		dbg(@"thread is still running!");
 		return;
@@ -39,7 +39,7 @@
 			[tag_string appendFormat: @" --tag='%@'", [tag stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"]];
 		}
 	}
-	if(sender == feedListSync) {
+	if(!doFeeds) {
 		tag_string = [tag_string stringByAppendingString: @" --no-download"];
 	}
 	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --show-status --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
@@ -84,6 +84,14 @@
 	
 	// ..and go!
 	[syncThread start];
+}
+
+- (IBAction) syncFeedListOnly: (id) sender {
+	[self syncWithFeeds: NO];
+}
+
+- (IBAction) sync: (id) sender {
+	[self syncWithFeeds:YES];
 }
 
 - (IBAction) cancelSync: (id) sender {

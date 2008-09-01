@@ -6,7 +6,6 @@
 	IBOutlet id syncStatusView;
 	IBOutlet id notSyncingView;
 	IBOutlet id cancelButton;
-	IBOutlet id feedListSync;
 	IBOutlet id okButton;
 	IBOutlet id spinner;
 	IBOutlet id feedList;
@@ -28,6 +27,7 @@
 	NSString * last_output_line;
 }
 - (IBAction) sync: (id) sender;
+- (IBAction) syncFeedListOnly: (id) sender;
 - (IBAction) cancelSync: (id) sender;
 - (IBAction) hideSyncView: (id)sender;
 @end

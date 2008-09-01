@@ -18,6 +18,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
+	if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) return NO;
 	if([self itemListIsActive]) {
 		return YES;
 	}
