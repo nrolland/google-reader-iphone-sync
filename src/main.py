@@ -13,29 +13,6 @@ import app_globals
 import template
 from reader import Reader
 
-def reader_login():
-	"""
-	Login to google-reader with credentials in OPTIONS.
-	Stores the logged-in reader in the global READER variable
-	Raises exception if authentication fails
-	"""
-	if app_globals.OPTIONS['test']:
-		info("using a mock google reader...")
-		return
-
-	app_globals.READER = GoogleReader()
-	app_globals.READER.identify(
-		app_globals.OPTIONS['user'],
-		app_globals.OPTIONS['password'])
-	
-	try:
-		if not app_globals.READER.login():
-			raise Exception("Login failed")
-	except:
-		raise Exception("Login failed")
-
-
-
 def execute():
 	"""
 	Logs in, syncs and downloads new items
@@ -50,7 +27,7 @@ def execute():
 	app_globals.READER.save_tag_list()
 	app_globals.READER.validate_tag_list()
 
-	status("TASK_PROGRESS", 1, "Syncing to google")
+	status("TASK_PROGRESS", 1, "Pushing status to google")
 
 	line()
 	app_globals.DATABASE = DB()
@@ -60,6 +37,7 @@ def execute():
 		info("not downloading any new items...")
 	else:
 		status("TASK_PROGRESS", 2, "Downloading new items")
+		app_globals.DATABASE.prepare_for_download()
 		download_new_items()
 
 	status("TASK_PROGRESS", 3, "Cleaning up old resources")
@@ -73,9 +51,7 @@ def retry_failed_items():
 		item.download_images()
 		item.save()
 
-first_item = True
 def download_feed(feed, feed_tag, feed_number=0):
-	global first_item
 	item_number = feed_number * app_globals.OPTIONS['num_items']
 	status("SUBTASK_PROGRESS", item_number)
 
@@ -95,11 +71,6 @@ def download_feed(feed, feed_tag, feed_number=0):
 		debug_verbose(entry.__repr__())
 
 		item = Item(entry, feed_tag)
-		
-		if first_item:
-			info("Deleting items older than %s" % (item.date,))
-			app_globals.DATABASE.delete_items_older_than(item)
-			first_item = False
 		
 		state = app_globals.DATABASE.is_read(item.google_id)
 		name = item.basename

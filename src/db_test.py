@@ -28,7 +28,8 @@ def fake_item(**kwargs):
 		'feed_name' : 'feedname',
 		'date' : '20080812140000',
 		'content' : '<h1>content!</h1>',
-		'had_errors' : False
+		'had_errors' : False,
+		'is_stale': False,
 		}
 	args.update(kwargs)
 	return OpenStruct(**args)
@@ -152,12 +153,12 @@ class DBTest(unittest.TestCase):
 		assert len(items) == 1
 		assert items[0].google_id == 'b'
 	
-	def test_deleting_old_items(self):
-		old_1 = fake_item(google_id = 'old_1', date = '20060812140000') # 2006
-		old_2 = fake_item(google_id = 'old_2', date = '20070812140000') # 2007
-		new_1 = fake_item(google_id = 'new_1', date = '20080812140000') # 2008 - this is where we'll slice it
-		new_2 = fake_item(google_id = 'new_2', date = '20080812140000') # identical to new_1
-		new_3 = fake_item(google_id = 'new_3', date = '20090812140000') # 2009
+	def test_deleting_stale_items(self):
+		old_1 = fake_item(google_id = 'old_1')
+		old_2 = fake_item(google_id = 'old_2')
+		new_1 = fake_item(google_id = 'new_1')
+		new_2 = fake_item(google_id = 'new_2')
+		new_3 = fake_item(google_id = 'new_3')
 		
 		old_items = [old_1, old_2]
 		new_items = [new_1, new_2, new_3]
@@ -166,12 +167,18 @@ class DBTest(unittest.TestCase):
 		for the_item in all_items:
 			self.db.add_item(the_item)
 		
+		self.db.prepare_for_download()
+		
+		# simulate getting of the new items again:
+		for item_id in google_ids(new_items):
+			self.db.is_read(item_id)
+		
 		self.assertEqual(sorted(google_ids(self.db.get_items_list())), sorted(google_ids(all_items)))
-		self.db.delete_items_older_than(new_1)
+
+		self.db.cleanup_stale_items()
 		print google_ids(self.db.get_items_list())
 		
 		self.assertEqual(sorted(google_ids(self.db.get_items_list())), sorted(google_ids(new_items)))
-		print google_ids(self.db.get_items_list())
 	
 	def test_is_read(self):
 		assert self.db.is_read('sample_id') == None

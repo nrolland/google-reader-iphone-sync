@@ -19,6 +19,7 @@ schema_history = [
 	'CREATE TABLE items(google_id TEXT primary key, date TIMESTAMP, url TEXT, original_id TEXT, title TEXT, content TEXT, feed_name TEXT, is_read BOOLEAN, is_starred BOOLEAN, is_dirty BOOLEAN default 0)',
 	'CREATE UNIQUE INDEX item_id_index on items(google_id)',
 	'ALTER TABLE items ADD COLUMN had_errors BOOLEAN default 0',
+	'ALTER TABLE items ADD COLUMN is_stale BOOLEAN default 0',
 	]
 
 class VersionDB:
@@ -75,6 +76,7 @@ class DB:
 				('is_starred', 'BOOLEAN'),
 				('is_dirty', 'BOOLEAN default 0'),
 				('had_errors', 'BOOLEAN default 0'),
+				('is_stale', 'BOOLEAN default 0'),
 			],
 			'indexes' : [ ('item_id_index', 'items(google_id)') ]
 		}
@@ -123,12 +125,6 @@ class DB:
 		google_id = item.google_id
 		self.sql("delete from items where google_id = ?", (google_id,))
 	
-	def delete_items_older_than(self, item):
-		item_count = self.get_item_count('date < ?', (item.date,))
-		debug("Deleting %s items from the database" % item_count)
-		danger("Delete %s items from the database" % item_count)
-		self.sql('delete from items where date < ?', (item.date,))
-
 	def update_item(self, item):
 		self.sql("update items set is_read=?, is_starred=?, is_dirty=? where google_id=?",
 			(item.is_read, item.is_starred, item.is_dirty, item.google_id));
@@ -169,7 +165,8 @@ class DB:
 		return Item(raw_data = item)
 	
 	def cleanup(self):
-		"""Clean up any hanging resources (for items that have been deleted)"""
+		"""Clean up any stale items / resources"""
+		self.cleanup_stale_items()
 		self.cleanup_resources_directory()
 		
 	def close(self):
@@ -180,14 +177,18 @@ class DB:
 		self.db.close()
 		self.db = None
 
-	def is_read(self, google_id):
+	def is_read(self, google_id, mark_as_fresh = True):
 		"""
 		check if an item is marked as read in the DB.
 		If the id is not in the database, returns None
 		"""
+		debug('is_read = %s' % (google_id))
 		cursor = self.sql('select is_read from items where google_id = ?', (google_id,))
 		try:
-			return cursor.next()[0] == 1 # truth is 1 in sqlite's mind
+			is_read = cursor.next()[0] == 1 # truth is 1 in sqlite's mind
+			if mark_as_fresh:
+				self.mark_item_as_fresh(google_id)
+			return is_read
 		except StopIteration:
 			return None
 	
@@ -208,6 +209,15 @@ class DB:
 			item.delete()
 		danger("about to delete %s read items from db" % self.get_item_count('is_read = 1'))
 		self.sql('delete from items where is_read = 1')
+		
+	def prepare_for_download(self):
+		self.sql('update items set is_stale = ?', (True,))
+	
+	def mark_item_as_fresh(self, item_id):
+		self.sql('update items set is_stale = ? where google_id = ?', (False, item_id))
+		
+	def cleanup_stale_items(self):
+		self.sql('delete from items where is_stale = ?', (True,))
 	
 	def cleanup_resources_directory(self):
 		res_prefix = "%s/%s/" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'])

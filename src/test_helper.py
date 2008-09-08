@@ -12,7 +12,7 @@ from reader import Reader
 
 def init_output_folder():
 	output_folder = '/tmp/GRiS/test_entries'
-	config.parse_options(['--test','--num-items=3','--verbose','--verbose', '--output-path=%s' % output_folder])
+	config.parse_options(['--test','--num-items=3','--verbose','--verbose', '--verbose', '--output-path=%s' % output_folder])
 
 	assert app_globals.OPTIONS['output_path'] == output_folder
 	app_globals.READER = Reader()

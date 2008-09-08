@@ -37,6 +37,7 @@ class Item:
 			self.content = feed_item['content']
 			self.original_id = feed_item['original_id']
 			self.is_dirty = False
+			self.is_stale = False
 		else:
 			# just copy the dict's keys to my instance vars
 			for key,value in raw_data.items():
