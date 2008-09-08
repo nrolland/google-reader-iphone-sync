@@ -1,10 +1,8 @@
-0.2.2:
-	- on sync, remove feeds that were read by means other than GRiS
-	
 0.2.1:
 	- added "refresh feed list" button in settings view
 	- don't allow the interface go into upside-down orientation
-
+	- on sync, remove feeds that were read by means other than GRiS
+	
 0.2.0:
 	- Replaced "feeds" text input with a proper feeds picker.
 
