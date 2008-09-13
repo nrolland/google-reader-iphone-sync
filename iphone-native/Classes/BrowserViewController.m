@@ -1,4 +1,5 @@
 #import "BrowserViewController.h"
+#import "TCHelpers.h"
 
 @implementation BrowserViewController
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -14,7 +15,10 @@
 }
 
 - (void) activate {
-	[topLevelWindow addSubview:[self view]];
+	// id mainController = [[[UIApplication sharedApplication] delegate] mainController];
+	// [[mainController view] addSubview:[self view]];
+	// [[mainController tabBar] setHidden: YES];
+//	[topLevelWindow addSubview:[self view]];
 	// TODO: stop being underneath the statusbar. it does this for us when the screen rotates, so we must be able to do it somehow...
 	// this is a hacky version that only works if it's in portrait mode:
 //	[[self view] setCenter: CGPointMake(160,250)];
@@ -22,7 +26,7 @@
 }
 
 - (void) deactivate {
-	[[self view] removeFromSuperview];
+//	[[self view] removeFromSuperview];
 	[webView deactivate];
 }
 

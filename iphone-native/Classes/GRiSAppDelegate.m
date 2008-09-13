@@ -13,6 +13,7 @@
 }
 
 - (id) settings { return appSettings; }
+- (id) mainController { return mainController; }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 	#ifndef SIMULATOR
@@ -37,14 +38,29 @@
 	dbg(@"Navigation!");
 	[[browseController webView] showCurrentItemInItemList: [mainController itemList]];
 	[browseController deactivate];
-	inItemViewMode = NO;
+	[self setViewToShowItem: NO];
 	[mainController activate];
+}
+
+- (void) setViewToShowItem:(BOOL) showItemView {
+	inItemViewMode = showItemView;
+	if(showItemView) {
+		[[mainController view] addSubview:[browseController view]];
+		CGRect frame = [[mainController view] bounds];
+		frame.origin = CGPointMake(0,0);
+		[[browseController view] setFrame: frame];
+	} else {
+		[[browseController view] removeFromSuperview];
+	}
+	[[[mainController selectedViewController] navigationBar] setHidden: showItemView];
+	[[mainController tabBar] setHidden: showItemView];
+	[[mainController view] layoutSubviews];
 }
 
 - (void)showViewer: (id) sender {
 	dbg(@"Viewer!");
 	[mainController deactivate];
-	inItemViewMode = YES;
+	[self setViewToShowItem: YES];
 	[browseController activate];
 }
 
@@ -87,6 +103,7 @@
 	if(!(itemID == nil || [itemID length] == 0)) {
 		[itemListDelegate loadItemWithID:itemID];
 	}
+	[window addSubview:[mainController view]];
 }
 
 - (NSString *) currentItemID {

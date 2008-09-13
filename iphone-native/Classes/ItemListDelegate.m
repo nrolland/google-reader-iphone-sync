@@ -113,23 +113,30 @@
 	return index;
 }
 
+- (id) createControllerForTag: (NSString *) tag {
+	ItemListController * newItemListController = [[[ItemListController alloc] init] autorelease];
+	ItemListDelegate * newItemDelegate = [[[ItemListDelegate alloc] initWithTag: tag db: db] autorelease];
+	UITableView * newTableView = [[[UITableView alloc] init] autorelease];
+	
+	[newItemListController setDelegate: newItemDelegate];
+	[newTableView setDelegate: newItemDelegate];
+	[newTableView setDataSource: newItemDelegate];
+	[newTableView setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[newItemListController setView: newTableView];
+	[newItemListController setListView: newTableView];
+
+	// use the current "options" button for all views
+	id rightButton = [[[navigationController navigationBar] topItem] rightBarButtonItem];
+	[[newItemListController navigationItem] setRightBarButtonItem: rightButton];
+	return newItemListController;
+}	
+
 - (void) tableView:(id)view didSelectRowAtIndexPath:(id) indexPath {
 	int itemIndex = [self itemIndexFromIndexPath:indexPath];
 	id item = [[self itemSet] objectAtIndex: itemIndex];
 	if([item hasChildren]) {
 		dbg(@"pushing item onto nav: %@", item);
-		ItemListController * newItemListController = [[[ItemListController alloc] init] autorelease];
-		ItemListDelegate * newItemDelegate = [[[ItemListDelegate alloc] initWithTag: [item tagValue] db: db] autorelease];
-		UITableView * newTableView = [[[UITableView alloc] init] autorelease];
-		
-		[newItemListController setDelegate: newItemDelegate];
-		[newTableView setDelegate: newItemDelegate];
-		[newTableView setDataSource: newItemDelegate];
-		[newItemListController setView: newTableView];
-		[newItemListController setListView: newTableView];
-		// use the current "options" button for all views
-		id rightButton = [[[navigationController navigationBar] topItem] rightBarButtonItem];
-		[[newItemListController navigationItem] setRightBarButtonItem: rightButton];
+		ItemListController * newItemListController = [self createControllerForTag: [item tagValue]];
 		
 		[navigationController pushViewController: newItemListController animated:YES];
 	} else {
@@ -140,13 +147,15 @@
 }
 
 - (void) loadItemWithID:(NSString *) google_id {
+	// TODO: maybe load up items in the "All items" tag? Or just persist the last tag as well...
+	return;
 	int index;
 	id items = [self itemSet];
 	id item;
 	for(index == 0; index < [items count]; index++) {
 		item = [items objectAtIndex:index];
 		if([[item google_id] isEqualToString: google_id]) {
-			[[[UIApplication sharedApplication] delegate] loadItemAtIndex: index fromSet: [self itemSet]];
+//FIXME			[[[UIApplication sharedApplication] delegate] loadItemAtIndex: index fromSet: [self itemSet]];
 			return;
 		}
 	}
