@@ -90,6 +90,7 @@
 	id item = [self itemIndexFromIndexPath:indexPath];
 	if([item hasChildren]) {
 		// TODO: load children of [item tag]
+		
 /*		###################### */
 	} else {
 		// load it

@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-@interface ItemsListController : UIViewController {
+@interface ItemListController : UIViewController {
 	IBOutlet id dataSource;
 	IBOutlet id listView;
 	

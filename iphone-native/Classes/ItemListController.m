@@ -1,7 +1,7 @@
-#import "ItemsListController.h"
+#import "ItemListController.h"
 #import "TCHelpers.h"
 
-@implementation ItemsListController
+@implementation ItemListController
 - (void) setDB: (id) db {
 	[dataSource setDB: db];
 	[listView reloadData];
