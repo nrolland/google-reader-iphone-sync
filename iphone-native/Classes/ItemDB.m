@@ -140,9 +140,20 @@ NSString * all_items_tag = @"All Items";
 		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:@"select feed_name, count(google_id) as num_items from items GROUP BY feed_name ORDER BY feed_name"];
 	} else {
 		BOOL readItemsOnly = [[[[UIApplication sharedApplication] delegate] settings] showReadItems];
-		NSString * condition = [NSString stringWithFormat:@"%s feed_name = ?", readItemsOnly? "":"is_read = 0 and "];
-		dbg(@"conditions = %@", condition);
-		return [self itemsMatchingCondition: condition, tag ];
+		NSString * condition = nil;
+		if(readItemsOnly) {
+			condition = @"is_read = 0";
+		}
+		id result;
+		if([tag isEqualToString:all_items_tag]) {
+			result = [self itemsMatchingCondition: condition];
+		} else {
+			NSString * additionalCondition = @"feed_name = ?";
+			condition = condition? [condition stringByAppendingFormat: @" and %@", additionalCondition] : additionalCondition;
+			result = [self itemsMatchingCondition: condition, tag ];
+		}
+		dbg(@"condition = %@", condition);
+		return result;
 	}
 }
 
@@ -157,7 +168,7 @@ NSString * all_items_tag = @"All Items";
 	return [self itemFromResultSet: [db executeQuery: @"select * from items where google_id = ?", google_id]];
 }
 
-- (void) setAllItemsReadState: (BOOL) readState withTag:(NSString *) tag {
+- (void) setAllItemsReadState: (BOOL) readState forTag:(NSString *) tag {
 	dbg(@"DB: marking all items as %s", read ? "read" : "unread");
 	if(tag == nil || [tag isEqualToString: all_items_tag]) {
 		[db executeUpdate: @"update items set is_read=?", [NSNumber numberWithBool: readState]];

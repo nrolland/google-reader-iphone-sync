@@ -189,7 +189,7 @@
 - (NSString *) password  { return [plistData valueForKey:@"password"]; }
 - (id)         tagList   { 
 	id tags = [plistData valueForKey:@"tagList"];
-	if([[tags class] isSubclassOfClass: [@"" class]]) { // FIXME: what's wrong with NSString?
+	if([[tags class] isSubclassOfClass: [@"" class]]) { // TODO: why can't I just pass the NSString class object?
 		tags = [tags componentsSeparatedByString:@"\n"];
 	}
 	return tags;

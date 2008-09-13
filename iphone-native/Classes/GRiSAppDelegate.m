@@ -48,6 +48,32 @@
 	[browseController activate];
 }
 
+- (IBAction) toggleOptions: (id) sender {
+	UIView * currentView = [[[mainController navController] topViewController] view];
+	id subviews = [currentView subviews];
+	if([subviews containsObject: optionsView]) {
+		dbg(@"hiding options");
+		[optionsView removeFromSuperview];
+		[[[mainController navController] topViewController] refresh: self];
+	} else {
+		dbg(@"showing options");
+		[currentView addSubview: optionsView];
+		[optionsView setHidden: NO];
+		[optionsView animateFadeIn];
+	}
+}
+- (id) currentListController {
+	return [[mainController navController] topViewController];
+}
+- (IBAction) markItemsAsRead: (id) sender    { [self markItemsWithReadState: YES]; }
+- (IBAction) markItemsAsUnread: (id) sender  { [self markItemsWithReadState: NO];  }
+
+- (void) markItemsWithReadState: (BOOL) read {
+	[[self currentListController] markItemsWithReadState:read];
+	[self toggleOptions: self];
+}
+	
+
 - (void)dealloc {
 	[window release];
 	[browseController release];

@@ -90,10 +90,10 @@
 	[listView setNeedsDisplay]; // this shouldn't be necessary, surely...
 }
 
-- (IBAction) markAllItemsAsRead:   (id) sender { [self markAllItemsWithReadState: YES]; }
-- (IBAction) markAllItemsAsUnread: (id) sender { [self markAllItemsWithReadState: NO];  }
+- (IBAction) markItemsAsRead:   (id) sender { [self markAllItemsWithReadState: YES]; }
+- (IBAction) markItemsAsUnread: (id) sender { [self markAllItemsWithReadState: NO];  }
 
-- (void) markAllItemsWithReadState: (BOOL) read {
+- (void) markItemsWithReadState: (BOOL) read {
 	alertWasForMarkingAsRead = read;
 	markAsReadAlert = [[UIAlertView alloc]
 		initWithTitle: [NSString stringWithFormat: @"Mark as %@",read ? @"read":@"unread"]
@@ -110,6 +110,7 @@
 		[[self delegate] setAllItemsReadState: alertWasForMarkingAsRead];
 		[[self delegate] reloadItems];
 		[self hideOptions];
+		[self refresh:self];
 	}
 	[_view release];
 }

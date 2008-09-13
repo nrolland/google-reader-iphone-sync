@@ -2,15 +2,16 @@
 #import "ItemListController.h"
 #import "ItemSet.h"
 #import "TCHelpers.h"
+#import "TagItem.h"
 
-@interface NSObject (MissingMethodTrace)
-@end
-
-@implementation NSObject (MissingMethodTrace)
-- (void) doesNotRecognizeSelector:(SEL)sel {
-	dbg(@"object %@ does not recognise selector: %s", self, sel);
-}
-@end
+//@interface NSObject (MissingMethodTrace)
+//@end
+//
+//@implementation NSObject (MissingMethodTrace)
+//- (void) doesNotRecognizeSelector:(SEL)sel {
+//	dbg(@"object %@ does not recognise selector: %s", self, sel);
+//}
+//@end
 
 @implementation ItemListDelegate
 - (id) init {
@@ -129,8 +130,8 @@
 		// use the current "options" button for all views
 		id rightButton = [[[navigationController navigationBar] topItem] rightBarButtonItem];
 		[[newItemListController navigationItem] setRightBarButtonItem: rightButton];
+		
 		[navigationController pushViewController: newItemListController animated:YES];
-		dbg(@"setting bar button item to %@", rightButton);
 	} else {
 		// load it
 		dbg(@"listdelegate: loading item: %@", item);
@@ -175,8 +176,6 @@
 - (void) reloadItems {
 	[itemSet release];
 	itemSet = nil;
-	dbg(@"items has been nil'd - it should reload shortly");
-	[self itemSet];
 }
 
 - (void) setDB:(id) _db {
@@ -187,12 +186,14 @@
 
 - (id) itemSet {
 	if(!itemSet) {
-		dbg(@"getting a band new item set... my tag is %@", tag);
 		itemSet = [[[ItemSet alloc] initWithTag: tag db: db] getItems];
-		dbg(@"got item set: %@", itemSet);
+		if(tag == nil) {
+			// add the "All Items" tag
+			itemSet = [NSMutableArray arrayWithArray: itemSet];
+			[itemSet insertObject: [[[TagItem alloc] initWithTag: @"All Items" count: -1 db:db] autorelease] atIndex: 0];
+		}
 		[itemSet retain];
 	}
-	dbg(@"itemSet is not nil");
 	return itemSet;
 }
 
