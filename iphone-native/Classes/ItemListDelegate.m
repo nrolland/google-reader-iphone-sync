@@ -146,17 +146,30 @@
 	}
 }
 
-- (void) loadItemWithID:(NSString *) google_id {
-	// TODO: maybe load up items in the "All items" tag? Or just persist the last tag as well...
-	return;
+- (void) loadItemWithID:(NSString *) google_id fromTag:(NSString *) _tag {
+	if(!_tag) {
+		dbg(@"no tag to load item from - returning");
+		return;
+	}
+	if(![_tag isEqualToString:tag]) {
+		dbg(@"i am not the controller for tag %@ - making one", _tag);
+		id tagController = [self createControllerForTag: _tag];
+		[navigationController pushViewController: tagController animated:NO];
+		[[tagController delegate] loadItemWithID: google_id fromTag: _tag];
+		return;
+	}
+	
+	dbg(@"loading item from tag: %@ with id: %@", _tag, google_id);
 	int index;
 	id items = [self itemSet];
 	id item;
-	for(index == 0; index < [items count]; index++) {
+	for(index = 0; index < [items count]; index++) {
 		item = [items objectAtIndex:index];
-		if([[item google_id] isEqualToString: google_id]) {
-//FIXME			[[[UIApplication sharedApplication] delegate] loadItemAtIndex: index fromSet: [self itemSet]];
+		if([item respondsToSelector:@selector(google_id)] && [[item google_id] isEqualToString: google_id]) {
+			[[[UIApplication sharedApplication] delegate] loadItemAtIndex: index fromSet: items];
 			return;
+		} else {
+			dbg(@"item does not match google id: %@ (item = %@)", google_id, item);
 		}
 	}
 }
@@ -183,6 +196,7 @@
 
 
 - (void) reloadItems {
+	dbg(@"dropping itemSet for %@", self);
 	[itemSet release];
 	itemSet = nil;
 }
@@ -195,6 +209,7 @@
 
 - (id) itemSet {
 	if(!itemSet) {
+		dbg(@"getting a new itemSet");
 		itemSet = [[[ItemSet alloc] initWithTag: tag db: db] getItems];
 		if(tag == nil) {
 			// add the "All Items" tag

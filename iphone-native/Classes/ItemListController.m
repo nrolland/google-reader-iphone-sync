@@ -11,7 +11,7 @@
 - (id) title {
 	NSString * title = [delegate tag];
 	if(!title) {
-		title = @"Something else!";
+		title = @"[no tag]";
 	}
 	return title;
 }
@@ -38,9 +38,6 @@
 
 - (void) selectItemWithID:(NSString *) google_id {
 	id indexPath = [[self delegate] getIndexPathForItemWithID:google_id];
-	dbg(@"reloading data");
-	[self refresh:self];
-	[listView reloadData];
 	[listView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionTop];
 }
 
@@ -82,9 +79,10 @@
 }
 
 -(IBAction) refresh: (id) sender {
-	dbg(@"refreshing imteListController");
+	dbg(@"refreshing itemListController");
 	[self hideOptions];
-	[[self delegate] reloadItems];
+	dbg(@"delegate = %@", delegate);
+	[delegate reloadItems];
 	[listView reloadData];
 	[self redraw];
 	[listView setNeedsDisplay]; // this shouldn't be necessary, surely...
@@ -110,7 +108,7 @@
 		[[self delegate] setAllItemsReadState: alertWasForMarkingAsRead];
 		[[self delegate] reloadItems];
 		[self hideOptions];
-		[self refresh:self];
+		[[[UIApplication sharedApplication] delegate] refreshItemLists];
 	}
 	[_view release];
 }

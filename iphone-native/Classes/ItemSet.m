@@ -22,8 +22,6 @@
 - (void) reload {
 	[itemSet release];
 	itemSet = [[[db itemsInTag: tag] allObjects] retain];
-	dbg(@"got itemSet: %d", itemSet);
-	dbg(@"got itemSet: %@", itemSet);
 }
 
 - (void) setDB:(id) _db {

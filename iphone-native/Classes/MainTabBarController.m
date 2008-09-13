@@ -5,10 +5,6 @@
 @synthesize navController;
 - (void) activate {
 	dbg(@"%@ activating", self);
-//FIXME	[topLevelWindow addSubview:[self view]];
-	// TODO: stop being underneath the statusbar. it does this for us when the screen rotates, so we much be able to do it somehow...
-	// this is a hacky version that only works if it's in portrait mode:
-//FIXME	[[self view] setCenter: CGPointMake(160,250)];
 	[[self itemList] redraw];
 }
 
@@ -23,14 +19,10 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) return NO;
-//	if([self itemListIsActive]) {
-		return YES;
-//FIXME	}
-	return interfaceOrientation == UIInterfaceOrientationPortrait;
+	return YES;
 }
 
 - (void) deactivate {
 	dbg(@"%@ deactivating", self);
-//FIXME	[[self view] removeFromSuperview];
 }
 @end

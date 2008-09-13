@@ -202,9 +202,8 @@
 	return 20; // default
 }
 
-- (NSString *) getLastViewedItem {
-	return [plistData valueForKey:@"lastItemID"];
-}
+- (NSString *) getLastViewedItem { return [plistData valueForKey:@"lastItemID"]; }
+- (NSString *) getLastViewedTag { return [plistData valueForKey:@"lastItemTag"]; }
 	
 #pragma mark SETTING values
 - (void) setReadItems:(BOOL) newVal {
@@ -213,13 +212,17 @@
 
 - (void) setLastViewedItem {
 	[plistData setValue: [[[UIApplication sharedApplication] delegate] currentItemID] forKey:@"lastItemID"];
+	[plistData
+		setValue: [[[[[[[UIApplication sharedApplication] delegate] mainController] navController] topViewController] delegate] tag]
+		forKey:@"lastItemTag"];
 }
 
 - (void) setTagList: (NSArray *) selectedTags {
 	[plistData setValue:selectedTags forKey:@"tagList"];
 }
 
-// save string data
+#pragma mark event handlers
+
 - (IBAction) stringValueDidChange:(id)sender {
 	NSString * key;
 	if(sender == emailField) {
@@ -238,13 +241,11 @@
 - (IBAction) switchValueDidChange:(id) sender {
 	if(sender == showReadItemsToggle) {
 		[self setReadItems: [[sender valueForKey:@"on"] boolValue]];
+		[[[UIApplication sharedApplication] delegate] toggleOptions: self];
 	} else {
 		dbg(@"unknown sender sent switchValueDidChange to ApplicationSettings");
 	}
 }
-
-
-#pragma mark event handlers
 
 // general handler for text view & text fields
 - (void) textElementDidFinishEditing:(id) sender {

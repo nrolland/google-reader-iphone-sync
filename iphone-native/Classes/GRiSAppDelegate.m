@@ -36,6 +36,7 @@
 
 - (void)showNavigation: (id) sender {
 	dbg(@"Navigation!");
+	[self refreshItemLists];
 	[[browseController webView] showCurrentItemInItemList: [mainController itemList]];
 	[browseController deactivate];
 	[self setViewToShowItem: NO];
@@ -64,13 +65,19 @@
 	[browseController activate];
 }
 
+- (void) refreshItemLists {
+	for(id controller in [[mainController navController] viewControllers]) {
+		[controller refresh:self];
+	}
+}
+
 - (IBAction) toggleOptions: (id) sender {
 	UIView * currentView = [[[mainController navController] topViewController] view];
 	id subviews = [currentView subviews];
 	if([subviews containsObject: optionsView]) {
 		dbg(@"hiding options");
 		[optionsView removeFromSuperview];
-		[[[mainController navController] topViewController] refresh: self];
+		[self refreshItemLists];
 	} else {
 		dbg(@"showing options");
 		[currentView addSubview: optionsView];
@@ -98,10 +105,13 @@
 
 - (void) loadFirstView {
 	NSString * itemID = [appSettings getLastViewedItem];
+	NSString * tag = [appSettings getLastViewedTag];
 	dbg(@"last viewed item = %@", itemID);
+	dbg(@"last viewed tag = %@", tag);
 	[self showNavigation: self];
-	if(!(itemID == nil || [itemID length] == 0)) {
-		[itemListDelegate loadItemWithID:itemID];
+	if(!(itemID == nil || [itemID length] == 0 || tag == nil || [tag length] == 0)) {
+		dbg(@"loading tag %@, item %@", tag, itemID);
+		[itemListDelegate loadItemWithID:itemID fromTag: tag];
 	}
 	[window addSubview:[mainController view]];
 }

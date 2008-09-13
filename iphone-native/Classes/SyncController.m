@@ -146,7 +146,7 @@
 - (IBAction) hideSyncView: (id)sender {
 	[syncStatusView animateFadeOutThenTell:self withSelector:@selector(syncViewIsGone)];
 	[db reload];
-	[itemsController refresh:self];
+	[[[UIApplication sharedApplication] delegate] refreshItemLists];
 }
 
 // sync finished but you still want to see the report

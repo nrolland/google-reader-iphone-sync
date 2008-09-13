@@ -136,12 +136,12 @@ NSString * all_items_tag = @"All Items";
 }
 
 - (NSArray *) itemsInTag:(NSString *) tag{
+	BOOL showReadItems = [[[[UIApplication sharedApplication] delegate] settings] showReadItems];
 	if(!tag) {
-		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:@"select feed_name, count(google_id) as num_items from items GROUP BY feed_name ORDER BY feed_name"];
+		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:[NSString stringWithFormat:@"select feed_name, count(google_id) as num_items from items %@ GROUP BY feed_name ORDER BY feed_name", showReadItems? @"" : @"where is_read = 0"]];
 	} else {
-		BOOL readItemsOnly = [[[[UIApplication sharedApplication] delegate] settings] showReadItems];
 		NSString * condition = nil;
-		if(readItemsOnly) {
+		if(!showReadItems) {
 			condition = @"is_read = 0";
 		}
 		id result;
@@ -198,7 +198,6 @@ NSString * all_items_tag = @"All Items";
 }
 
 - (id) construct:(id) rs {
-	dbg(@"constructing object %@ with selector: %s", rs, constructor);
 	return [db performSelector:constructor withObject: rs];
 }
 

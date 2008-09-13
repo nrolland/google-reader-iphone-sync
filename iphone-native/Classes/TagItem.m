@@ -6,8 +6,6 @@
 
 - (id) initWithTag: (NSString *) _tag count:(int) _count db:(id) _db {
 	self = [super init];
-	dbg(@"tagItem initWithTag: _tag count:_count db:_db");
-	dbg(@"tagItem initWithTag: %@ count:%d db:%@", _tag, _count, _db);
 	tag = [_tag retain];
 	db = [_db retain];
 	count = _count;
@@ -17,13 +15,17 @@
 - (BOOL) hasChildren { dbg(@"has children? YES!"); return YES; }
 - (BOOL) is_starred { return NO; }
 - (BOOL) is_read    { return NO; }
+- (BOOL) count      { return count; }
 
 - (NSString *) tagValue {
 	return tag;
 }
 
 - (NSString *) title {
-	return tag;
+	if(count < 0) {
+		return tag;
+	}
+	return [tag stringByAppendingFormat: @" (%d)", count];
 }
 
 - (void) dealloc {
