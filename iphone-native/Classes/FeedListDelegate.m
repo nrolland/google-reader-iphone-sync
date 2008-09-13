@@ -1,5 +1,5 @@
 #import "FeedListDelegate.h"
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 
 @implementation FeedListDelegate
 - (void) dealloc {
@@ -26,7 +26,7 @@
 	NSUInteger indexes[[indexPath length]];
 	[indexPath getIndexes:indexes];
 	if(feedList) {
-		NSString * feedName = [feedList objectAtIndex: [tcHelpers lastIndexInPath:indexPath]];
+		NSString * feedName = [feedList objectAtIndex: [TCHelpers lastIndexInPath:indexPath]];
 		[cell setText:feedName];
 		UIColor * textColor;
 		if([selectedFeedList containsObject: feedName]) {
@@ -51,7 +51,7 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	if(feedList) {
-		NSString * selectedFeed = [feedList objectAtIndex: [tcHelpers lastIndexInPath:indexPath]];
+		NSString * selectedFeed = [feedList objectAtIndex: [TCHelpers lastIndexInPath:indexPath]];
 		if([selectedFeedList containsObject:selectedFeed]) {
 			[selectedFeedList removeObject:selectedFeed];
 		} else {

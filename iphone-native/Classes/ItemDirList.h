@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface tcDirList : NSObject {
+@interface ItemDirList : NSObject {
 	NSString * path;
 }
 - (id) initWithPath: (NSString *) initPath;

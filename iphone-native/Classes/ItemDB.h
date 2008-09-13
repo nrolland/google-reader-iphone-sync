@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
-#import "tcItem.h"
+#import "FeedItem.h"
 
-@interface tcItemDB : NSObject {
+@interface ItemDB : NSObject {
 	FMDatabase* db;
 	NSString * filename;
 }

@@ -1,5 +1,5 @@
 #import "ApplicationSettings.h"
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 
 @implementation ApplicationSettings
 - (NSString *) docsPath{ return docsPath; }
@@ -32,7 +32,7 @@
 		// this is the last resort, when none of the above paths exist
 		dbg(@"creating a new docs directory in the standard app doc directory");
 		path = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent: @"GRiS"];
-		[tcHelpers ensureDirectoryExists: path];
+		[TCHelpers ensureDirectoryExists: path];
 	}
 	NSLog(@"using docs path: %@", path);
 	[self setDocsPath: path];

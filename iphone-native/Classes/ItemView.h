@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
-#import "tcItemDB.h"
+#import "ItemDB.h"
 
-@interface tcWebView : UIWebView {
+@interface ItemView : UIWebView {
 	IBOutlet id appDelegate;
 	IBOutlet id titleDisplay;
 
@@ -10,16 +10,16 @@
 	IBOutlet id buttonStar;
 	IBOutlet id buttonRead;
 	
-	IBOutlet tcItemDB * db;
+	IBOutlet ItemDB * db;
 	id nextCursor;
 	id prevCursor;
 	NSString * currentHTML;
 	NSMutableArray * allItems;
 	int currentItemIndex;
-	tcItem * currentItem;
+	FeedItem * currentItem;
 }
 - (void) loadHTMLString: (NSString *) newHTML;
-- (void) loadItem: (tcItem *) item;
+- (void) loadItem: (FeedItem *) item;
 - (IBAction) loadUnread;
 - (void) loadItemAtIndex:(int) index fromSet: (id) items;
 - (void) setButtonStates;

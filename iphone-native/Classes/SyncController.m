@@ -1,5 +1,5 @@
 #import "SyncController.h"
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 #import <stdio.h>
 
 // and for proxy stuff:

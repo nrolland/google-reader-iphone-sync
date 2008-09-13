@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D3623260D0F684500981E51 /* Feeds2AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */; };
+		1D3623260D0F684500981E51 /* GRiSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* GRiSAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -26,6 +26,7 @@
 		225D84A50E433E2F00BFE7D1 /* FeedListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */; };
 		225D84A80E433E3800BFE7D1 /* ItemListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */; };
 		225D85210E435FF200BFE7D1 /* SyncController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225D851F0E435FF200BFE7D1 /* SyncController.m */; };
+		226C545D0E7AAF950083D8FD /* ItemSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 226C545C0E7AAF950083D8FD /* ItemSet.m */; };
 		22976FD30E610459001B44DA /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22976FD20E610459001B44DA /* CoreFoundation.framework */; };
 		22976FD90E610488001B44DA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22976FD80E610488001B44DA /* CFNetwork.framework */; };
 		22C6B5280E3DD33700B8F9A3 /* BrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */; };
@@ -45,17 +46,18 @@
 		22C6B6920E3DEF6100B8F9A3 /* read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C6B6820E3DEF6100B8F9A3 /* read.png */; };
 		22C6B6930E3DEF6100B8F9A3 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C6B6830E3DEF6100B8F9A3 /* star.png */; };
 		22C6B6940E3DEF6100B8F9A3 /* up.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C6B6840E3DEF6100B8F9A3 /* up.png */; };
-		22D4C54B0E34A95A001E2E58 /* tcWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D4C54A0E34A95A001E2E58 /* tcWebView.m */; };
-		22D4C5500E34A9EF001E2E58 /* tcDirList.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D4C54F0E34A9EF001E2E58 /* tcDirList.m */; };
 		22D4C57F0E34AC93001E2E58 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D4C5780E34AC93001E2E58 /* FMResultSet.m */; };
 		22D4C5810E34AC93001E2E58 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D4C57B0E34AC93001E2E58 /* FMDatabaseAdditions.m */; };
 		22D4C5820E34AC93001E2E58 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D4C57D0E34AC93001E2E58 /* FMDatabase.m */; };
 		22D4C5840E34AD8F001E2E58 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D4C5830E34AD8F001E2E58 /* libsqlite3.0.dylib */; };
 		22DB0D4A0E45C8BE008CD8C7 /* ApplicationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */; };
 		22DB0D4B0E45C8BE008CD8C7 /* BackgroundShell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */; };
-		22DF94D10E3ABEE20052AAAB /* tcItemDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DF94D00E3ABEE20052AAAB /* tcItemDB.m */; };
-		22DF94EF0E3AD2470052AAAB /* tcHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DF94EE0E3AD2470052AAAB /* tcHelpers.m */; };
-		22DF94FD0E3AF6040052AAAB /* tcItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DF94FC0E3AF6040052AAAB /* tcItem.m */; };
+		22F0658E0E7B4FE20021E97A /* FeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F065850E7B4FE20021E97A /* FeedItem.m */; };
+		22F0658F0E7B4FE20021E97A /* ItemDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F065870E7B4FE20021E97A /* ItemDB.m */; };
+		22F065900E7B4FE20021E97A /* ItemDirList.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F065890E7B4FE20021E97A /* ItemDirList.m */; };
+		22F065910E7B4FE20021E97A /* ItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F0658B0E7B4FE20021E97A /* ItemView.m */; };
+		22F065920E7B4FE20021E97A /* TCHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F0658D0E7B4FE20021E97A /* TCHelpers.m */; };
+		22F065DD0E7B53790021E97A /* TagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F065DC0E7B53790021E97A /* TagItem.m */; };
 		22F693700E4EB06F001792D4 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 22F6936F0E4EB06F001792D4 /* Default.png */; };
 		28216C970DB411BC00E5133A /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28216C960DB411BC00E5133A /* FirstViewController.m */; };
 		28AD73880D9D96C1002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD73870D9D96C1002E5188 /* MainWindow.xib */; };
@@ -75,8 +77,8 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D3623240D0F684500981E51 /* Feeds2AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Feeds2AppDelegate.h; sourceTree = "<group>"; };
-		1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feeds2AppDelegate.m; sourceTree = "<group>"; };
+		1D3623240D0F684500981E51 /* GRiSAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GRiSAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* GRiSAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GRiSAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* GRiS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GRiS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		222CA6C40E568C0300146D8E /* StripedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StripedView.h; sourceTree = "<group>"; };
@@ -101,6 +103,8 @@
 		225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemListDelegate.m; sourceTree = "<group>"; };
 		225D851F0E435FF200BFE7D1 /* SyncController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncController.m; sourceTree = "<group>"; };
 		225D85200E435FF200BFE7D1 /* SyncController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncController.h; sourceTree = "<group>"; };
+		226C545B0E7AAF950083D8FD /* ItemSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemSet.h; sourceTree = "<group>"; };
+		226C545C0E7AAF950083D8FD /* ItemSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemSet.m; sourceTree = "<group>"; };
 		22976FD20E610459001B44DA /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		22976FD80E610488001B44DA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowserViewController.m; sourceTree = "<group>"; };
@@ -121,10 +125,6 @@
 		22C6B6820E3DEF6100B8F9A3 /* read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = read.png; path = button_images/read.png; sourceTree = "<group>"; };
 		22C6B6830E3DEF6100B8F9A3 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = star.png; path = button_images/star.png; sourceTree = "<group>"; };
 		22C6B6840E3DEF6100B8F9A3 /* up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = up.png; path = button_images/up.png; sourceTree = "<group>"; };
-		22D4C5490E34A95A001E2E58 /* tcWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcWebView.h; sourceTree = "<group>"; };
-		22D4C54A0E34A95A001E2E58 /* tcWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tcWebView.m; sourceTree = "<group>"; };
-		22D4C54E0E34A9EF001E2E58 /* tcDirList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcDirList.h; sourceTree = "<group>"; };
-		22D4C54F0E34A9EF001E2E58 /* tcDirList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tcDirList.m; sourceTree = "<group>"; };
 		22D4C5780E34AC93001E2E58 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMResultSet.m; path = Classes/fmdb/src/FMResultSet.m; sourceTree = "<group>"; };
 		22D4C5790E34AC93001E2E58 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMResultSet.h; path = Classes/fmdb/src/FMResultSet.h; sourceTree = "<group>"; };
 		22D4C57A0E34AC93001E2E58 /* fmdb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = fmdb.m; path = Classes/fmdb/src/fmdb.m; sourceTree = "<group>"; };
@@ -137,12 +137,18 @@
 		22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationSettings.m; sourceTree = "<group>"; };
 		22DB0D480E45C8BE008CD8C7 /* BackgroundShell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundShell.h; sourceTree = "<group>"; };
 		22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundShell.m; sourceTree = "<group>"; };
-		22DF94CF0E3ABEE20052AAAB /* tcItemDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcItemDB.h; sourceTree = "<group>"; };
-		22DF94D00E3ABEE20052AAAB /* tcItemDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tcItemDB.m; sourceTree = "<group>"; };
-		22DF94ED0E3AD2470052AAAB /* tcHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcHelpers.h; sourceTree = "<group>"; };
-		22DF94EE0E3AD2470052AAAB /* tcHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tcHelpers.m; sourceTree = "<group>"; };
-		22DF94FB0E3AF6040052AAAB /* tcItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcItem.h; sourceTree = "<group>"; };
-		22DF94FC0E3AF6040052AAAB /* tcItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tcItem.m; sourceTree = "<group>"; };
+		22F065840E7B4FE20021E97A /* FeedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedItem.h; sourceTree = "<group>"; };
+		22F065850E7B4FE20021E97A /* FeedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedItem.m; sourceTree = "<group>"; };
+		22F065860E7B4FE20021E97A /* ItemDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemDB.h; sourceTree = "<group>"; };
+		22F065870E7B4FE20021E97A /* ItemDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemDB.m; sourceTree = "<group>"; };
+		22F065880E7B4FE20021E97A /* ItemDirList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemDirList.h; sourceTree = "<group>"; };
+		22F065890E7B4FE20021E97A /* ItemDirList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemDirList.m; sourceTree = "<group>"; };
+		22F0658A0E7B4FE20021E97A /* ItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemView.h; sourceTree = "<group>"; };
+		22F0658B0E7B4FE20021E97A /* ItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemView.m; sourceTree = "<group>"; };
+		22F0658C0E7B4FE20021E97A /* TCHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCHelpers.h; sourceTree = "<group>"; };
+		22F0658D0E7B4FE20021E97A /* TCHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCHelpers.m; sourceTree = "<group>"; };
+		22F065DB0E7B53790021E97A /* TagItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagItem.h; sourceTree = "<group>"; };
+		22F065DC0E7B53790021E97A /* TagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagItem.m; sourceTree = "<group>"; };
 		22F6936F0E4EB06F001792D4 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		28216C950DB411BC00E5133A /* FirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
 		28216C960DB411BC00E5133A /* FirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
@@ -171,40 +177,9 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				222CA7130E56B0A900146D8E /* TCViewExtensions.h */,
-				222CA7140E56B0A900146D8E /* TCViewExtensions.m */,
-				22DB0D460E45C8BE008CD8C7 /* ApplicationSettings.h */,
-				22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */,
-				22DB0D480E45C8BE008CD8C7 /* BackgroundShell.h */,
-				22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */,
-				22425F330E43F02D00252E7A /* ItemsListController.h */,
-				22425F340E43F02D00252E7A /* ItemsListController.m */,
-				225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */,
-				225D84A40E433E2F00BFE7D1 /* FeedListDelegate.h */,
-				225D84A60E433E3800BFE7D1 /* ItemListDelegate.h */,
-				225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */,
-				225D851F0E435FF200BFE7D1 /* SyncController.m */,
-				225D85200E435FF200BFE7D1 /* SyncController.h */,
-				22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */,
-				22C6B5270E3DD33700B8F9A3 /* BrowserViewController.h */,
-				22DF94FB0E3AF6040052AAAB /* tcItem.h */,
-				22DF94FC0E3AF6040052AAAB /* tcItem.m */,
-				22DF94ED0E3AD2470052AAAB /* tcHelpers.h */,
-				22DF94EE0E3AD2470052AAAB /* tcHelpers.m */,
-				22D4C54E0E34A9EF001E2E58 /* tcDirList.h */,
-				22D4C54F0E34A9EF001E2E58 /* tcDirList.m */,
-				22D4C5490E34A95A001E2E58 /* tcWebView.h */,
-				22D4C54A0E34A95A001E2E58 /* tcWebView.m */,
-				28216C950DB411BC00E5133A /* FirstViewController.h */,
-				28216C960DB411BC00E5133A /* FirstViewController.m */,
-				1D3623240D0F684500981E51 /* Feeds2AppDelegate.h */,
-				1D3623250D0F684500981E51 /* Feeds2AppDelegate.m */,
-				22DF94CF0E3ABEE20052AAAB /* tcItemDB.h */,
-				22DF94D00E3ABEE20052AAAB /* tcItemDB.m */,
-				222CA6C40E568C0300146D8E /* StripedView.h */,
-				222CA6C50E568C0300146D8E /* StripedView.m */,
-				225D84990E43376A00BFE7D1 /* MainTabBarController.h */,
-				225D849A0E43376A00BFE7D1 /* MainTabBarController.m */,
+				22F065950E7B505D0021E97A /* App */,
+				22F065940E7B50370021E97A /* Support */,
+				22F065930E7B501B0021E97A /* Items */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -259,6 +234,65 @@
 				22D4C57E0E34AC93001E2E58 /* FMDatabase.h */,
 			);
 			name = fmdb;
+			sourceTree = "<group>";
+		};
+		22F065930E7B501B0021E97A /* Items */ = {
+			isa = PBXGroup;
+			children = (
+				22F065DB0E7B53790021E97A /* TagItem.h */,
+				22F065DC0E7B53790021E97A /* TagItem.m */,
+				225D84A30E433E2F00BFE7D1 /* FeedListDelegate.m */,
+				225D84A40E433E2F00BFE7D1 /* FeedListDelegate.h */,
+				22F065860E7B4FE20021E97A /* ItemDB.h */,
+				22F065870E7B4FE20021E97A /* ItemDB.m */,
+				22F065880E7B4FE20021E97A /* ItemDirList.h */,
+				22425F330E43F02D00252E7A /* ItemsListController.h */,
+				22425F340E43F02D00252E7A /* ItemsListController.m */,
+				22F065890E7B4FE20021E97A /* ItemDirList.m */,
+				225D84A60E433E3800BFE7D1 /* ItemListDelegate.h */,
+				225D84A70E433E3800BFE7D1 /* ItemListDelegate.m */,
+				22F065840E7B4FE20021E97A /* FeedItem.h */,
+				22F065850E7B4FE20021E97A /* FeedItem.m */,
+				22F0658A0E7B4FE20021E97A /* ItemView.h */,
+				22F0658B0E7B4FE20021E97A /* ItemView.m */,
+				226C545B0E7AAF950083D8FD /* ItemSet.h */,
+				226C545C0E7AAF950083D8FD /* ItemSet.m */,
+			);
+			name = Items;
+			sourceTree = "<group>";
+		};
+		22F065940E7B50370021E97A /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				22F0658C0E7B4FE20021E97A /* TCHelpers.h */,
+				22F0658D0E7B4FE20021E97A /* TCHelpers.m */,
+				222CA7130E56B0A900146D8E /* TCViewExtensions.h */,
+				222CA7140E56B0A900146D8E /* TCViewExtensions.m */,
+				22DB0D480E45C8BE008CD8C7 /* BackgroundShell.h */,
+				22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */,
+			);
+			name = Support;
+			sourceTree = "<group>";
+		};
+		22F065950E7B505D0021E97A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				22DB0D460E45C8BE008CD8C7 /* ApplicationSettings.h */,
+				22DB0D470E45C8BE008CD8C7 /* ApplicationSettings.m */,
+				225D851F0E435FF200BFE7D1 /* SyncController.m */,
+				225D85200E435FF200BFE7D1 /* SyncController.h */,
+				22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */,
+				22C6B5270E3DD33700B8F9A3 /* BrowserViewController.h */,
+				28216C950DB411BC00E5133A /* FirstViewController.h */,
+				28216C960DB411BC00E5133A /* FirstViewController.m */,
+				1D3623240D0F684500981E51 /* GRiSAppDelegate.h */,
+				1D3623250D0F684500981E51 /* GRiSAppDelegate.m */,
+				222CA6C40E568C0300146D8E /* StripedView.h */,
+				222CA6C50E568C0300146D8E /* StripedView.m */,
+				225D84990E43376A00BFE7D1 /* MainTabBarController.h */,
+				225D849A0E43376A00BFE7D1 /* MainTabBarController.m */,
+			);
+			name = App;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* Feeds2 */ = {
@@ -387,16 +421,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
-				1D3623260D0F684500981E51 /* Feeds2AppDelegate.m in Sources */,
+				1D3623260D0F684500981E51 /* GRiSAppDelegate.m in Sources */,
 				28216C970DB411BC00E5133A /* FirstViewController.m in Sources */,
-				22D4C54B0E34A95A001E2E58 /* tcWebView.m in Sources */,
-				22D4C5500E34A9EF001E2E58 /* tcDirList.m in Sources */,
 				22D4C57F0E34AC93001E2E58 /* FMResultSet.m in Sources */,
 				22D4C5810E34AC93001E2E58 /* FMDatabaseAdditions.m in Sources */,
 				22D4C5820E34AC93001E2E58 /* FMDatabase.m in Sources */,
-				22DF94D10E3ABEE20052AAAB /* tcItemDB.m in Sources */,
-				22DF94EF0E3AD2470052AAAB /* tcHelpers.m in Sources */,
-				22DF94FD0E3AF6040052AAAB /* tcItem.m in Sources */,
 				22C6B5280E3DD33700B8F9A3 /* BrowserViewController.m in Sources */,
 				225D849B0E43376A00BFE7D1 /* MainTabBarController.m in Sources */,
 				225D84A50E433E2F00BFE7D1 /* FeedListDelegate.m in Sources */,
@@ -407,6 +436,13 @@
 				22DB0D4B0E45C8BE008CD8C7 /* BackgroundShell.m in Sources */,
 				222CA6C60E568C0300146D8E /* StripedView.m in Sources */,
 				222CA7150E56B0A900146D8E /* TCViewExtensions.m in Sources */,
+				226C545D0E7AAF950083D8FD /* ItemSet.m in Sources */,
+				22F0658E0E7B4FE20021E97A /* FeedItem.m in Sources */,
+				22F0658F0E7B4FE20021E97A /* ItemDB.m in Sources */,
+				22F065900E7B4FE20021E97A /* ItemDirList.m in Sources */,
+				22F065910E7B4FE20021E97A /* ItemView.m in Sources */,
+				22F065920E7B4FE20021E97A /* TCHelpers.m in Sources */,
+				22F065DD0E7B53790021E97A /* TagItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

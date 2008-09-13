@@ -1,8 +1,8 @@
-#import "Feeds2AppDelegate.h"
-#import "tcWebView.h"
-#import "tcHelpers.h"
+#import "GRiSAppDelegate.h"
+#import "ItemView.h"
+#import "TCHelpers.h"
 
-@implementation Feeds2AppDelegate
+@implementation GRiSAppDelegate
 
 @synthesize window;
 

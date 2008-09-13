@@ -1,9 +1,9 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "tcItemDB.h"
+#import "ItemDB.h"
 
 @interface ItemListDelegate : UITableViewController {
-	IBOutlet tcItemDB * db;
+	IBOutlet ItemDB * db;
 	id itemSet;
 	UIImage * starredImage;
 	UIImage * readImage;
@@ -11,6 +11,8 @@
 	UIFont * cellFont;
 	IBOutlet id settings;
 	IBOutlet UITableView * listView;
+	NSString * tag;
+	NSString * feed;
 }
 
 - (id) itemSet;

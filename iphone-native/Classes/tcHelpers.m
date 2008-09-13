@@ -1,6 +1,6 @@
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 
-@implementation tcHelpers
+@implementation TCHelpers
 + (BOOL) ensureDirectoryExists:(NSString *)path {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if(![fileManager fileExistsAtPath: path]){

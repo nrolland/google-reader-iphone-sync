@@ -1,5 +1,5 @@
 #import "MainTabBarController.h"
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 
 @implementation MainTabBarController
 @synthesize itemList;

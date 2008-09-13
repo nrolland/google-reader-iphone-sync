@@ -1,7 +1,7 @@
 #import "Foundation/Foundation.h"
-#import "tcItemDB.h"
+#import "ItemDB.h"
 
-@interface tcItem : NSObject {
+@interface FeedItem : NSObject {
 	NSString* google_id;
 	NSString* date;
 	NSString* url;

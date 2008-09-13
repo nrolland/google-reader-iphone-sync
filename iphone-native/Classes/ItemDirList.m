@@ -1,7 +1,7 @@
-#import "tcDirList.h"
+#import "ItemDirList.h"
 
 
-@implementation tcDirList
+@implementation ItemDirList
 - (id) init {
 	return [self initWithPath: @"/"];
 }

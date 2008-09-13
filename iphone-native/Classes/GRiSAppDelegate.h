@@ -2,7 +2,7 @@
 #import "browserViewController.h"
 #import "MainTabBarController.h"
 
-@interface Feeds2AppDelegate : NSObject {
+@interface GRiSAppDelegate : NSObject {
 	IBOutlet UIWindow *window;
 	IBOutlet id db;
 	IBOutlet BrowserViewController * browseController;

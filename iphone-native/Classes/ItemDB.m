@@ -1,19 +1,21 @@
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
-#import "tcHelpers.h"
-#import "tcItemDB.h"
-#import "tcItem.h"
+#import "TCHelpers.h"
+#import "ItemDB.h"
+#import "FeedItem.h"
+#import "TagItem.h"
 
-@interface tcItemEnumerator : NSEnumerator {
+@interface FeedItemEnumerator : NSEnumerator {
 	FMResultSet* rs;
-	tcItemDB * db;
+	ItemDB * db;
+	SEL constructor;
 }
-- (id) initWithResultSet: result_set fromDB:(tcItemDB *) the_db;
+- (id) initWithResultSet: result_set fromDB:(ItemDB *) the_db;
 @end
 
 
-@implementation tcItemDB
+@implementation ItemDB
 
 #define db_ok [self dbHadError]
 #define if_error if([self dbHadError])
@@ -75,7 +77,7 @@
 }
 
 - (id) itemFromResultSet: (FMResultSet *)rs {
-	 return [[[tcItem alloc]
+	return [[[FeedItem alloc]
 			initWithId:		[rs stringForColumn:@"google_id"]
 			originalId:		[rs stringForColumn:@"original_id"]
 			date:			[rs stringForColumn:@"date"]
@@ -89,26 +91,53 @@
 		autorelease];
 }
 
-- (NSEnumerator *) enumeratorForQuery: (NSString *) sql, ... {
-	va_list args;
-	va_start(args, sql);
-	
-	dbg(@"** SQL: enumeratorForQuery: %@", sql);
-	FMResultSet *rs = [db executeQuery:sql arguments:args];
-	
-	va_end(args);
-	if_error return nil;
-	
-	return [[[tcItemEnumerator alloc] initWithResultSet:rs fromDB: self] autorelease];
+- (id) tagItemFromResultSet: (FMResultSet *)rs {
+	dbg(@"making a tag item from result set %@", rs);
+	return [[[TagItem alloc]
+			initWithTag:	[rs stringForColumn:@"feed_name"]
+			count:			[rs intForColumn:@"num_items"]
+			db: self]
+		autorelease];
 }
 
-- (NSEnumerator *) itemsMatchingCondition:(NSString *) condition {
+
+- (NSEnumerator *) enumeratorWithConstructor:(SEL)constructor forQuery: (NSString *) sql arguments: (va_list) args {
+	dbg(@"** SQL: enumeratorForQuery: %@", sql);
+	FMResultSet *rs = [db executeQuery:sql arguments:args];
+	if_error return nil;
+	
+	return [[[FeedItemEnumerator alloc] initWithResultSet:rs fromDB: self withConstructor: constructor] autorelease];
+}
+
+- (NSEnumerator *) enumeratorWithConstructor:(SEL)constructor forQuery: (NSString *) sql, ... {
+	va_list args;
+	va_start(args, sql);
+
+	id ret = [self enumeratorWithConstructor:constructor forQuery: sql arguments: args];
+	
+	va_end(args);
+	return ret;
+}
+
+- (NSEnumerator *) itemsMatchingCondition:(NSString *) condition, ... {
 	NSString * query = @"select * from items";
 	if(condition != nil){
-		query = [query stringByAppendingFormat: @" where %@", condition];
+		va_list args;
+		va_start(args, condition);
+		query = [query stringByAppendingFormat: @" where %@", condition, args];
+		va_end(args);
 	}
 	// TODO: better pagination
-	return [self enumeratorForQuery: [query stringByAppendingFormat: @" order by date limit 400"]];
+	return [self enumeratorWithConstructor:@selector(itemFromResultSet:) forQuery: [query stringByAppendingFormat: @" order by date limit 400"]];
+}
+
+- (NSArray *) itemsInTag:(NSString *) tag{
+	if(!tag) {
+		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:@"select feed_name, count(google_id) as num_items from items GROUP BY feed_name"];
+	} else {
+		BOOL readItemsOnly = [[[[UIApplication sharedApplication] delegate] settings] showReadItems];
+		return [self itemsMatchingCondition: [NSString stringWithFormat:@"%s tag = ?", readItemsOnly? "":"is_read = 0 and "], tag ];
+	}
 }
 
 #pragma mark convenience query methods
@@ -129,20 +158,29 @@
 }
 @end
 
-@implementation tcItemEnumerator : NSEnumerator
-- (id) initWithResultSet: result_set fromDB:(tcItemDB *) the_db {
+
+
+
+@implementation FeedItemEnumerator : NSEnumerator
+- (id) initWithResultSet: result_set fromDB:(ItemDB *) the_db withConstructor:(SEL)_constructor {
 	self = [super init];
-	rs = result_set;
+	rs = [result_set retain];
 	db = [the_db retain];
-	[rs retain];
+	constructor = _constructor;
 	return self;
 }
 - (id) nextObject {
 	if(![rs next]){
 		return nil;
 	}
-	return [db itemFromResultSet: rs];
+	return [self construct: rs];
 }
+
+- (id) construct:(id) rs {
+	dbg(@"constructing object %@ with selector: %s", rs, constructor);
+	return [db performSelector:constructor withObject: rs];
+}
+
 - (void) dealloc {
 	[rs close];
 	[rs release];
@@ -153,32 +191,49 @@
 - (NSArray *) allObjects {
 	NSMutableArray *array = [NSMutableArray array];
 	while([rs next]) {
-		[array addObject: [db itemFromResultSet: rs]];
+		[array addObject: [self construct: rs]];
 	}
 	return array;
 }
 @end
 
 @interface itemProxy : NSObject {
-	NSString * google_id;
-	tcItemDB * db;
+	NSString * obj_id;
+	ItemDB * db;
+	SEL constructor;
+	id * _item;
 }
 @end
+
 @implementation itemProxy : NSObject
-- (id) initWithID: (NSString *)ngoogle_id fromSource:(tcItemDB *)ndb {
+- (id) initWithID: (NSString *)_id fromSource:(ItemDB *)_db usingConstructor:(SEL)_sel {
 	self = [super init];
-	google_id = [ngoogle_id retain];
-	db = [ndb retain];
+	obj_id = [_id retain];
+	db = [_db retain];
+	constructor = _sel;
 	return self;
 }
 
+- (void) deflate {
+	[_item release];
+	_item = nil;
+}
+
+- (id) fullItem {
+	if(!_item) {
+		_item = [db performSelector:constructor withObject:obj_id];
+	}
+	return _item;
+}
+
 - (void) forwardInvocation:(NSInvocation *)invocation {
-	[invocation invokeWithTarget: [db itemWithID: google_id]];
+	[invocation invokeWithTarget: [self fullItem]];
 }
 
 - (void) dealloc {
 	[db release];
-	[google_id release];
+	[obj_id release];
+	[_item release];
 	[super dealloc];
 }
 @end

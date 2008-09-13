@@ -1,9 +1,9 @@
 #import "ItemsListController.h"
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 
 @implementation ItemsListController
-- (void) setItemSet: (id) set {
-	[dataSource setItemSet: set];
+- (void) setDB: (id) db {
+	[dataSource setDB: db];
 	[listView reloadData];
 }
 

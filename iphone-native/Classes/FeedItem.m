@@ -1,7 +1,7 @@
-#import "tcItem.h"
-#import "tcHelpers.h"
+#import "FeedItem.h"
+#import "TCHelpers.h"
 
-@implementation tcItem
+@implementation FeedItem
 @synthesize google_id, original_id, url, date, title, content, feed_name, is_read, is_starred, is_dirty;
 - (id) initWithId: (NSString *) ngoogle_id
 	originalId: (NSString *) noriginal_id

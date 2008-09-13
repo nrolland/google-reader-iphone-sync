@@ -1,7 +1,19 @@
 #import "ItemListDelegate.h"
-#import "tcHelpers.h"
+#import "ItemSet.h"
+#import "TCHelpers.h"
 
 @implementation ItemListDelegate
+- (id) init {
+	return [self initWithTag:nil db:nil];
+}
+
+- (id) initWithTag:(NSString *) _tag db:(id)_db {
+	self = [super init];
+	tag = [_tag retain];
+	db = [_db retain];
+	return self;
+}
+
 - (id) tableView:(id)view cellForRowAtIndexPath: (id) indexPath {
 	UITableViewCell * cell = [view dequeueReusableCellWithIdentifier:@"itemCell"];
 	if(cell == nil) {
@@ -75,7 +87,14 @@
 }
 
 - (void) tableView:(id)view didSelectRowAtIndexPath:(id) indexPath {
-	[[[UIApplication sharedApplication] delegate] loadItemAtIndex: [self itemIndexFromIndexPath:indexPath] fromSet: itemSet];
+	id item = [self itemIndexFromIndexPath:indexPath];
+	if([item hasChildren]) {
+		// TODO: load children of [item tag]
+/*		###################### */
+	} else {
+		// load it
+		[[[UIApplication sharedApplication] delegate] loadItemAtIndex: item fromSet: [self itemSet]];
+	}
 }
 
 - (void) loadItemWithID:(NSString *) google_id {
@@ -85,7 +104,7 @@
 	for(index == 0; index < [items count]; index++) {
 		item = [items objectAtIndex:index];
 		if([[item google_id] isEqualToString: google_id]) {
-			[[[UIApplication sharedApplication] delegate] loadItemAtIndex: index fromSet: itemSet];
+			[[[UIApplication sharedApplication] delegate] loadItemAtIndex: index fromSet: [self itemSet]];
 			return;
 		}
 	}
@@ -116,35 +135,28 @@
 	return [NSIndexPath indexPathWithIndexes:indexes length:2];
 }
 
-- (void) setItemSet:(id)newItemSet {
-	[itemSet release];
-	itemSet = [newItemSet retain];
+- (void) setDB:(id) _db {
+	[db release];
+	db = [db retain];
+	[self deleteItemCache];
+}
+
+- (id) itemSet {
+	if(!itemSet) {
+		id it = 
+		itemSet = [[[ItemSet alloc] initWithTag: tag db: db] getItems];
+		dbg(@"got item set: %@", itemSet);
+		[itemSet retain];
+	}
+	return itemSet;
 }
 
 - (void) setAllItemsReadState: (BOOL) readState {
 	[db setAllItemsReadState: readState];
 }
 
-- (id) itemSet {
-	// ensure it exists
-	if(itemSet == nil) {
-		[self setItemSet: [self getNewItemSet]];
-	}
-	return itemSet;
-}
-
-- (id) getNewItemSet {
-	id itemSet;
-	if([settings showReadItems]) {
-		itemSet = [[db allItems] allObjects];
-	} else {
-		itemSet = [[db unreadItems] allObjects];
-	}
-	return itemSet;
-}
-
 - (void) reloadItems {
-	[self setItemSet: [self getNewItemSet]];
+	[self deleteItemCache];
 	dbg(@"reloading data...");
 	[listView reloadData];
 	// TODO: why is this not working?
@@ -161,6 +173,7 @@
 	[readAndStarredImage release];
 	[itemSet release];
 	[cellFont release];
+	[db release];
 	[super dealloc];
 }
 

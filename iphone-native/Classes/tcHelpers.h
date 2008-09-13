@@ -10,7 +10,7 @@
 	#define dbg_s( ... ) {}
 #endif
 
-@interface tcHelpers : NSObject {
+@interface TCHelpers : NSObject {
 }
 + (BOOL) ensureDirectoryExists:(NSString *)path;
 + (void) alertCalled: (NSString *) title saying: (NSString *) msg;

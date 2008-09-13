@@ -1,8 +1,8 @@
-#import "tcWebView.h"
-#import "tcDirList.h"
-#import "tcHelpers.h"
+#import "ItemView.h"
+#import "ItemDirList.h"
+#import "TCHelpers.h"
 
-@implementation tcWebView
+@implementation ItemView
 - (void) load {
 	[self allItems];
 	if(currentItem == nil) {
@@ -93,7 +93,7 @@
 	[self loadItemAtIndex:currentItemIndex - 1];
 }
 
-- (void) loadItem: (tcItem *) item {
+- (void) loadItem: (FeedItem *) item {
 	NSLog(@"loading item %@", item);
 	if(item == nil) {
 		[self loadHTMLString:@"<html><body><h1>No More</h1><p>..files for you!</p></body></html>"];
