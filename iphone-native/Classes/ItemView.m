@@ -65,7 +65,7 @@
 
 - (void) showCurrentItemInItemList: (id) itemList {
 	if(allItems && currentItem) {
-		[itemList selectItemWithID: [currentItem google_id] inItemSet: allItems];
+		[itemList selectItemWithID: [currentItem google_id]];
 	} else {
 		dbg(@"no item to showCurrentItemInItemList");
 	}

@@ -17,6 +17,8 @@
 
 @implementation ItemDB
 
+NSString * all_items_tag = @"All Items";
+
 #define db_ok [self dbHadError]
 #define if_error if([self dbHadError])
 - (void) awakeFromNib {
@@ -102,7 +104,7 @@
 
 
 - (NSEnumerator *) enumeratorWithConstructor:(SEL)constructor forQuery: (NSString *) sql arguments: (va_list) args {
-	dbg(@"** SQL: enumeratorForQuery: %@", sql);
+	dbg(@"** SQL: enumeratorForQuery: %@, ", sql);
 	FMResultSet *rs = [db executeQuery:sql arguments:args];
 	if_error return nil;
 	
@@ -122,21 +124,25 @@
 - (NSEnumerator *) itemsMatchingCondition:(NSString *) condition, ... {
 	NSString * query = @"select * from items";
 	if(condition != nil){
-		va_list args;
-		va_start(args, condition);
-		query = [query stringByAppendingFormat: @" where %@", condition, args];
-		va_end(args);
+		query = [query stringByAppendingFormat: @" where %@", condition];
 	}
+	va_list args;
+	va_start(args, condition);
 	// TODO: better pagination
-	return [self enumeratorWithConstructor:@selector(itemFromResultSet:) forQuery: [query stringByAppendingFormat: @" order by date limit 400"]];
+	id retval = [self enumeratorWithConstructor:@selector(itemFromResultSet:) forQuery: [query stringByAppendingFormat: @" order by date limit 400"] arguments: args];
+	va_end(args);
+
+	return retval;
 }
 
 - (NSArray *) itemsInTag:(NSString *) tag{
 	if(!tag) {
-		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:@"select feed_name, count(google_id) as num_items from items GROUP BY feed_name"];
+		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:@"select feed_name, count(google_id) as num_items from items GROUP BY feed_name ORDER BY feed_name"];
 	} else {
 		BOOL readItemsOnly = [[[[UIApplication sharedApplication] delegate] settings] showReadItems];
-		return [self itemsMatchingCondition: [NSString stringWithFormat:@"%s tag = ?", readItemsOnly? "":"is_read = 0 and "], tag ];
+		NSString * condition = [NSString stringWithFormat:@"%s feed_name = ?", readItemsOnly? "":"is_read = 0 and "];
+		dbg(@"conditions = %@", condition);
+		return [self itemsMatchingCondition: condition, tag ];
 	}
 }
 
@@ -151,9 +157,13 @@
 	return [self itemFromResultSet: [db executeQuery: @"select * from items where google_id = ?", google_id]];
 }
 
-- (void) setAllItemsReadState: (BOOL) readState {
+- (void) setAllItemsReadState: (BOOL) readState withTag:(NSString *) tag {
 	dbg(@"DB: marking all items as %s", read ? "read" : "unread");
-	[db executeUpdate: @"update items set is_read=?", [NSNumber numberWithBool: readState]];
+	if(tag == nil || [tag isEqualToString: all_items_tag]) {
+		[db executeUpdate: @"update items set is_read=?", [NSNumber numberWithBool: readState]];
+	} else {
+		[db executeUpdate: @"update items set is_read=? where feed_name = ?", [NSNumber numberWithBool: readState], tag];
+	}
 	if_error [NSException raise:@"UpdateFailed" format:@"updating marking all items as %s failed", readState ? "read":"unread"];
 }
 @end

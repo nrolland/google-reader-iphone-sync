@@ -33,6 +33,8 @@
 	return self;
 }
 
+- (BOOL) hasChildren { return NO; }
+
 - (void) save {
 	[source_db updateItem:self];
 }

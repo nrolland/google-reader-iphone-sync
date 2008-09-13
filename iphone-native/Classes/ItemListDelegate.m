@@ -1,6 +1,16 @@
 #import "ItemListDelegate.h"
+#import "ItemListController.h"
 #import "ItemSet.h"
 #import "TCHelpers.h"
+
+@interface NSObject (MissingMethodTrace)
+@end
+
+@implementation NSObject (MissingMethodTrace)
+- (void) doesNotRecognizeSelector:(SEL)sel {
+	dbg(@"object %@ does not recognise selector: %s", self, sel);
+}
+@end
 
 @implementation ItemListDelegate
 - (id) init {
@@ -12,6 +22,10 @@
 	tag = [_tag retain];
 	db = [_db retain];
 	return self;
+}
+
+- (id) tag {
+	return tag;
 }
 
 - (id) tableView:(id)view cellForRowAtIndexPath: (id) indexPath {
@@ -28,8 +42,12 @@
 	UIColor * textColor = [item is_read] ? [UIColor lightGrayColor] : [UIColor blackColor]; // nil should work (for black), but doesn't
 	[cell setTextColor: textColor];
 	
-	UIImage * image;
-	image = [item is_starred] ? [self starredImage] : nil;
+	UIImage * image = nil;
+	if([item hasChildren]) {
+		image = [self folderImage];
+	} else if([item is_starred]) {
+		image = [self starredImage];
+	}
 	// if([item userHasMarkedAsUnread]) {
 	// 	image = [item is_starred] ? [self readAndStarredImage] : [self readImage];
 	// } else {
@@ -65,6 +83,14 @@
 	return readImage;
 }
 
+- (UIImage *) folderImage {
+	if(folderImage == nil) {
+		folderImage = [UIImage imageNamed: @"emblem_folder.png"];
+	}
+	return folderImage;
+}
+
+
 - (UIImage *) readAndStarredImage {
 	if(readAndStarredImage == nil) {
 		readAndStarredImage = [UIImage imageNamed: @"emblem_read_and_starred.png"];
@@ -87,14 +113,28 @@
 }
 
 - (void) tableView:(id)view didSelectRowAtIndexPath:(id) indexPath {
-	id item = [self itemIndexFromIndexPath:indexPath];
+	int itemIndex = [self itemIndexFromIndexPath:indexPath];
+	id item = [[self itemSet] objectAtIndex: itemIndex];
 	if([item hasChildren]) {
-		// TODO: load children of [item tag]
+		dbg(@"pushing item onto nav: %@", item);
+		ItemListController * newItemListController = [[[ItemListController alloc] init] autorelease];
+		ItemListDelegate * newItemDelegate = [[[ItemListDelegate alloc] initWithTag: [item tagValue] db: db] autorelease];
+		UITableView * newTableView = [[[UITableView alloc] init] autorelease];
 		
-/*		###################### */
+		[newItemListController setDelegate: newItemDelegate];
+		[newTableView setDelegate: newItemDelegate];
+		[newTableView setDataSource: newItemDelegate];
+		[newItemListController setView: newTableView];
+		[newItemListController setListView: newTableView];
+		// use the current "options" button for all views
+		id rightButton = [[[navigationController navigationBar] topItem] rightBarButtonItem];
+		[[newItemListController navigationItem] setRightBarButtonItem: rightButton];
+		[navigationController pushViewController: newItemListController animated:YES];
+		dbg(@"setting bar button item to %@", rightButton);
 	} else {
 		// load it
-		[[[UIApplication sharedApplication] delegate] loadItemAtIndex: item fromSet: [self itemSet]];
+		dbg(@"listdelegate: loading item: %@", item);
+		[[[UIApplication sharedApplication] delegate] loadItemAtIndex: itemIndex fromSet: [self itemSet]];
 	}
 }
 
@@ -109,11 +149,6 @@
 			return;
 		}
 	}
-}
-
-- (void) deleteItemCache {
-	[itemSet release];
-	itemSet = nil;
 }
 
 - (id) getIndexPathForItemWithID:(NSString *) google_id {
@@ -136,40 +171,45 @@
 	return [NSIndexPath indexPathWithIndexes:indexes length:2];
 }
 
+
+- (void) reloadItems {
+	[itemSet release];
+	itemSet = nil;
+	dbg(@"items has been nil'd - it should reload shortly");
+	[self itemSet];
+}
+
 - (void) setDB:(id) _db {
 	[db release];
 	db = [db retain];
-	[self deleteItemCache];
+	[self reloadItems];
 }
 
 - (id) itemSet {
 	if(!itemSet) {
-		id it = 
+		dbg(@"getting a band new item set... my tag is %@", tag);
 		itemSet = [[[ItemSet alloc] initWithTag: tag db: db] getItems];
 		dbg(@"got item set: %@", itemSet);
 		[itemSet retain];
 	}
+	dbg(@"itemSet is not nil");
 	return itemSet;
 }
 
 - (void) setAllItemsReadState: (BOOL) readState {
-	[db setAllItemsReadState: readState];
-}
-
-- (void) reloadItems {
-	[self deleteItemCache];
-	dbg(@"reloading data...");
-	[listView reloadData];
-	// TODO: why is this not working?
-	[listView setNeedsDisplay]; // this shouldn't be necessary, surely...
+	dbg(@"marking all items as read for tag: %@", tag);
+	[db setAllItemsReadState: readState forTag: tag];
 }
 
 - (int)tableView:(id)view numberOfRowsInSection:(id)section {
+	dbg(@"number of rows... %d", [[self itemSet] count]);
 	return [[self itemSet] count];
 }
 
 - (void) dealloc {
+	dbg(@"dealloc: %@", self);
 	[starredImage release];
+	[folderImage release];
 	[readImage release];
 	[readAndStarredImage release];
 	[itemSet release];

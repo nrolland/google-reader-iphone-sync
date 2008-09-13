@@ -2,17 +2,18 @@
 #import <Foundation/Foundation.h>
 #import "ItemDB.h"
 
-@interface ItemListDelegate : UITableViewController {
+@interface ItemListDelegate : NSObject {
 	IBOutlet ItemDB * db;
+	IBOutlet id optionsButton;
 	id itemSet;
+	UIImage * folderImage;
 	UIImage * starredImage;
 	UIImage * readImage;
 	UIImage * readAndStarredImage;
 	UIFont * cellFont;
 	IBOutlet id settings;
-	IBOutlet UITableView * listView;
+	IBOutlet id navigationController;
 	NSString * tag;
-	NSString * feed;
 }
 
 - (id) itemSet;

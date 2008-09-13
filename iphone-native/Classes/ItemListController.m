@@ -2,19 +2,46 @@
 #import "TCHelpers.h"
 
 @implementation ItemListController
+- (id) initWithDelegate: (id) _delegate {
+	self = [super init];
+	[self setDelegate: _delegate];
+	return self;
+}
+
+- (id) title {
+	NSString * title = [delegate tag];
+	if(!title) {
+		title = @"Something else!";
+	}
+	return title;
+}
+
+- (void) setListView: (id) _listView {
+	[_listView retain];
+	[listView release];
+	listView = _listView;
+}
+
 - (void) setDB: (id) db {
-	[dataSource setDB: db];
+	[[self delegate] setDB: db];
 	[listView reloadData];
+}
+- (id) delegate {
+	return delegate;
+}
+
+- (void) setDelegate: (id) _delegate {
+	[_delegate retain];
+	[delegate release];
+	delegate = _delegate;
 }
 
 - (void) selectItemWithID:(NSString *) google_id {
-	id indexPath = [dataSource getIndexPathForItemWithID:google_id];
+	id indexPath = [[self delegate] getIndexPathForItemWithID:google_id];
+	dbg(@"reloading data");
+	[self refresh:self];
+	[listView reloadData];
 	[listView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionTop];
-}
-
-- (void) selectItemWithID: (NSString *) google_id inItemSet: (id) set {
-	[self setItemSet: set];
-	[self selectItemWithID: google_id];
 }
 
 - (IBAction) toggleOptions:(id)sender {
@@ -50,14 +77,17 @@
 }
 
 - (void) redraw{
-	dbg(@"redrawing listview");
+	dbg(@"redrawing listView");
 	[listView reloadData];
 }
 
 -(IBAction) refresh: (id) sender {
+	dbg(@"refreshing imteListController");
 	[self hideOptions];
-	[dataSource reloadItems];
+	[[self delegate] reloadItems];
+	[listView reloadData];
 	[self redraw];
+	[listView setNeedsDisplay]; // this shouldn't be necessary, surely...
 }
 
 - (IBAction) markAllItemsAsRead:   (id) sender { [self markAllItemsWithReadState: YES]; }
@@ -74,14 +104,14 @@
 	[markAsReadAlert show];
 }
 
-- (void) alertView:(id)view clickedButtonAtIndex:(NSInteger) index {
+- (void) alertView:(id)_view clickedButtonAtIndex:(NSInteger) index {
 	dbg(@"answer: %d", index);
-	if(index == 1 && view == markAsReadAlert) {
-		[dataSource setAllItemsReadState: alertWasForMarkingAsRead];
-		[dataSource reloadItems];
+	if(index == 1 && _view == markAsReadAlert) {
+		[[self delegate] setAllItemsReadState: alertWasForMarkingAsRead];
+		[[self delegate] reloadItems];
 		[self hideOptions];
 	}
-	[view release];
+	[_view release];
 }
 
 @end

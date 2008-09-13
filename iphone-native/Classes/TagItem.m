@@ -14,8 +14,13 @@
 	return self;
 }
 
+- (BOOL) hasChildren { dbg(@"has children? YES!"); return YES; }
 - (BOOL) is_starred { return NO; }
 - (BOOL) is_read    { return NO; }
+
+- (NSString *) tagValue {
+	return tag;
+}
 
 - (NSString *) title {
 	return tag;
