@@ -12,6 +12,7 @@
 
 	IBOutlet id optionsView;
 	BOOL inItemViewMode;
+	BOOL loading;
 }
 
 @property (nonatomic, retain) UIWindow *window;

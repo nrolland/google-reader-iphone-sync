@@ -9,7 +9,7 @@
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<integer value="309"/>
-			<integer value="242"/>
+			<integer value="526"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -294,7 +294,7 @@
 				<object class="IBUINavigationController" key="IBUISelectedViewController" id="497338223">
 					<string key="IBUITitle">Feeds</string>
 					<object class="IBUITabBarItem" key="IBUITabBarItem" id="842537089">
-						<string key="IBUITitle">Items</string>
+						<string key="IBUITitle">Read</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">toolbar_items.png</string>

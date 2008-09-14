@@ -25,6 +25,7 @@
 	dbg(@"Loaded...");
 
 	[window setBackgroundColor: [UIColor groupTableViewBackgroundColor]];
+	loading = YES;
 	[self loadFirstView];
 }
 
@@ -43,18 +44,29 @@
 	[mainController activate];
 }
 
+- (void) removeBrowseView {
+	[[browseController view] removeFromSuperview];
+}
+
 - (void) setViewToShowItem:(BOOL) showItemView {
+	BOOL withAnimation = !loading;
 	inItemViewMode = showItemView;
 	if(showItemView) {
 		[[mainController view] addSubview:[browseController view]];
 		CGRect frame = [[mainController view] bounds];
 		frame.origin = CGPointMake(0,0);
 		[[browseController view] setFrame: frame];
+		[[browseController view] setHidden:NO];
+		if(withAnimation) {
+			[[browseController view] animateFadeIn];
+		}
 	} else {
-		[[browseController view] removeFromSuperview];
+		if(withAnimation) {
+			[[browseController view] animateFadeOutThenTell:self withSelector:@selector(removeBrowseView)];
+		} else {
+			[self removeBrowseView];
+		}
 	}
-	[[[mainController selectedViewController] navigationBar] setHidden: showItemView];
-	[[mainController tabBar] setHidden: showItemView];
 	[[mainController view] layoutSubviews];
 }
 
@@ -114,6 +126,7 @@
 		[itemListDelegate loadItemWithID:itemID fromTag: tag];
 	}
 	[window addSubview:[mainController view]];
+	loading = NO;
 }
 
 - (NSString *) currentItemID {

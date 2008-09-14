@@ -49,11 +49,21 @@
 	[self endAnimating];
 }
 
+- (void) animateFade:(BOOL) fadingOut {
+	if(fadingOut) {
+		[self animateFadeOutThenTell:nil withSelector:nil];
+	} else {
+		[self animateFadeIn];
+	}
+}
+
 - (void) animateFadeOutThenTell:(id) callbackObject withSelector:(SEL) completionSelector {
 	[self setAlpha: 1.0];
 	[self startAnimating];
-	[UIView setAnimationDelegate: callbackObject];
-	[UIView setAnimationDidStopSelector: completionSelector];
+	if(callbackObject){
+		[UIView setAnimationDelegate: callbackObject];
+		[UIView setAnimationDidStopSelector: completionSelector];
+	}
 	[self setAlpha: 0.0];
 	[self endAnimating];
 }
