@@ -13,12 +13,25 @@ import app_globals
 import template
 from reader import Reader
 
+TASK_PROGRESS = 0
+def new_task(description=""):
+	global TASK_PROGRESS
+	status("TASK_PROGRESS", TASK_PROGRESS, description)
+	TASK_PROGRESS += 1
+
 def execute():
 	"""
 	Logs in, syncs and downloads new items
 	"""
-	status("TASK_TOTAL",5)
-	status("TASK_PROGRESS", 0, "Authorizing")
+	steps = 4
+	download_steps = 0
+	if not app_globals.OPTIONS['no_download']:
+		download_steps = len(app_globals.OPTIONS['tag_list'])
+		if download_steps < 1: download_steps = 1
+		steps += download_steps
+		
+	status("TASK_TOTAL",steps)
+	new_task("Authorizing")
 	
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	ensure_dir_exists(app_globals.OPTIONS['output_path'] + '/' + app_globals.CONFIG['resources_path'])
@@ -27,7 +40,7 @@ def execute():
 	app_globals.READER.save_tag_list()
 	app_globals.READER.validate_tag_list()
 
-	status("TASK_PROGRESS", 1, "Pushing status to google")
+	new_task("Pushing status to google")
 
 	line()
 	app_globals.DATABASE = DB()
@@ -36,25 +49,23 @@ def execute():
 	if app_globals.OPTIONS['no_download']:
 		info("not downloading any new items...")
 	else:
-		status("TASK_PROGRESS", 2, "Downloading new items")
 		app_globals.DATABASE.prepare_for_download()
 		download_new_items()
 
-	status("TASK_PROGRESS", 3, "Cleaning up old resources")
+	new_task("Cleaning up old resources")
 	app_globals.DATABASE.cleanup() # remove old _resources files
 	app_globals.DATABASE.close()
 
 def retry_failed_items():
-	status("TASK_PROGRESS", 4, "Re-trying failed feeds")
+	new_task("Re-trying failed image downloads")
 	for item in app_globals.DATABASE.get_items_that_had_errors():
 		info("trying to re-download images for item: %s" % (item['title'],))
 		item.download_images()
 		item.save()
 
-def download_feed(feed, feed_tag, feed_number=0):
-	item_number = feed_number * app_globals.OPTIONS['num_items']
-	status("SUBTASK_PROGRESS", item_number)
-
+def download_feed(feed, feed_tag):
+	item_number = 0
+	status("SUBTASK_TOTAL", len(feed))
 	for entry in feed.get_entries():
 		item_number += 1
 		status("SUBTASK_PROGRESS", item_number)
@@ -101,7 +112,6 @@ def download_new_items():
 	"""
 	Downloads new items from google reader across all feeds
 	"""
-	feed_number = 0
 	tag_list = app_globals.OPTIONS['tag_list']
 
 	# special case: no tags specified so we download the global set
@@ -114,10 +124,10 @@ def download_new_items():
 	for feed_tag in tag_list:
 		line()
 		_feed_tag = "[all items]" if feed_tag is None else feed_tag
+		new_task("Downloading tag \"%s\"" % (_feed_tag,))
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], _feed_tag))
 		feed = app_globals.READER.get_tag_feed(feed_tag)
-		download_feed(feed, _feed_tag, feed_number)
-		feed_number += 1
+		download_feed(feed, _feed_tag)
 		
 	line()
 	

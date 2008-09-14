@@ -26,6 +26,10 @@ class GoogleFeed(object) :
 	def get_title(self) :
 		if 'title' in self._properties :
 			return self._properties['title'].childNodes[0].data
+
+	def __len__(self):
+		return len(self._entries)
+		
 	def get_entries(self) :
 		for dom_entry in self._entries :
 			try:

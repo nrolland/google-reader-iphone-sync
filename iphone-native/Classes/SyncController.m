@@ -181,7 +181,7 @@
 		if(numStatusComponents > 1) {
 			@try{
 				NSString * type = [statusComponents objectAtIndex:1];
-				if(       [type isEqualToString:@"TASK_TOTAL"]){
+				if([type isEqualToString:@"TASK_TOTAL"]){
 					// total number of tasks
 					totalTasks = [[statusComponents objectAtIndex:2] integerValue];
 				} else if([type isEqualToString:@"TASK_PROGRESS"]){
