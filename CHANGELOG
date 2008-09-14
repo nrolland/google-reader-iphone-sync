@@ -1,11 +1,12 @@
 0.3.0:
 	- overhaul of item display mode:
-		- initial display is now by folder, plus special "All Items" entry
+		- display now shows folders (tags), plus special "All Items" entry
 		- item counts next to each tag
 		- mark as read / unread applies to the current view
 	- orientation handling greatly improved (it actually works properly now)
 	- string handing fixes (unicode and special characters now work in tags)
-	- jump to last viewed item on load (if you were viewing an item when you last quit)
+	- jump to last viewed item on load (if you were viewing an item when you
+	  last quit)
 	
 0.2.1:
 	- added "refresh feed list" button in settings view
@@ -20,7 +21,8 @@
 
 0.1.7:
 	- Initial support for proxies.
-	- Fixed packaging issue which led to old (python) sources not being replaced.
+	- Fixed packaging issue which led to old (python) sources not being
+	  replaced.
 
 0.1.6:
 	- Added "mark as read / unread" buttons
