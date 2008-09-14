@@ -38,7 +38,9 @@
 
 - (void) selectItemWithID:(NSString *) google_id {
 	id indexPath = [[self delegate] getIndexPathForItemWithID:google_id];
-	[listView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionTop];
+	if(indexPath) {
+		[listView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionTop];
+	}
 }
 
 - (IBAction) toggleOptions:(id)sender {

@@ -175,7 +175,7 @@
 }
 
 - (id) getIndexPathForItemWithID:(NSString *) google_id {
-	int foundAtIndex = 0;
+	int foundAtIndex = -1;
 	int index;
 	
 	itemSet = [self itemSet];
@@ -187,6 +187,9 @@
 			foundAtIndex = index;
 			break;
 		}
+	}
+	if(foundAtIndex < 0) {
+		return nil;
 	}
 	NSUInteger indexes[2];
 	indexes[0] = 0;

@@ -15,7 +15,6 @@
 
 - (id) getItems {
 	if(!itemSet) [self reload];
-	dbg(@"getItems returning: %@", itemSet);
 	return itemSet;
 }
 
