@@ -59,8 +59,11 @@
 		[[browseController view] setHidden:NO];
 		if(withAnimation) {
 			[[browseController view] animateFadeIn];
+		} else {
+			[[mainController tabBar] setHidden: showItemView];
 		}
 	} else {
+		[[mainController tabBar] setHidden: showItemView];
 		if(withAnimation) {
 			[[browseController view] animateFadeOutThenTell:self withSelector:@selector(removeBrowseView)];
 		} else {
