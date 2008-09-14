@@ -36,7 +36,7 @@
 		dbg(@"tag = %@", tag);
 		tag = [tag stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 		if([tag length] > 0) {
-			[tag_string appendFormat: @" --tag='%@'", [tag stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"]];
+			[tag_string appendFormat: @" --tag='%@'", [[tag stringByReplacingOccurrencesOfString:@"\\" withString: @"\\\\"] stringByReplacingOccurrencesOfString:@"'" withString:@"'\"'\"'"]];
 		}
 	}
 	if(!doFeeds) {

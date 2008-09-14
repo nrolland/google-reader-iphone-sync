@@ -15,6 +15,7 @@ def init_output_folder():
 	config.parse_options(['--test','--num-items=3','--verbose','--verbose', '--verbose', '--output-path=%s' % output_folder])
 
 	assert app_globals.OPTIONS['output_path'] == output_folder
+	ensure_dir_exists(output_folder)
 	app_globals.READER = Reader()
 	assert type(app_globals.READER.gr) == Mock
 

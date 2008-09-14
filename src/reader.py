@@ -8,6 +8,7 @@ class Reader:
 	def __init__(self, user=None, password=None):
 		if app_globals.OPTIONS['test']:
 			from lib.mock import Mock
+			debug("WARNING: using a mock google reader object")
 			self.gr = Mock()
 		else:
 			self.gr = GoogleReader()
@@ -43,7 +44,7 @@ class Reader:
 		for utag in user_tags:
 			if utag not in self.tag_list:
 				print "Valid tags are: %s" %(self.tag_list,)
-				raise Exception("No such tag: %s" % (utag,))
+				raise Exception("No such tag: %r" % (utag,))
 
 	def save_tag_list(self):
 		write_file_lines(os.path.join(app_globals.OPTIONS['output_path'], 'tag_list'), self.tag_list)

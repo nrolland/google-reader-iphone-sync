@@ -99,20 +99,20 @@ def slashify_single_quotes(s):
 
 def write_file(filename, content):
 	f = file(filename, 'w')
-	f.write(content)
+	f.write(utf8(content))
 	f.close()
 
 def write_file_lines(filename, content):
 	f = file(filename, 'w')
 	for line in content:
-		f.write(line)
+		f.write(utf8(line))
 		if not line.endswith("\n"):
 			f.write("\n")
 	f.close()
 
 def read_file_lines(filename):
 	f = file(filename,'r')
-	ret = f.readlines()
+	ret = [unicode(line, 'utf-8') for line in f.readlines()]
 	f.close()
 	return ret
 

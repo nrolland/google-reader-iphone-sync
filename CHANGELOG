@@ -1,3 +1,12 @@
+0.3.0:
+	- overhaul of item display mode:
+		- initial display is now by folder, plus special "All Items" entry
+		- item counts next to each tag
+		- mark as read / unread applies to the current view
+	- orientation handling greatly improved (it actually works properly now)
+	- string handing fixes (unicode and special characters now work in tags)
+	- jump to last viewed item on load (if you were viewing an item when you last quit)
+	
 0.2.1:
 	- added "refresh feed list" button in settings view
 	- don't allow the interface go into upside-down orientation

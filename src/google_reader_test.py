@@ -26,7 +26,7 @@ class GoogleReaderLiveTest(unittest.TestCase):
 		config.check()
 		self.reader = app_globals.READER = Reader()
 		
-	def tearFown(self):
+	def tearDown(self):
 		pass
 		# rm_rf('/tmp/gris-test')
 	

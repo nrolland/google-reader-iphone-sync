@@ -14,6 +14,8 @@ from feed import GoogleFeed
 from object import GoogleObject
 from const import CONST
 
+def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
+
 class GoogleReader(object) :
 	'''This class provide python binding for GoogleReader http://google.com/reader/'''
 	def __init__(self,agent=None,http_proxy=None) :
@@ -104,7 +106,7 @@ class GoogleReader(object) :
 		if feed == None :
 			feedurl = CONST.ATOM_STATE_READING_LIST
 		else:
-			feedurl = urllib.quote(feed)
+			feedurl = urllib.quote(utf8(feed))
 		
 		feedurl = CONST.URI_PREFIXE_ATOM + feedurl
 		

@@ -74,7 +74,7 @@ static FILE * my_popen (char * command, const char * type, pid * tid);
 		return NULL;
 	}
 	NSLog(@"BGShell: running command.");
-	proc = my_popen([command cStringUsingEncoding:NSASCIIStringEncoding],"r", &shellPid);
+	proc = my_popen([command cStringUsingEncoding:NSUTF8StringEncoding],"r", &shellPid);
 	[command release];
 	command = nil;
 	return proc;
