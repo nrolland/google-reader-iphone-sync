@@ -5,6 +5,7 @@
 	IBOutlet id statusView;
 	IBOutlet id topLevelWindow;
 	IBOutlet id navController;
+	BOOL isActive;
 }
 @property(readonly) id navController;
 - (void) activate;

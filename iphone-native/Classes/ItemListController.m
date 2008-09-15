@@ -30,6 +30,8 @@
 	return delegate;
 }
 
+- (id) listView { return listView; }
+
 - (void) setDelegate: (id) _delegate {
 	[_delegate retain];
 	[delegate release];
