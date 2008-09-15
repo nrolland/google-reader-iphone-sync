@@ -1,5 +1,7 @@
 0.3.2:
-	- bugfix for main tab-bar appearing over the item view toolbar
+	- bugfixes:
+		- main tab-bar appearing over the item view toolbar
+		- crash when scrolling past the last item
 	
 0.3.1:
 	- better progress reporting during sync

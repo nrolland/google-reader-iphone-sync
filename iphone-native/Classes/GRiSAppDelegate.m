@@ -12,6 +12,7 @@
 	[db dealloc];
 }
 
+- (BOOL) inItemViewMode { return inItemViewMode; }
 - (id) settings { return appSettings; }
 - (id) mainController { return mainController; }
 
@@ -51,24 +52,20 @@
 - (void) setViewToShowItem:(BOOL) showItemView {
 	BOOL withAnimation = !loading;
 	inItemViewMode = showItemView;
+	
+	// tab / navigation bar:
+	[[mainController tabBar] setHidden: showItemView];
+	[[[mainController selectedViewController] navigationBar] setHidden: showItemView];
+	
+	// viewer
 	if(showItemView) {
 		[[mainController view] addSubview:[browseController view]];
 		CGRect frame = [[mainController view] bounds];
 		frame.origin = CGPointMake(0,0);
 		[[browseController view] setFrame: frame];
 		[[browseController view] setHidden:NO];
-		if(withAnimation) {
-			[[browseController view] animateFadeIn];
-		} else {
-			[[mainController tabBar] setHidden: showItemView];
-		}
 	} else {
-		[[mainController tabBar] setHidden: showItemView];
-		if(withAnimation) {
-			[[browseController view] animateFadeOutThenTell:self withSelector:@selector(removeBrowseView)];
-		} else {
-			[self removeBrowseView];
-		}
+		[self removeBrowseView];
 	}
 	[[mainController view] layoutSubviews];
 }

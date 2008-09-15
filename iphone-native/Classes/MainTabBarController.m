@@ -5,6 +5,8 @@
 @synthesize navController;
 - (void) activate {
 	dbg(@"%@ activating", self);
+	isActive = YES;
+	[self setListScrollToTop:YES];
 	[[self itemList] redraw];
 }
 
@@ -22,7 +24,18 @@
 	return YES;
 }
 
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)previousOrientation {
+	[[self tabBar] setHidden: !isActive];
+}
+
+- (void) setListScrollToTop:(BOOL) doScroll {
+	dbg(@"scrolling list view to top? %s -- %@", doScroll ? "YES" : "NO", [[navController topViewController] listView]);
+	[[[navController topViewController] listView] setScrollsToTop:doScroll];
+}
+
 - (void) deactivate {
 	dbg(@"%@ deactivating", self);
+	[self setListScrollToTop:NO];
+	isActive = NO;
 }
 @end
