@@ -18,6 +18,16 @@ def remove_the_damn_html_entities(s):
 def esc(s):   return urllib.quote(string)
 def unesc(s): return urllib.unquote(s)
 
+def strip_html_tags(s):
+	double_tag_match = re.compile('<(?P<tagname>[a-zA-Z0-9]+)[^<>]*>(?P<content>.*?)</(?P=tagname)>')
+	single_tag_match = re.compile('<(?P<tagname>[a-zA-Z0-9]+)[^<>]*/>')
+	
+	while re.search(double_tag_match, s) is not None:
+		s = re.sub(double_tag_match, '\g<content>', s)
+		print s
+	s = re.sub(single_tag_match, '', s)
+	return s
+
 class Item:
 	"""
 	A wrapper around a GoogleReader item
@@ -28,7 +38,7 @@ class Item:
 			try: self.feed_name = feed_item['feed_name']
 			except:
 				self.feed_name = feed_name
-			self.title = feed_item['title']
+			self.title = strip_html_tags(feed_item['title'])
 			self.google_id = feed_item['google_id']
 			self.date = time.strftime('%Y%m%d%H%M%S', time.localtime(feed_item['updated']))
 			self.is_read = 'read' in feed_item['categories']

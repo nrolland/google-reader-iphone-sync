@@ -27,6 +27,10 @@ sample_item = {
 	'title': u'Assembly Fail',
 	'updated': 1214269209.0}
 
+def item_with_title(title):
+	item = sample_item.copy()
+	item['title'] = title
+	return item
 
 class ItemTest(unittest.TestCase):
 
@@ -48,3 +52,33 @@ class ItemTest(unittest.TestCase):
 	
 	def test_read(self):
 		item = Item(sample_item, 'feed-name')
+		
+	def test_remove_open_and_close_html_tags(self):
+		item = Item(item_with_title('<openTag attr="dsdjas">some title</openTag>'), 'feed-name')
+		self.assertEqual(item.title, 'some title')
+
+	def test_dont_remove_tags_when_there_is_no_matching_open_or_close_tag(self):
+		item = Item(item_with_title('<notATag>some title'), 'feed-name')
+		self.assertEqual(item.title, '<notATag>some title')
+		
+		item = Item(item_with_title('some title</notATag>'), 'feed-name')
+		self.assertEqual(item.title, 'some title</notATag>')
+		
+		item = Item(item_with_title('<noEndTag>some title</noStartTag>'), 'feed-name')
+		self.assertEqual(item.title, '<noEndTag>some title</noStartTag>')
+	
+	def test_remove_self_closing_tags(self):
+		item = Item(item_with_title('<self_ending_tag />some title'), 'feed-name')
+		self.assertEqual(item.title, 'some title')
+		
+		item = Item(item_with_title('<self_ending_tag/>some title'), 'feed-name')
+		self.assertEqual(item.title, 'some title')
+
+	def test_remove_multiple_tags(self):
+		item = Item(item_with_title('<a>some</a> <a>title</a>'), 'feed-name')
+		self.assertEqual(item.title, 'some title')
+	
+	def test_remove_nested_tags(self):
+		item = Item(item_with_title('<div>some <div><a>title</a></div></div>'), 'feed-name')
+		self.assertEqual(item.title, 'some title')
+		

@@ -22,9 +22,9 @@ $ipod_path = "/var/mobile/GRiS/"
 
 ipod_ip = ENV['ip']
 ipod_ip = "192.168.1.#{ipod_ip}" if ipod_ip =~ /^[0-9]+$/ # shortcut
-puts "IP = #{ipod_ip.inspect}"
-puts "HOSNTAME = #{config['iphone_hostname'].inspect}"
-puts "SERVER = #{$ipod_server.inspect}"
+# puts "IP = #{ipod_ip.inspect}"
+# puts "HOSNTAME = #{config['iphone_hostname'].inspect}"
+# puts "SERVER = #{$ipod_server.inspect}"
 
 $ipod_server = ipod_ip || config['iphone_hostname']
 
@@ -223,7 +223,11 @@ def loud_error(err)
 EOF
 end
 
+task :clean do
+	`rm -rf '#{build_dir}'`
+end
+
 task :end do
 	`growlnotify -m 'Completed' 'capistrano task'`
-	`rm -rf '#{build_dir}'`
+	clean
 end

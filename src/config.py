@@ -34,7 +34,6 @@ all_options = (bootstrap_options[0] + main_options[0],
                bootstrap_options[1] + main_options[1])
 
 def unicode_argv(args = None):
-	print "argv is: %r" % ([unicode(arg, 'utf-8') for arg in (sys.argv[1:] if args is None else args)], )
 	return [unicode(arg, 'utf-8') for arg in (sys.argv[1:] if args is None else args)]
 
 def bootstrap(argv = None):
@@ -68,8 +67,7 @@ Usage:
 """
 	tag_list = []
 	argv = unicode_argv(argv)
-	debug("argv is: %s" % (argv,))
-		
+
 	(opts, argv) = getopt(argv, *all_options)
 	for (key,val) in opts:
 		if key in ['-q','--quiet','-v','--verbose', '-c','--config','-s','--show-status']:
