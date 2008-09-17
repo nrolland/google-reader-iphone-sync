@@ -2,12 +2,6 @@
 #import "TCHelpers.h"
 
 @implementation BrowserViewController
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-	if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) return NO;
-	return YES;
-}
-
 - (id) webView { return webView; }
 
 - (id) currentItemID {

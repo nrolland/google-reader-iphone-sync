@@ -11,6 +11,7 @@
 	IBOutlet id itemListDelegate;
 
 	IBOutlet id optionsView;
+	IBOutlet id optionsUnderlayView;
 	BOOL inItemViewMode;
 	BOOL loading;
 }

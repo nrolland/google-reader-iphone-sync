@@ -45,38 +45,6 @@
 	}
 }
 
-- (IBAction) toggleOptions:(id)sender {
-	[self hideOptions] || [self showOptions];
-}
-
-- (BOOL) showOptions {
-	BOOL didShow = NO;
-	if(!optionsAreVisible) {
-		[showHideOptionsButton setTitle:@"Done"];
-		[optionsView setHidden:NO];
-		[optionsView animateFadeIn];
-		optionsAreVisible = YES;
-		didShow = YES;
-	}
-	return didShow;
-}
-
-- (BOOL) optionsDidFadeOut {
-	[optionsView setHidden:YES];
-}
-
-- (BOOL) hideOptions {
-	BOOL didHide = NO;
-	if(optionsAreVisible) {
-		[showHideOptionsButton setTitle:@"Options"];
-		[optionsView animateFadeOutThenTell:self withSelector:@selector(optionsDidFadeOut)];
-		optionsAreVisible = NO;
-		[self refresh: self];
-		didHide = YES;
-	}
-	return didHide;
-}
-
 - (void) redraw{
 	dbg(@"redrawing listView");
 	[listView reloadData];
@@ -84,7 +52,6 @@
 
 -(IBAction) refresh: (id) sender {
 	dbg(@"refreshing itemListController");
-	[self hideOptions];
 	dbg(@"delegate = %@", delegate);
 	[delegate reloadItems];
 	[listView reloadData];
@@ -111,7 +78,6 @@
 	if(index == 1 && _view == markAsReadAlert) {
 		[[self delegate] setAllItemsReadState: alertWasForMarkingAsRead];
 		[[self delegate] reloadItems];
-		[self hideOptions];
 		[[[UIApplication sharedApplication] delegate] refreshItemLists];
 	}
 	[_view release];

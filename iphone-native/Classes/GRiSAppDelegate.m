@@ -60,9 +60,7 @@
 	// viewer
 	if(showItemView) {
 		[[mainController view] addSubview:[browseController view]];
-		CGRect frame = [[mainController view] bounds];
-		frame.origin = CGPointMake(0,0);
-		[[browseController view] setFrame: frame];
+		[[browseController view] fitToSuperview];
 		[[browseController view] setHidden:NO];
 	} else {
 		[self removeBrowseView];
@@ -84,17 +82,23 @@
 }
 
 - (IBAction) toggleOptions: (id) sender {
+	id optionsButton = [[[[mainController navController] topViewController] navigationItem] rightBarButtonItem];
 	UIView * currentView = [[[mainController navController] topViewController] view];
 	id subviews = [currentView subviews];
 	if([subviews containsObject: optionsView]) {
 		dbg(@"hiding options");
+		[optionsUnderlayView removeFromSuperview];
 		[optionsView removeFromSuperview];
 		[self refreshItemLists];
+		[optionsButton setTitle: @"Options"];
 	} else {
 		dbg(@"showing options");
+		[currentView addSubview: optionsUnderlayView];
+		[optionsUnderlayView fitToSuperview];
 		[currentView addSubview: optionsView];
 		[optionsView setHidden: NO];
 		[optionsView animateFadeIn];
+		[optionsButton setTitle: @"Done"];
 	}
 }
 - (id) currentListController {

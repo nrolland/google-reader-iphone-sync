@@ -21,6 +21,9 @@
 	IBOutlet id stopEditingAccountButton;
 	
 	IBOutlet id showReadItemsToggle;
+	IBOutlet id rotationLockToggle;
+	IBOutlet id openLinksInSafariToggle;
+	BOOL rotationLock;
 	
 	IBOutlet id feedList;
 	IBOutlet id noFeedsView;

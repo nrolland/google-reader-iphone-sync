@@ -3,6 +3,16 @@
 
 @implementation UIView (TCViewExtensions)
 
+- (void) fitToSuperview {
+	[self fitTo: [self superview]];
+}
+
+- (void) fitTo:(UIView *) view {
+	CGRect frame = [view bounds];
+	frame.origin = CGPointMake(0,0);
+	[self setFrame: frame];
+}
+
 - (void) startAnimating {
 	[UIView beginAnimations:nil context: nil];
 }

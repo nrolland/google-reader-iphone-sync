@@ -184,18 +184,25 @@
 	return (int)(([[sender valueForKey:@"value"] floatValue] / 5) + 0.5) * 5;
 }
 
+- (BOOL) boolFromKey:(NSString *) key {
+	NSNumber * val = [plistData valueForKey:key];
+	return val && [val boolValue];
+}
+	
+- (BOOL) openLinksInSafari { return [self boolFromKey:@"openInSafari"]; }
+- (BOOL) showReadItems     { return [self boolFromKey:@"showReadItems"]; }
+- (BOOL) rotationLock      { return rotationLock; }
 
-- (NSString *) email     { return [plistData valueForKey:@"user"]; }
-- (NSString *) password  { return [plistData valueForKey:@"password"]; }
-- (id)         tagList   { 
+- (NSString *) email       { return [plistData valueForKey:@"user"]; }
+- (NSString *) password    { return [plistData valueForKey:@"password"]; }
+
+- (id) tagList     { 
 	id tags = [plistData valueForKey:@"tagList"];
 	if([[tags class] isSubclassOfClass: [@"" class]]) { // TODO: why can't I just pass the NSString class object?
 		tags = [tags componentsSeparatedByString:@"\n"];
 	}
 	return tags;
 }
-
-- (BOOL) showReadItems   { return [[plistData valueForKey:@"showReadItems"] boolValue]; }
 - (int) itemsPerFeed     {
 	int val = [[plistData valueForKey:@"num_items"] intValue];
 	if(val) return val;
@@ -206,9 +213,13 @@
 - (NSString *) getLastViewedTag { return [plistData valueForKey:@"lastItemTag"]; }
 	
 #pragma mark SETTING values
-- (void) setReadItems:(BOOL) newVal {
-	[plistData setValue: [NSNumber numberWithBool: newVal] forKey:@"showReadItems"];
+- (void) setBool:(BOOL) val forKey:(NSString *) key {
+	[plistData setValue: [NSNumber numberWithBool: val] forKey:key];
 }
+
+- (void) setOpenLinksInSafari:(BOOL) newVal { [self setBool:newVal forKey:@"openInSafari"];  }
+- (void) setReadItems:(BOOL) newVal         { [self setBool:newVal forKey:@"showReadItems"]; }
+- (void) setRotationLock:(BOOL) newVal      { rotationLock = newVal; } // this is intentionally not persisted
 
 - (void) setLastViewedItem {
 	[plistData setValue: [[[UIApplication sharedApplication] delegate] currentItemID] forKey:@"lastItemID"];
@@ -239,9 +250,13 @@
 }
 
 - (IBAction) switchValueDidChange:(id) sender {
+	BOOL newValue = [[sender valueForKey:@"on"] boolValue];
 	if(sender == showReadItemsToggle) {
-		[self setReadItems: [[sender valueForKey:@"on"] boolValue]];
-		[[[UIApplication sharedApplication] delegate] toggleOptions: self];
+		[self setReadItems: newValue];
+	} else if(sender == rotationLockToggle) {
+		[self setRotationLock: newValue];
+	} else if(sender == openLinksInSafariToggle) {
+		[self setOpenLinksInSafari: newValue];
 	} else {
 		dbg(@"unknown sender sent switchValueDidChange to ApplicationSettings");
 	}

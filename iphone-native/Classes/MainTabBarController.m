@@ -21,7 +21,7 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) return NO;
-	return YES;
+	return ![[[[UIApplication sharedApplication] delegate] settings] rotationLock];
 }
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)previousOrientation {
