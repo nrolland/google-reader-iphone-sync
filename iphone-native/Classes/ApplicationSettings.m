@@ -166,6 +166,7 @@
 	[itemsPerFeedSlider setValue:[self itemsPerFeed]];
 	[itemsPerFeedLabel setText:[NSString stringWithFormat:@"%d", [self itemsPerFeed]]];
 	[showReadItemsToggle setOn: [self showReadItems]];
+	[openLinksInSafariToggle setOn:[self openLinksInSafari]];
 	[feedList setSelectedFeeds: [self tagList]];
 	[feedList setFeedList: possibleTags];
 	for(id view in [feedsPlaceholderView subviews]) {

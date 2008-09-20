@@ -32,7 +32,7 @@ NSString * all_items_tag = @"All Items";
 	id appdel = [[UIApplication sharedApplication] delegate];
 	id sett = [appdel settings];
 	id dp = [sett docsPath];
-	NSString *path = [[[[[UIApplication sharedApplication] delegate] settings] docsPath] stringByAppendingPathComponent:filename];
+	NSString *path = [[[appdel settings] docsPath] stringByAppendingPathComponent:filename];
 	dbg(@"loading database at path: %@", path);
 	db = [[FMDatabase alloc] initWithPath:path];
 	if (![db open]) {

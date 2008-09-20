@@ -29,6 +29,8 @@
 		226C545D0E7AAF950083D8FD /* ItemSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 226C545C0E7AAF950083D8FD /* ItemSet.m */; };
 		22976FD30E610459001B44DA /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22976FD20E610459001B44DA /* CoreFoundation.framework */; };
 		22976FD90E610488001B44DA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22976FD80E610488001B44DA /* CFNetwork.framework */; };
+		22A120640E84D2A3000647C2 /* ItemViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22A120630E84D2A3000647C2 /* ItemViewDelegate.m */; };
+		22A120670E84D394000647C2 /* TCObjectExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 22A120660E84D394000647C2 /* TCObjectExtensions.m */; };
 		22C6B5280E3DD33700B8F9A3 /* BrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */; };
 		22C6B6850E3DEF6100B8F9A3 /* active_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C6B6750E3DEF6100B8F9A3 /* active_read.png */; };
 		22C6B6860E3DEF6100B8F9A3 /* active_star.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C6B6760E3DEF6100B8F9A3 /* active_star.png */; };
@@ -108,6 +110,10 @@
 		226C545C0E7AAF950083D8FD /* ItemSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemSet.m; sourceTree = "<group>"; };
 		22976FD20E610459001B44DA /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		22976FD80E610488001B44DA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		22A120620E84D2A3000647C2 /* ItemViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemViewDelegate.h; sourceTree = "<group>"; };
+		22A120630E84D2A3000647C2 /* ItemViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemViewDelegate.m; sourceTree = "<group>"; };
+		22A120650E84D394000647C2 /* TCObjectExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCObjectExtensions.h; sourceTree = "<group>"; };
+		22A120660E84D394000647C2 /* TCObjectExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCObjectExtensions.m; sourceTree = "<group>"; };
 		22C6B5260E3DD33700B8F9A3 /* BrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowserViewController.m; sourceTree = "<group>"; };
 		22C6B5270E3DD33700B8F9A3 /* BrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowserViewController.h; sourceTree = "<group>"; };
 		22C6B6750E3DEF6100B8F9A3 /* active_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = active_read.png; path = button_images/active_read.png; sourceTree = "<group>"; };
@@ -260,6 +266,8 @@
 				22F0658B0E7B4FE20021E97A /* ItemView.m */,
 				226C545B0E7AAF950083D8FD /* ItemSet.h */,
 				226C545C0E7AAF950083D8FD /* ItemSet.m */,
+				22A120620E84D2A3000647C2 /* ItemViewDelegate.h */,
+				22A120630E84D2A3000647C2 /* ItemViewDelegate.m */,
 			);
 			name = Items;
 			sourceTree = "<group>";
@@ -267,6 +275,8 @@
 		22F065940E7B50370021E97A /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				22A120650E84D394000647C2 /* TCObjectExtensions.h */,
+				22A120660E84D394000647C2 /* TCObjectExtensions.m */,
 				22F0658C0E7B4FE20021E97A /* TCHelpers.h */,
 				22F0658D0E7B4FE20021E97A /* TCHelpers.m */,
 				222CA7130E56B0A900146D8E /* TCViewExtensions.h */,
@@ -447,6 +457,8 @@
 				22F065910E7B4FE20021E97A /* ItemView.m in Sources */,
 				22F065920E7B4FE20021E97A /* TCHelpers.m in Sources */,
 				22F065DD0E7B53790021E97A /* TagItem.m in Sources */,
+				22A120640E84D2A3000647C2 /* ItemViewDelegate.m in Sources */,
+				22A120670E84D394000647C2 /* TCObjectExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
