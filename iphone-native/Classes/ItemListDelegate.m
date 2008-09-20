@@ -27,8 +27,10 @@
 	if(cell == nil) {
 		cell = [[UITableViewCell alloc] initWithFrame: CGRectMake(0,0,1,1) reuseIdentifier:@"itemCell"];
 		
-		descriptionLabel = [[[UILabel alloc] initWithFrame:CGRectMake(280.0, 12.0, 60.0, 25.0)] autorelease];
+		descriptionLabel = [[[UILabel alloc] initWithFrame:CGRectMake(280.0, 12.0, 50.0, 25.0)] autorelease];
 		[descriptionLabel setBackgroundColor: [UIColor whiteColor]];
+		[descriptionLabel setAdjustsFontSizeToFitWidth: YES];
+		[descriptionLabel setMinimumFontSize: 10.0];
 		[descriptionLabel setFont: [UIFont systemFontOfSize:13.0]];
 		[descriptionLabel setTextAlignment: UITextAlignmentRight];
 		[descriptionLabel setTextColor: [UIColor lightGrayColor]];
