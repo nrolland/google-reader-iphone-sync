@@ -96,6 +96,7 @@
 		[currentView addSubview: optionsUnderlayView];
 		[optionsUnderlayView fitToSuperview];
 		[currentView addSubview: optionsView];
+		[optionsView fitToSuperviewWidth];
 		[optionsView setHidden: NO];
 		[optionsView animateFadeIn];
 		[optionsButton setTitle: @"Done"];

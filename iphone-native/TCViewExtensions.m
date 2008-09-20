@@ -13,6 +13,15 @@
 	[self setFrame: frame];
 }
 
+- (void) fitToSuperviewWidth {
+	CGRect frame = [[self superview] bounds];
+	CGRect myFrame = [self bounds];
+	myFrame.origin.x = 0;
+	myFrame.size.width = frame.size.width;
+	[self setFrame: myFrame];
+}
+	
+
 - (void) startAnimating {
 	[UIView beginAnimations:nil context: nil];
 }

@@ -4,15 +4,6 @@
 #import "TCHelpers.h"
 #import "TagItem.h"
 
-//@interface NSObject (MissingMethodTrace)
-//@end
-//
-//@implementation NSObject (MissingMethodTrace)
-//- (void) doesNotRecognizeSelector:(SEL)sel {
-//	dbg(@"object %@ does not recognise selector: %s", self, sel);
-//}
-//@end
-
 @implementation ItemListDelegate
 - (id) init {
 	return [self initWithTag:nil db:nil];

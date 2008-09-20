@@ -121,6 +121,10 @@ NSString * all_items_tag = @"All Items";
 	return ret;
 }
 
+- (NSString *) orderByDateString {
+	return [NSString stringWithFormat: @"order by date %@", [[self globalAppSettings] sortNewestItemsFirst] ? @"DESC" : @"ASC"];
+}
+
 - (NSEnumerator *) itemsMatchingCondition:(NSString *) condition, ... {
 	NSString * query = @"select * from items";
 	if(condition != nil){
@@ -129,7 +133,7 @@ NSString * all_items_tag = @"All Items";
 	va_list args;
 	va_start(args, condition);
 	// TODO: better pagination
-	id retval = [self enumeratorWithConstructor:@selector(itemFromResultSet:) forQuery: [query stringByAppendingFormat: @" order by date limit 400"] arguments: args];
+	id retval = [self enumeratorWithConstructor:@selector(itemFromResultSet:) forQuery: [query stringByAppendingFormat: @" %@ limit 400", [self orderByDateString]] arguments: args];
 	va_end(args);
 
 	return retval;

@@ -89,7 +89,6 @@
 
 - (IBAction) goBack{
 	NSLog(@"back");
-	[currentItem userDidScrollPast];
 	[self loadItemAtIndex:currentItemIndex - 1];
 }
 

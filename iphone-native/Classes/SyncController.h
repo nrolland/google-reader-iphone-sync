@@ -30,4 +30,5 @@
 - (IBAction) syncFeedListOnly: (id) sender;
 - (IBAction) cancelSync: (id) sender;
 - (IBAction) hideSyncView: (id)sender;
+- (IBAction) syncStatusOnly: (id) sender;
 @end

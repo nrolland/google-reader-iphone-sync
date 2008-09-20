@@ -54,6 +54,7 @@
 	if(!plistData) {
 		NSLog(@"FAILED loading plist");
 		plistData = [[NSMutableDictionary dictionary] retain];
+		dbg_s(@"Loaded plist data: %@", plistData);
 	}
 	[self loadFeedList];
 }
@@ -167,6 +168,7 @@
 	[itemsPerFeedLabel setText:[NSString stringWithFormat:@"%d", [self itemsPerFeed]]];
 	[showReadItemsToggle setOn: [self showReadItems]];
 	[openLinksInSafariToggle setOn:[self openLinksInSafari]];
+	[newestItemsFirstToggle setOn: [self sortNewestItemsFirst]];
 	[feedList setSelectedFeeds: [self tagList]];
 	[feedList setFeedList: possibleTags];
 	for(id view in [feedsPlaceholderView subviews]) {
@@ -193,6 +195,7 @@
 - (BOOL) openLinksInSafari { return [self boolFromKey:@"openInSafari"]; }
 - (BOOL) showReadItems     { return [self boolFromKey:@"showReadItems"]; }
 - (BOOL) rotationLock      { return rotationLock; }
+- (BOOL) sortNewestItemsFirst{ return [self boolFromKey:@"sortNewestItemsFirst"]; }
 
 - (NSString *) email       { return [plistData valueForKey:@"user"]; }
 - (NSString *) password    { return [plistData valueForKey:@"password"]; }
@@ -215,12 +218,17 @@
 	
 #pragma mark SETTING values
 - (void) setBool:(BOOL) val forKey:(NSString *) key {
+	dbg(@"Setting boolean value %@ to %s", key, val ? "TRUE" : "FALSE");
 	[plistData setValue: [NSNumber numberWithBool: val] forKey:key];
 }
 
 - (void) setOpenLinksInSafari:(BOOL) newVal { [self setBool:newVal forKey:@"openInSafari"];  }
 - (void) setReadItems:(BOOL) newVal         { [self setBool:newVal forKey:@"showReadItems"]; }
 - (void) setRotationLock:(BOOL) newVal      { rotationLock = newVal; } // this is intentionally not persisted
+- (void) setSortNewestItemsFirst:(BOOL) newVal {
+	[self setBool:newVal forKey:@"sortNewestItemsFirst"];
+	[[self globalAppDelegate] refreshItemLists];
+}
 
 - (void) setLastViewedItem {
 	[plistData setValue: [[[UIApplication sharedApplication] delegate] currentItemID] forKey:@"lastItemID"];
@@ -258,6 +266,8 @@
 		[self setRotationLock: newValue];
 	} else if(sender == openLinksInSafariToggle) {
 		[self setOpenLinksInSafari: newValue];
+	} else if(sender == newestItemsFirstToggle) {
+		[self setSortNewestItemsFirst: newValue];
 	} else {
 		dbg(@"unknown sender sent switchValueDidChange to ApplicationSettings");
 	}

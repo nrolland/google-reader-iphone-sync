@@ -21,10 +21,11 @@
 	#define DEBUG
 #endif
 
+typedef enum { Default, FeedList, Status } SyncType;
 
 @implementation SyncController
 
-- (void) syncWithFeeds:(BOOL) doFeeds {
+- (void) syncWithType:(SyncType) syncType {
 	if(syncThread && ![syncThread isFinished]) {
 		dbg(@"thread is still running!");
 		return;
@@ -39,9 +40,22 @@
 			[tag_string appendFormat: @" --tag='%@'", [[tag stringByReplacingOccurrencesOfString:@"\\" withString: @"\\\\"] stringByReplacingOccurrencesOfString:@"'" withString:@"'\"'\"'"]];
 		}
 	}
-	if(!doFeeds) {
-		tag_string = [tag_string stringByAppendingString: @" --no-download"];
+	
+	switch(syncType) {
+		case FeedList:
+			[tag_string appendString: @" --only-tags"];
+			break;
+		case Status:
+			[tag_string appendString: @" --no-download"];
+			break;
 	}
+	
+	if( [[self globalAppSettings] sortNewestItemsFirst] ) {
+		[tag_string appendString: @" --newest-first"];
+	} else {
+		dbg(@"NOT sorting newest first");
+	}
+	
 	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --show-status --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
 		[[settings docsPath] stringByAppendingPathComponent:@"src/main.py"],
 		[settings docsPath],
@@ -87,11 +101,15 @@
 }
 
 - (IBAction) syncFeedListOnly: (id) sender {
-	[self syncWithFeeds: NO];
+	[self syncWithType:FeedList];
 }
 
 - (IBAction) sync: (id) sender {
-	[self syncWithFeeds:YES];
+	[self syncWithType: Default];
+}
+
+- (IBAction) syncStatusOnly: (id) sender {
+	[self syncWithType: Status];
 }
 
 - (IBAction) cancelSync: (id) sender {
