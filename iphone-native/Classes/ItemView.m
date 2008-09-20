@@ -46,7 +46,7 @@
 
 	[buttonPrev setEnabled:[self canGoPrev]];
 
-	[self loadItem: currentItem];
+	[self loadItem: currentItem withPositionDescription:[NSString stringWithFormat:@" (%d / %d)", index+1, [allItems count]]];
 	[self setButtonStates];
 }
 
@@ -92,12 +92,12 @@
 	[self loadItemAtIndex:currentItemIndex - 1];
 }
 
-- (void) loadItem: (FeedItem *) item {
+- (void) loadItem: (FeedItem *) item withPositionDescription:(NSString *) position_description{
 	NSLog(@"loading item %@", item);
 	if(item == nil) {
 		[self loadHTMLString:@"<html><body><h1>No More</h1><p>..files for you!</p></body></html>"];
 	} else {
-		NSString *str = [item html];
+		NSString *str = [item htmlForPosition:position_description];
 		[self loadHTMLString:str];
 	}
 }

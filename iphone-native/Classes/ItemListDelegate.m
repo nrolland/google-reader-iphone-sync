@@ -42,7 +42,6 @@
 	
 	id item = [self itemAtIndexPath:indexPath];
 	[cell setText: [item title]];
-	dbg(@"setting description text for item %@", item);
 	[descriptionLabel setText: [item descriptionText]];
 	
 	UIColor * textColor = [item is_read] ? [UIColor lightGrayColor] : [UIColor blackColor]; // nil should work (for black), but doesn't
@@ -230,7 +229,6 @@
 }
 
 - (BOOL) reloadTags {
-	dbg(@"reloading tags...");
 	BOOL didSomething = NO;
 	for (id item in [self itemSet]) {
 		if([item hasChildren]) {
@@ -246,9 +244,7 @@
 }
 
 - (void) navigationController:(id) navController willShowViewController:(id) viewController animated: (BOOL) animated {
-	dbg(@"its going to show someone!");
 	if([[viewController delegate] reloadTags]) {
-		dbg(@"reloading table: %@", [viewController listView]);
 		[[viewController listView] reloadData];
 	}
 }
@@ -259,7 +255,6 @@
 }
 
 - (int)tableView:(id)view numberOfRowsInSection:(id)section {
-	dbg(@"number of rows... %d", [[self itemSet] count]);
 	return [[self itemSet] count];
 }
 

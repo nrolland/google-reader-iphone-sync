@@ -22,13 +22,11 @@
 }
 
 - (NSString *) descriptionText {
-//	if(count < 0) return nil;
 	return [NSString stringWithFormat: @"%d item%s", count, PLURAL(count)];
 }
 
 - (void) refreshCount {
 	count = [db itemCountForTag:tag];
-	dbg(@"tag %@ refreshing.. count now = %d", tag, count);
 }
 
 - (NSString *) title {

@@ -1,15 +1,30 @@
 0.3.3:
 	- Moved the feeds view into its own tab
 	  (to free up space for more settings)
-	- New options:
+
+	- New settings:
+
 		- load links in safari
-		- sort newest items first (affects both view and download behaviour)
+
+		- sort newest items first (when turned on, the order that feeds
+		  are downloaded from google reader is also set to newest-first)
+
 	- loading indicator when you click a link
+
 	- "rotation lock" toggle in the item view options
+
 	- better support for unicode and html entities in item titles
+
 	- pressing the "back" button no longer marks an item as read
+
 	- button to only sync "state" in the sync tab
-	(ie mark items as read / starred, but don't download new items)
+	  (ie mark items as read / starred, but don't download new items)
+
+	- improved display of feed lists, including correct number of
+	  items (for tags) and an "age" description for each item
+
+	- items should appear in their current tag after a sync (instead of the
+	  first tag they were seen at)
 	
 0.3.2:
 	- bugfixes:

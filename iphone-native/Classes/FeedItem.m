@@ -105,7 +105,7 @@
 	return dateStr;
 }
 
-- (NSString *) html {
+- (NSString *) htmlForPosition:(NSString *)position_info {
 	return [[NSString stringWithFormat:
 		@"<html>                                                                                            \n\
 			<head>                                                                                          \n\
@@ -115,9 +115,12 @@
 			<body>                                                                                          \n\
 				<div class='post-info'>                                                                     \n\
 					<h1 id='title'>                                                                         \n\
-						<a href='%@'>%@</a><!-- url, title -->                                              \n\
+						<a href='%@'>%@</a>                                <!-- url, title -->              \n\
 					</h1>                                                                                   \n\
-					<div class='date'>Posted %@, tag <b>%@</b></div>       <!-- date, feed_name -->         \n\
+					<div class='date'>                                                                      \n\
+						%@, tag: <b>%@</b>                                 <!-- date, feed_name -->         \n\
+						%@                                                 <!-- position_info -->           \n\
+					</div>                                                                                  \n\
 					<div class='via'>                                                                       \n\
 						on <em>%@</em>                                     <!-- domainName -->              \n\
 					</div>                                                                                  \n\
@@ -127,7 +130,7 @@
 				</div>                                                                                      \n\
 			</body>                                                                                         \n\
 		</html>",
-		url, title, [self dateStr:YES], feed_name, [self domainName], content] autorelease];
+		url, title, [self dateStr:YES], feed_name, position_info, [self domainName], content] autorelease];
 }
 
 - (void) userDidScrollPast {
