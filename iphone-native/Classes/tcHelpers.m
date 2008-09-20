@@ -1,5 +1,7 @@
 #import "TCHelpers.h"
 
+char * PLURAL(int objects) { return objects == 1 ? "" : "s"; }
+
 @implementation TCHelpers
 + (BOOL) ensureDirectoryExists:(NSString *)path {
 	NSFileManager *fileManager = [NSFileManager defaultManager];

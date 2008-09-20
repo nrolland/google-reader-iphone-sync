@@ -20,16 +20,30 @@
 	return tag;
 }
 
+
 - (id) tableView:(id)view cellForRowAtIndexPath: (id) indexPath {
+	id titleLabel, descriptionLabel;
 	UITableViewCell * cell = [view dequeueReusableCellWithIdentifier:@"itemCell"];
 	if(cell == nil) {
 		cell = [[UITableViewCell alloc] initWithFrame: CGRectMake(0,0,1,1) reuseIdentifier:@"itemCell"];
-		[cell setFont: [self cellFont]];
-		[cell setLineBreakMode: UILineBreakModeWordWrap];
+		
+		descriptionLabel = [[[UILabel alloc] initWithFrame:CGRectMake(280.0, 12.0, 60.0, 25.0)] autorelease];
+		[descriptionLabel setBackgroundColor: [UIColor whiteColor]];
+		[descriptionLabel setFont: [UIFont systemFontOfSize:13.0]];
+		[descriptionLabel setTextAlignment: UITextAlignmentRight];
+		[descriptionLabel setTextColor: [UIColor lightGrayColor]];
+		[descriptionLabel setAutoresizingMask: UIViewAutoresizingFlexibleRightMargin];
+		[cell setAccessoryView:descriptionLabel];
+		
+		[cell setFont: [UIFont systemFontOfSize:14.0]];
+	} else {
+		descriptionLabel = (UILabel *)[cell accessoryView];
 	}
 	
 	id item = [self itemAtIndexPath:indexPath];
 	[cell setText: [item title]];
+	dbg(@"setting description text for item %@", item);
+	[descriptionLabel setText: [item descriptionText]];
 	
 	UIColor * textColor = [item is_read] ? [UIColor lightGrayColor] : [UIColor blackColor]; // nil should work (for black), but doesn't
 	[cell setTextColor: textColor];
@@ -208,11 +222,35 @@
 		if(tag == nil) {
 			// add the "All Items" tag
 			itemSet = [NSMutableArray arrayWithArray: itemSet];
-			[itemSet insertObject: [[[TagItem alloc] initWithTag: @"All Items" count: -1 db:db] autorelease] atIndex: 0];
+			[itemSet insertObject: [[[TagItem alloc] initWithTag: @"All Items" count: [db itemCountForTag:nil] db:db] autorelease] atIndex: 0];
 		}
 		[itemSet retain];
 	}
 	return itemSet;
+}
+
+- (BOOL) reloadTags {
+	dbg(@"reloading tags...");
+	BOOL didSomething = NO;
+	for (id item in [self itemSet]) {
+		if([item hasChildren]) {
+			[item refreshCount];
+			didSomething = YES;
+		} else {
+			// fail fast so we don't bother checking the rest of the feeds
+			// NOTE: this is dodgy if we are to ever have a view with both items and tags. but we don't yet :p
+			return NO;
+		}
+	}
+	return didSomething;
+}
+
+- (void) navigationController:(id) navController willShowViewController:(id) viewController animated: (BOOL) animated {
+	dbg(@"its going to show someone!");
+	if([[viewController delegate] reloadTags]) {
+		dbg(@"reloading table: %@", [viewController listView]);
+		[[viewController listView] reloadData];
+	}
 }
 
 - (void) setAllItemsReadState: (BOOL) readState {

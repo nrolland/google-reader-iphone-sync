@@ -127,7 +127,7 @@ NSString * all_items_tag = @"All Items";
 
 - (NSEnumerator *) itemsMatchingCondition:(NSString *) condition, ... {
 	NSString * query = @"select * from items";
-	if(condition != nil){
+	if(condition != nil && [condition length] > 0){
 		query = [query stringByAppendingFormat: @" where %@", condition];
 	}
 	va_list args;
@@ -139,21 +139,43 @@ NSString * all_items_tag = @"All Items";
 	return retval;
 }
 
-- (NSArray *) itemsInTag:(NSString *) tag{
-	BOOL showReadItems = [[[[UIApplication sharedApplication] delegate] settings] showReadItems];
-	if(!tag) {
-		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:[NSString stringWithFormat:@"select feed_name, count(google_id) as num_items from items %@ GROUP BY feed_name ORDER BY feed_name", showReadItems? @"" : @"where is_read = 0"]];
+- (int) itemCountForTag:(NSString *) tag {
+	NSString * condition = @"";
+	FMResultSet *rs;
+	int count = 0;
+	if(!tag || [tag isEqualToString:all_items_tag]) {
+		count = [db intForQuery:[NSString stringWithFormat: @"select count(google_id) from items %@", [self isReadConditionStringWithPrefix:@"where"]]];
 	} else {
-		NSString * condition = nil;
-		if(!showReadItems) {
-			condition = @"is_read = 0";
-		}
+		count = [db intForQuery:[NSString stringWithFormat: @"select count(google_id) from items where feed_name = ? %@", [self isReadConditionStringWithPrefix:@"and"]], tag];
+	}
+		
+	if_error {
+		dbg(@"ERROR in sql getting itemCountForTag: %@", tag);
+		return -1;
+	}
+	return count;
+}
+
+- (NSString *) isReadConditionStringWithPrefix:(NSString *) prefix {
+	BOOL showReadItems = [[self globalAppSettings] showReadItems];
+	NSString * condition = showReadItems? @"" : @"is_read = 0";
+	if(prefix == nil || showReadItems) {
+		return condition;
+	}
+	return [NSString stringWithFormat:@"%@ %@", prefix, condition];
+}
+
+- (NSArray *) itemsInTag:(NSString *) tag {
+	if(!tag) {
+		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:[NSString stringWithFormat:@"select feed_name, count(google_id) as num_items from items %@ GROUP BY feed_name ORDER BY feed_name", [self isReadConditionStringWithPrefix:@"where"]]];
+	} else {
+		NSString * condition = [[self globalAppSettings] showReadItems] ? nil : @"is_read = 0";
 		id result;
 		if([tag isEqualToString:all_items_tag]) {
 			result = [self itemsMatchingCondition: condition];
 		} else {
 			NSString * additionalCondition = @"feed_name = ?";
-			condition = condition? [condition stringByAppendingFormat: @" and %@", additionalCondition] : additionalCondition;
+			condition = (condition && condition)? [condition stringByAppendingFormat: @" and %@", additionalCondition] : additionalCondition;
 			result = [self itemsMatchingCondition: condition, tag ];
 		}
 		dbg(@"condition = %@", condition);
@@ -261,3 +283,4 @@ NSString * all_items_tag = @"All Items";
 	[super dealloc];
 }
 @end
+

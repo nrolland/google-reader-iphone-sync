@@ -74,7 +74,12 @@
 	[super dealloc];
 }
 
-- (NSString *) dateStr {
+- (NSString *) descriptionText {
+	return [self dateStr:NO];
+}
+
+
+- (NSString *) dateStr:(BOOL) longFormat {
 	NSDate * now = [NSDate date];
 	NSDate * then;
 	NSString * dateStr;
@@ -85,10 +90,17 @@
 	// bah.. nstimeinterval is just a float of the number of seconds!
 	int hours = timePassed / (60 * 60);
 	int days = hours / 24;
-	if(abs(days) < 1){
-		dateStr = [NSString stringWithFormat: @"%d hours %@", hours, hours < 0 ? @"in the future":@"ago"];
+	char * pastOrFuture;
+	if(!longFormat) {
+		pastOrFuture = "";
 	} else {
-		dateStr = [NSString stringWithFormat: @"%d days %@", days, days < 0 ? @"in the future":@"ago"];
+		pastOrFuture = (hours < 0) ? " in the future" : " ago";
+	}
+	
+	if(abs(days) < 1){
+		dateStr = [NSString stringWithFormat: @"%d hour%s%s", hours, PLURAL(hours), pastOrFuture];
+	} else {
+		dateStr = [NSString stringWithFormat: @"%d day%s%s", days, PLURAL(days), pastOrFuture];
 	}
 	return dateStr;
 }
@@ -115,7 +127,7 @@
 				</div>                                                                                      \n\
 			</body>                                                                                         \n\
 		</html>",
-		url, title, [self dateStr], feed_name, [self domainName], content] autorelease];
+		url, title, [self dateStr:YES], feed_name, [self domainName], content] autorelease];
 }
 
 - (void) userDidScrollPast {

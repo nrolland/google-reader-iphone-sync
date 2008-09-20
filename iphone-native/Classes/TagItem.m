@@ -12,7 +12,7 @@
 	return self;
 }
 
-- (BOOL) hasChildren { dbg(@"has children? YES!"); return YES; }
+- (BOOL) hasChildren { return YES; }
 - (BOOL) is_starred { return NO; }
 - (BOOL) is_read    { return NO; }
 - (BOOL) count      { return count; }
@@ -21,11 +21,18 @@
 	return tag;
 }
 
+- (NSString *) descriptionText {
+//	if(count < 0) return nil;
+	return [NSString stringWithFormat: @"%d item%s", count, PLURAL(count)];
+}
+
+- (void) refreshCount {
+	count = [db itemCountForTag:tag];
+	dbg(@"tag %@ refreshing.. count now = %d", tag, count);
+}
+
 - (NSString *) title {
-	if(count < 0) {
-		return tag;
-	}
-	return [tag stringByAppendingFormat: @" (%d)", count];
+	return tag;
 }
 
 - (void) dealloc {
