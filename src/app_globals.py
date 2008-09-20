@@ -22,6 +22,8 @@ OPTIONS = {
 	'template_only': False,
 	'flush_output':  False,
 	'verbosity':     output.lvl_default,
+	'tag_list_only': False,
+	'newest_first':  False,
 	'show_status':   False,
 	'tag_list':      [],
 }

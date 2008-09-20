@@ -29,7 +29,7 @@ def execute():
 		download_steps = len(app_globals.OPTIONS['tag_list'])
 		if download_steps < 1: download_steps = 1
 		steps += download_steps
-		
+	
 	status("TASK_TOTAL",steps)
 	new_task("Authorizing")
 	
@@ -38,6 +38,10 @@ def execute():
 	
 	app_globals.READER = Reader()
 	app_globals.READER.save_tag_list()
+	if app_globals.OPTIONS['tag_list_only']:
+		info("Got all tags.")
+		return
+
 	app_globals.READER.validate_tag_list()
 
 	new_task("Pushing status to google")
@@ -48,6 +52,7 @@ def execute():
 	
 	if app_globals.OPTIONS['no_download']:
 		info("not downloading any new items...")
+		return
 	else:
 		app_globals.DATABASE.prepare_for_download()
 		download_new_items()
@@ -81,7 +86,7 @@ def download_feed(feed, feed_tag):
 		
 		debug_verbose(entry.__repr__())
 		item = Item(entry, feed_tag)
-		process_item(item, feed_tag)
+		process_item(item)
 
 def process_item(item):
 	state = app_globals.DATABASE.is_read(item.google_id)
@@ -126,13 +131,12 @@ def download_new_items():
 	
 	status("SUBTASK_TOTAL", len(tag_list) * app_globals.OPTIONS['num_items'])
 
-	
 	for feed_tag in tag_list:
 		line()
 		_feed_tag = "[all items]" if feed_tag is None else feed_tag
 		new_task("Downloading tag \"%s\"" % (_feed_tag,))
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], _feed_tag))
-		feed = app_globals.READER.get_tag_feed(feed_tag)
+		feed = app_globals.READER.get_tag_feed(feed_tag, oldest_first = app_globals.OPTIONS['newest_first'])
 		download_feed(feed, _feed_tag)
 		
 	line()

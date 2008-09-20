@@ -28,6 +28,8 @@ main_options = ("n:Cdth", [
 		'tag=',
 		'output-path=',
 		'no-html',
+		'only-tags',
+		'newest-first',
 		'flush-output',
 		])
 all_options = (bootstrap_options[0] + main_options[0],
@@ -59,6 +61,8 @@ Usage:
   -d, --no-download      don't download new items, just tell google reader about read items
   -t, --test             run in test mode. Don't notify google reader of anything, and clobber "test_entries" for output
   -c, --cautious         cautious mode - prompt before performing destructive actions
+  --only-tags            just get the current list of tags and exit
+  --newest-first         get newest items first instead of oldest
   --user=[username]      set the username
   --password=[pass]      set password
   --tag=[tag_name]       add a tag to the list of tags to be downloaded. Can be used multiple times
@@ -95,6 +99,8 @@ Usage:
 			set_opt('do_output', False)
 		elif key == '--flush-output':
 			set_opt('flush_output', True)
+		elif key == '--only-tags':
+			set_opt('tag_list_only', True)
 
 		# settings that are usually put in yaml...
 		elif key == '--user':
@@ -106,6 +112,8 @@ Usage:
 		elif key == '--tag':
 			tag_list.append(val)
 			set_opt('tag_list', tag_list)
+		elif key == '--newest-first':
+			set_opt('newest_first', True)
 		else:
 			print "unknown option: %s" % (key,)
 			print parse_options.__doc__
