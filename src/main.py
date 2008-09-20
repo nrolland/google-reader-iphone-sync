@@ -80,34 +80,40 @@ def download_feed(feed, feed_tag):
 			continue
 		
 		debug_verbose(entry.__repr__())
-
 		item = Item(entry, feed_tag)
+		process_item(item, feed_tag)
+
+def process_item(item):
+	state = app_globals.DATABASE.is_read(item.google_id)
+	name = item.basename
+	
+	item_is_read = state is True or item.is_read
+	if item_is_read:
+		# item has been read either online or offline
+		puts("READ: " + name)
+		app_globals.STATS['read'] += 1
+		danger("About to delete item")
+		item.delete()
+
+	already_seen = state is not None
+
+	if already_seen:
+		# we've already downloaded it
+		app_globals.DATABASE.update_feed_for_item(item)
+	else:
+		try:
+			puts("NEW: " + item.title)
+			danger("About to output item")
+			item.process()
+			item.save()
+			app_globals.STATS['new'] += 1
+		except Exception,e:
+			puts(" ** FAILED **: " + str(e))
+			log_error("Failed processing item: %s" % repr(item), e)
+			if in_debug_mode():
+				raise
+			app_globals.STATS['failed'] += 1
 		
-		state = app_globals.DATABASE.is_read(item.google_id)
-		name = item.basename
-
-		if state is None:
-			if not item.is_read:
-				try:
-					puts("NEW: " + item.title)
-					danger("About to output item")
-					item.process()
-					item.save()
-					app_globals.STATS['new'] += 1
-				except Exception,e:
-					puts(" ** FAILED **: " + str(e))
-					log_error("Failed processing item: %s" % repr(item), e)
-					if in_debug_mode():
-						raise
-					app_globals.STATS['failed'] += 1
-		else:
-			if state == True or item.is_read:
-				# item has been read either online or offline
-				pus("READ: " + name)
-				app_globals.STATS['read'] += 1
-				danger("About to delete item")
-				item.delete()
-
 def download_new_items():
 	"""
 	Downloads new items from google reader across all feeds

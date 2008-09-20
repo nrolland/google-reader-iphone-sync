@@ -20,3 +20,24 @@ def init_output_folder():
 	assert type(app_globals.READER.gr) == Mock
 
 	return output_folder
+
+def google_ids(item_list):
+	return [x.google_id for x in sorted(item_list)]
+
+def fake_item(**kwargs):
+	args = {
+		'google_id' : 'sample_id',
+		'title' : 'title',
+		'url' : 'http://example.com/post/1',
+		'original_id': 'http://www.exampleblog.com/post/1',
+		'is_read' : False,
+		'is_dirty' : False,
+		'is_starred' : False,
+		'feed_name' : 'feedname',
+		'date' : '20080812140000',
+		'content' : '<h1>content!</h1>',
+		'had_errors' : False,
+		'is_stale': False,
+		}
+	args.update(kwargs)
+	return OpenStruct(**args)

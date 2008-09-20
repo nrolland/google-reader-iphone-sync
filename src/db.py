@@ -191,6 +191,9 @@ class DB:
 			return is_read
 		except StopIteration:
 			return None
+		
+	def update_feed_for_item(self, item):
+		self.sql('update items set feed_name = ? where google_id = ?', (item.feed_name, item.google_id))
 	
 	def sync_to_google(self):
 		puts("Syncing with google...")

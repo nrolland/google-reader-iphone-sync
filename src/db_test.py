@@ -6,33 +6,13 @@ import os
 
 # test helpers
 import test_helper
+from test_helper import fake_item, google_ids
 from lib.mock import Mock
 import pickle
 from StringIO import StringIO
 from lib.OpenStruct import OpenStruct
 import unittest
 import config
-
-def google_ids(item_list):
-	return [x.google_id for x in sorted(item_list)]
-
-def fake_item(**kwargs):
-	args = {
-		'google_id' : 'sample_id',
-		'title' : 'title',
-		'url' : 'http://example.com/post/1',
-		'original_id': 'http://www.exampleblog.com/post/1',
-		'is_read' : False,
-		'is_dirty' : False,
-		'is_starred' : False,
-		'feed_name' : 'feedname',
-		'date' : '20080812140000',
-		'content' : '<h1>content!</h1>',
-		'had_errors' : False,
-		'is_stale': False,
-		}
-	args.update(kwargs)
-	return OpenStruct(**args)
 
 def test_migrated_persistance():
 	# make sure the migrations actually get saved to disk.
@@ -138,6 +118,34 @@ class DBTest(unittest.TestCase):
 		assert len(items) == 1
 		item = items[0]
 		assert item.is_read == True
+		
+	def test_adding_unicode(self):
+		# add to DB
+		input_item = fake_item(title=u'caf\xe9')
+		self.db.add_item(input_item)
+		
+		# grab it out
+		items = list(self.db.get_items())
+		assert len(items) == 1
+		item = items[0]
+		
+		# and check it still looks the same:
+		assert item.title == u'caf\xe9'
+	
+	def test_changing_item_feed(self):
+		# add to DB
+		input_item = fake_item(feed_name=u'feedname_1')
+		self.db.add_item(input_item)
+		
+		input_item.feed_name = 'feedname_2'
+		self.db.update_feed_for_item(input_item)
+
+		# grab it out
+		items = list(self.db.get_items())
+		assert len(items) == 1
+		item = items[0]
+
+		self.assertEqual(item.feed_name, u'feedname_2')
 
 	def test_deleting_an_item(self):
 		a = fake_item(google_id = 'a')
@@ -239,3 +247,5 @@ class DBTest(unittest.TestCase):
 		self.db.cleanup()
 		
 		assert os.listdir(self.output_folder + '/_resources') == ['b','d']
+	
+

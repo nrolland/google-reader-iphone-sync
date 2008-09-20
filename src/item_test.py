@@ -57,15 +57,15 @@ class ItemTest(unittest.TestCase):
 		item = Item(item_with_title('<openTag attr="dsdjas">some title</openTag>'), 'feed-name')
 		self.assertEqual(item.title, 'some title')
 
-	def test_dont_remove_tags_when_there_is_no_matching_open_or_close_tag(self):
-		item = Item(item_with_title('<notATag>some title'), 'feed-name')
-		self.assertEqual(item.title, '<notATag>some title')
+	# def test_dont_remove_tags_when_there_is_no_matching_open_or_close_tag(self):
+		# item = Item(item_with_title('<notATag>some title'), 'feed-name')
+		# self.assertEqual(item.title, '<notATag>some title')
 		
-		item = Item(item_with_title('some title</notATag>'), 'feed-name')
-		self.assertEqual(item.title, 'some title</notATag>')
+		# item = Item(item_with_title('some title</notATag>'), 'feed-name')
+		# self.assertEqual(item.title, 'some title</notATag>')
 		
-		item = Item(item_with_title('<noEndTag>some title</noStartTag>'), 'feed-name')
-		self.assertEqual(item.title, '<noEndTag>some title</noStartTag>')
+		# item = Item(item_with_title('<noEndTag>some title</noStartTag>'), 'feed-name')
+		# self.assertEqual(item.title, '<noEndTag>some title</noStartTag>')
 	
 	def test_remove_self_closing_tags(self):
 		item = Item(item_with_title('<self_ending_tag />some title'), 'feed-name')
@@ -81,4 +81,12 @@ class ItemTest(unittest.TestCase):
 	def test_remove_nested_tags(self):
 		item = Item(item_with_title('<div>some <div><a>title</a></div></div>'), 'feed-name')
 		self.assertEqual(item.title, 'some title')
+	
+	def test_convert_html_entities(self):
+		item = Item(item_with_title('caf&eacute;&#233;&#39;s'), 'feed-name')
+		self.assertEqual(item.title, u'caf\xe9\xe9\'s')
+	
+	def test_strip_unicode_from_basename(self):
+		item = Item(item_with_title('caf&eacute;&#39;s'), 'feed-name')
+		self.assertTrue(' cafs .||' in item.basename)
 		

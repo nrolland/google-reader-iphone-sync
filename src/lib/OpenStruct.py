@@ -13,3 +13,5 @@ class OpenStruct:
 		else:
 			self.__dict__.update({i:v})
 		return v
+	def __getitem__(self, i):
+		return self.__getattr__(i)

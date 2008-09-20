@@ -11,10 +11,6 @@ from lib.BeautifulSoup import BeautifulSoup
 import process
 
 
-def remove_the_damn_html_entities(s):
-	# surely there should be a library method somewhere to decode these. But for our purposes we can just ditch them.
-	return re.sub('&.{2,4};','',s)
-
 def esc(s):   return urllib.quote(string)
 def unesc(s): return urllib.unquote(s)
 
@@ -39,8 +35,9 @@ class Item:
 			except:
 				self.feed_name = feed_name
 			self.title = strip_html_tags(feed_item['title'])
+			self.title = unicode(BeautifulSoup(self.title, convertEntities = BeautifulSoup.HTML_ENTITIES))
 			self.google_id = feed_item['google_id']
-			self.date = time.strftime('%Y%m%d%H%M%S', time.localtime(feed_item['updated']))
+			self.date = time.strftime('%Y%m%d%H%M%S', time.localtime(float(feed_item['updated'])))
 			self.is_read = 'read' in feed_item['categories']
 			self.is_starred = 'starred' in feed_item['categories']
 			self.url = feed_item['link']
@@ -69,7 +66,7 @@ class Item:
 	def get_basename(self):
 		return utf8(
 			self.date + ' ' +
-			filter(lambda x: x not in '"\':#!+/$\\?*', ascii(remove_the_damn_html_entities(self.title)))[:120] + ' .||' +
+			filter(lambda x: x not in '"\':#!+/$\\?*', ascii(self.title))[:120] + ' .||' +
 			self.safe_google_id + '||' )
 
 	def soup_setup(self):
