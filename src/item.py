@@ -15,8 +15,8 @@ def esc(s):   return urllib.quote(string)
 def unesc(s): return urllib.unquote(s)
 
 def strip_html_tags(s):
-	double_tag_match = re.compile('<(?P<tagname>[a-zA-Z0-9]+)[^<>]*>(?P<content>.*?)</(?P=tagname)>')
-	single_tag_match = re.compile('<(?P<tagname>[a-zA-Z0-9]+)[^<>]*/>')
+	double_tag_match = re.compile('<(?P<tagname>[a-zA-Z0-9]+)[^<>]*>(?P<content>.*?)</(?P=tagname)>', re.DOTALL)
+	single_tag_match = re.compile('<(?P<tagname>[a-zA-Z0-9]+)[^<>]*/>', re.DOTALL)
 	
 	while re.search(double_tag_match, s) is not None:
 		s = re.sub(double_tag_match, '\g<content>', s)

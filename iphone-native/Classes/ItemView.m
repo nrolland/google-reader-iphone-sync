@@ -109,6 +109,7 @@
 	 [currentHTML release];
 	 */
 	currentHTML = newHTML;
+	dbg_s(@"HTML is: %@", newHTML);
 	[self loadHTMLString:currentHTML baseURL: [NSURL fileURLWithPath: [[appDelegate settings] docsPath]]];
 }
 
