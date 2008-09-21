@@ -25,6 +25,10 @@ typedef enum { Default, FeedList, Status } SyncType;
 
 @implementation SyncController
 
+NSString * escape_single_quotes(NSString * str) {
+	return [str stringByReplacingOccurrencesOfString:@"'" withString:@"'\"'\"'"];
+}
+
 - (void) syncWithType:(SyncType) syncType {
 	if(syncThread && ![syncThread isFinished]) {
 		dbg(@"thread is still running!");
@@ -37,7 +41,7 @@ typedef enum { Default, FeedList, Status } SyncType;
 		dbg(@"tag = %@", tag);
 		tag = [tag stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 		if([tag length] > 0) {
-			[tag_string appendFormat: @" --tag='%@'", [[tag stringByReplacingOccurrencesOfString:@"\\" withString: @"\\\\"] stringByReplacingOccurrencesOfString:@"'" withString:@"'\"'\"'"]];
+			[tag_string appendFormat: @" --tag='%@'", escape_single_quotes(tag)];
 		}
 	}
 	
@@ -57,17 +61,17 @@ typedef enum { Default, FeedList, Status } SyncType;
 	}
 	
 	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --show-status --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
-		[[settings docsPath] stringByAppendingPathComponent:@"src/main.py"],
-		[settings docsPath],
+		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"src/main.py"]),
+		escape_single_quotes([settings docsPath]),
 		[settings itemsPerFeed],
-		[settings email],
-		[settings password],
+		escape_single_quotes([settings email]),
+		escape_single_quotes([settings password]),
 		tag_string];
 	
 	NSString * proxy = [self proxySettings];
 	if(proxy) {
 		dbg(@"using proxy string: %@", proxy);
-		shellString = [NSString stringWithFormat:@"export http_proxy='%@';export https_proxy='%@';%@", proxy, proxy, shellString];
+		shellString = [NSString stringWithFormat:@"export http_proxy='%@';export https_proxy='%@';%@", escape_single_quotes(proxy), escape_single_quotes(proxy), shellString];
 	}
 	dbg_s(@"shell command: %@", shellString);
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];

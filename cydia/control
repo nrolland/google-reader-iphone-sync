@@ -1,6 +1,6 @@
 Package: com.sysprosoft.gfxmonk.gris
 Name: GRiS
-Version: 0.3.3-1
+Version: 0.3.4-1
 Architecture: iphoneos-arm
 Depends: python
 Description:
@@ -9,4 +9,4 @@ Icon: file:///Applications/GRiS.app/Icon.png
 Homepage: http://code.google.com/p/gris/
 Maintainer: Tim Cuthbertson <tim3d.junk+gris@gmail.com>
 Author: Tim Cuthbertson (gfxmonk) <tim3d.junk+gris@gmail.com>
-Section: Entertainment
+Section: Multimedia
