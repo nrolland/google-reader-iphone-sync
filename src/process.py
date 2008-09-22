@@ -45,7 +45,6 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 	if len(images) > 0:
 		ensure_dir_exists(dest_folder)
 	for img in images:
-		debug("Processing image link: " + img['src'])
 		href = absolute_url(img['src'], base_href)
 		
 		filename = get_filename(img['src'])
@@ -152,7 +151,6 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	try:
 		if headers.getmaintype().lower() == 'image':
 			filetype = headers.subtype
-			debug("sniffed type of image: %s" % filetype)
 	except: pass
 
 	if filetype is None:
