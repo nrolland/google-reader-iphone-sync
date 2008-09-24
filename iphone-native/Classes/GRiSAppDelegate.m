@@ -83,7 +83,7 @@
 
 - (IBAction) toggleOptions: (id) sender {
 	id optionsButton = [[[[mainController navController] topViewController] navigationItem] rightBarButtonItem];
-	UIView * currentView = [[[mainController navController] topViewController] view];
+	UIView * currentView = [[[[mainController navController] topViewController] view] superview];
 	id subviews = [currentView subviews];
 	if([subviews containsObject: optionsView]) {
 		dbg(@"hiding options");
