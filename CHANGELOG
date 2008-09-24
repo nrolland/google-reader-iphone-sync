@@ -1,3 +1,8 @@
+0.3.5:
+	- Bug fixes
+		- unicode characters in tags works
+		- "options" drop down never appears off-screen
+
 0.3.4:
 	- Improved escaping of sync script arguments
 	- Less broken images in feeds (by using mime-types)
