@@ -28,7 +28,8 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 		>>> ensure_dir_exists = Mock()
 		>>> import process
 		>>> process.download_file = Mock()
-
+		>>> process.download_file.return_value = "image.jpg"
+		
 		>>> soup = BeautifulSoup('<img src="http://google.com/image.jpg?a=b&c=d"/>')
 		>>> download_images(soup, 'dest_folder', 'local_folder/')
 		True
@@ -37,7 +38,7 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 	
 		# (make sure the file was downloaded from the correct URL:)
 		>>> process.download_file.call_args
-		((u'http://google.com/image.jpg?a=b&c=d', u'dest_folder/image.jpg'), {})
+		((u'http://google.com/image.jpg?a=b&c=d', u'image.jpg'), {'base_path': 'dest_folder'})
 	"""
 	images = soup.findAll('img',{'src':True})
 	success = True
@@ -104,22 +105,26 @@ def unique_filename(output_filename, base_path=None):
 	"""
 	get the next filename for a pattern that doesn't already exist
 
-	>>> base='/tmp/filetest/'
-	>>> rm_rf(base)
-	>>> unique_filename(base+'filename.x.txt')
-	'/tmp/filetest/base.x.txt'
-	>>> touch_file(_)
-	>>> unique_filename(base+'filename.x.txt')
-	'/tmp/filetest/base.x-2.txt'
-	>>> touch_file(_)
-	>>> touch_file('/tmp/filetest/base.x-3.txt')
-	>>> unique_filename(base+'filename.x.txt')
-	'/tmp/filetest/base.x-4.txt'
+		>>> base='/tmp/filetest/'
+		>>> rm_rf(base)
+		>>> unique_filename(base+'filename.x.txt')
+		'/tmp/filetest/filename.x.txt'
+		>>> touch_file(_)
+		>>> unique_filename(base+'filename.x.txt')
+		'/tmp/filetest/filename.x-2.txt'
+		>>> touch_file(_)
+		>>> touch_file('/tmp/filetest/filename.x-3.txt')
+		
+	use a base_path to specify a full path for file-checking purposes,
+	but which isn't included in the return value
+	
+		>>> unique_filename('filename.x.txt', base)
+		'filename.x-4.txt'
 	"""
 	i = 2
 	base, ext = os.path.splitext(output_filename)
 	while os.path.exists(os.path.join(base_path, output_filename) if base_path else output_filename):
-		output_filename = "%s-%s.%s" % (base, i, ext)
+		output_filename = "%s-%s%s" % (base, i, ext)
 		i += 1
 	return output_filename
 
