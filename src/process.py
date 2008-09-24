@@ -3,6 +3,9 @@ import urllib2, re, os
 from misc import *
 from output import *
 
+# don't bother downloading images smaller than this
+MIN_IMAGE_BYTES = 1024
+
 ## processing modules:
 def insert_alt_text(soup):
 	"""
@@ -156,6 +159,13 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	try:
 		if headers.getmaintype().lower() == 'image':
 			filetype = headers.subtype
+	except: pass
+	
+	try:
+		if int(headers['Content-Length']) < MIN_IMAGE_BYTES:
+			debug("not downloading image - it's only %s bytes long" % headers['Content-Length'])
+			dl.close()
+			return None
 	except: pass
 
 	if filetype is None:
