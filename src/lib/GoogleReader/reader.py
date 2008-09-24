@@ -14,7 +14,7 @@ from feed import GoogleFeed
 from object import GoogleObject
 from const import CONST
 
-def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
+def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else str(s)
 
 class GoogleReader(object) :
 	'''This class provide python binding for GoogleReader http://google.com/reader/'''
