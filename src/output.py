@@ -11,8 +11,8 @@ lvl_silent = 0
 
 logfile = None
 
-def ascii(s): return s.encode('ascii','ignore') if isinstance(s, unicode) else s
-def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else s
+def ascii(s): return s.encode('ascii','ignore') if isinstance(s, unicode) else str(s)
+def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else str(s)
 
 def puts_array(s, level=lvl_quiet):
 	global logfile
@@ -46,7 +46,7 @@ def log_error(description, exception):
 def status(*s):
 	"""output a machine-readable status message"""
 	if app_globals.OPTIONS['show_status']:
-		puts("STAT:%s" % ":".join([str(x) for x in s]))
+		puts("STAT:%s" % ":".join([utf8(x) for x in s]))
 
 
 # level is actually an output function, i.e. one of the above
