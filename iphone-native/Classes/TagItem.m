@@ -22,6 +22,7 @@
 }
 
 - (NSString *) descriptionText {
+	if(count < 0) return @"";
 	return [NSString stringWithFormat: @"%d item%s", count, PLURAL(count)];
 }
 
