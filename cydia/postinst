@@ -6,6 +6,7 @@ if [ -f "$config" ]; then
 	cp "$config/*" /var/mobile/GRiS/ || exit 1
 fi
 chown -R mobile.mobile /var/mobile/GRiS
+chmod +x /Applications/GRiS.app/GRiS
 
 if [ "$1" == 'configure' ]; then
 	echo "$2" > /var/mobile/GRiS/VERSION
