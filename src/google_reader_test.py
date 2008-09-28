@@ -37,9 +37,10 @@ class GoogleReaderLiveTest(unittest.TestCase):
 	def test_tag_with_spaces(self):
 		main.download_feed(self.reader.get_tag_feed('i am a tag with lots of spaces'),'feed')
 	
-	# FIXME: the below tests still fail
-	# def test_tag_with_all_manner_of_crazy_characters_except_spaces(self):
-	# 	main.download_feed(main.get_feed_from_tag('abc\'"~!@#$%^&*()-+_=,.<>?/\\'))
-	
-	# def test_tag_with_non_ascii_characters(self):
-	# 	main.download_feed(main.get_feed_from_tag(u'caf\xe9'))
+	@test_helper.pending
+	def test_tag_with_all_manner_of_crazy_characters_except_spaces(self):
+		main.download_feed(main.get_feed_from_tag('abc\'"~!@#$%^&*()-+_=,.<>?/\\'))
+
+	@test_helper.pending	
+	def test_tag_with_non_ascii_characters(self):
+		main.download_feed(main.get_feed_from_tag(u'caf\xe9'))

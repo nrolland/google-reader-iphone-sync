@@ -41,3 +41,18 @@ def fake_item(**kwargs):
 		}
 	args.update(kwargs)
 	return OpenStruct(**args)
+
+
+################ generic test helpers ################
+import sys
+
+def pending(original_function, reason = None):
+	def test_the_original_function(*args, **kwargs):
+		fn_name = original_function.__name__
+		reason_str = "" if reason is None else " (%s)" % reason
+		try:
+			original_function(*args, **kwargs)
+			print >> sys.stderr, "%s %sPASSED unexpectedly" % (fn_name, reason_str)
+		except Exception, e:
+			print >> sys.stderr, "PENDING%s: %s raised error: %s" % (reason_str, fn_name, e)
+	return test_the_original_function

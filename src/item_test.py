@@ -10,7 +10,6 @@ from lib.OpenStruct import OpenStruct
 import unittest
 import config
 
-
 sample_item = {
 	'author': u'pizzaburger',
 	'categories': {u'user/-/label/03-comics---imagery': u'03-comics---imagery',
@@ -57,15 +56,16 @@ class ItemTest(unittest.TestCase):
 		item = Item(item_with_title('<openTag attr="dsdjas">some title</openTag>'), 'feed-name')
 		self.assertEqual(item.title, 'some title')
 
-	# def test_dont_remove_tags_when_there_is_no_matching_open_or_close_tag(self):
-		# item = Item(item_with_title('<notATag>some title'), 'feed-name')
-		# self.assertEqual(item.title, '<notATag>some title')
+	@test_helper.pending
+	def test_dont_remove_tags_when_there_is_no_matching_open_or_close_tag(self):
+		item = Item(item_with_title('<notATag>some title'), 'feed-name')
+		self.assertEqual(item.title, '<notATag>some title')
 		
-		# item = Item(item_with_title('some title</notATag>'), 'feed-name')
-		# self.assertEqual(item.title, 'some title</notATag>')
+		item = Item(item_with_title('some title</notATag>'), 'feed-name')
+		self.assertEqual(item.title, 'some title</notATag>')
 		
-		# item = Item(item_with_title('<noEndTag>some title</noStartTag>'), 'feed-name')
-		# self.assertEqual(item.title, '<noEndTag>some title</noStartTag>')
+		item = Item(item_with_title('<noEndTag>some title</noStartTag>'), 'feed-name')
+		self.assertEqual(item.title, '<noEndTag>some title</noStartTag>')
 	
 	def test_remove_self_closing_tags(self):
 		item = Item(item_with_title('<self_ending_tag />some title'), 'feed-name')
