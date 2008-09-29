@@ -46,13 +46,24 @@ def fake_item(**kwargs):
 ################ generic test helpers ################
 import sys
 
-def pending(original_function, reason = None):
-	def test_the_original_function(*args, **kwargs):
-		fn_name = original_function.__name__
+def pending(function_or_reason):
+	def wrap_func(func, reason = None):
 		reason_str = "" if reason is None else " (%s)" % reason
-		try:
-			original_function(*args, **kwargs)
-			print >> sys.stderr, "%s %sPASSED unexpectedly" % (fn_name, reason_str)
-		except Exception, e:
-			print >> sys.stderr, "PENDING%s: %s raised error: %s" % (reason_str, fn_name, e)
-	return test_the_original_function
+		def actually_call_it(*args, **kwargs):
+			fn_name = func.__name__
+			try:
+				func(*args, **kwargs)
+				print >> sys.stderr, "%s%s PASSED unexpectedly " % (fn_name, reason_str),
+			except:
+				print >> sys.stderr, "[[[ PENDING ]]]%s ... " % (reason_str,),
+		actually_call_it.__name__ = func.__name__
+		return actually_call_it
+	
+	if callable(function_or_reason):
+		# we're decorating a function
+		return wrap_func(function_or_reason)
+	else:
+		# we've been given a description - return a decorator
+		def decorator(func):
+			return wrap_func(func, function_or_reason)
+		return decorator

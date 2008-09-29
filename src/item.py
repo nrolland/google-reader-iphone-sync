@@ -132,11 +132,7 @@ class Item:
 
 		# apply the actions
 		for action in actions:
-			result = Item.google_do_with_id(action, self.google_id)
-			if not result:
-				msg = "Failed to apply function %s" % action
-				info(msg)
-				raise Exception(msg)
+			Item.google_do_with_id(action, self.google_id)
 		
 		self.is_dirty = False
 

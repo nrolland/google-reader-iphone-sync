@@ -198,10 +198,10 @@ class DBTest(unittest.TestCase):
 	def test_google_sync(self):
 		# mock out the google reader
 		reader = app_globals.READER.gr
-		reader.set_read.return_value = True
-		reader.add_star.return_value = True
-		reader.set_unread.return_value = True
-		reader.del_star.return_value = True
+		reader.set_read.return_value = 'OK'
+		reader.add_star.return_value = 'OK'
+		reader.set_unread.return_value = 'OK'
+		reader.del_star.return_value = 'OK'
 		
 		self.db.add_item(fake_item(google_id = 'b', title='item b', is_read = False, is_dirty = True))
 		self.db.add_item(fake_item(google_id = 'd', title='item d', is_read = False, is_dirty = True))

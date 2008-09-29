@@ -4,6 +4,9 @@ import app_globals
 from lib.GoogleReader import GoogleReader, CONST
 import os
 
+class ReaderError(Exception):
+	pass
+
 class Reader:
 	def __init__(self, user=None, password=None):
 		if app_globals.OPTIONS['test']:
@@ -67,13 +70,23 @@ class Reader:
 			return getattr(self.gr, f.__name__)(*args, **kwargs)
 		return pass_func
 	
-	@passthrough
-	def set_read(): pass
+	def passthrough_and_check(f):
+		def pass_func(self, *args, **kwargs):
+			result = getattr(self.gr, f.__name__)(*args, **kwargs)
+			if result != 'OK':
+				raise ReaderError("Result (%s) is not 'OK'" % (result,))
+		return pass_func
 	
-	@passthrough
+	@passthrough_and_check
+	def set_read(): pass
+
+	@passthrough_and_check
+	def set_unread(): pass
+	
+	@passthrough_and_check
 	def add_star(): pass
 	
-	@passthrough
+	@passthrough_and_check
 	def remove_star(): pass
 	
 	@passthrough

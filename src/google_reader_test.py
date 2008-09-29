@@ -8,10 +8,10 @@ import test_helper
 from lib.mock import Mock
 from StringIO import StringIO
 from lib.OpenStruct import OpenStruct
-import unittest
+import unittest, sys
 import config
 import app_globals
-from reader import Reader
+from reader import Reader, CONST
 
 # These are (relatively) long running tests, which require an active google reader account and network connection.
 # They should be separated from the main tests for this reason, but currenly they aren't.
@@ -44,3 +44,34 @@ class GoogleReaderLiveTest(unittest.TestCase):
 	@test_helper.pending	
 	def test_tag_with_non_ascii_characters(self):
 		main.download_feed(main.get_feed_from_tag(u'caf\xe9'))
+
+	# helper for the below test
+	def get_tag_items(self, tag, is_read = None):
+		kwargs = {}
+		if is_read is not None:
+			kwargs['exclude_target'] = CONST.ATOM_STATE_UNREAD if is_read else CONST.ATOM_STATE_READ
+		feed = CONST.ATOM_PREFIXE_LABEL + tag
+		return list(self.reader.get_feed(None, feed, count=1, **kwargs).get_entries())
+			
+	# For this test to pass, you need to have exactly one item tagged with "gris-test" in your google reader account.
+	# I'm afraid you're on your own setting this up - doing it in code is just too cumbersome.
+	def test_changing_item_status(self):
+		entries = self.get_tag_items('gris-test')
+		assert len(entries) == 1
+		entry = entries[0]
+		entry_id = entry['google_id']
+
+		# make sure it's unread
+		self.reader.set_unread(entry_id)
+		entries = self.get_tag_items('gris-test', is_read = False)
+		assert len(entries) == 1
+		entry = entries[0]
+		assert entry_id == entry['google_id']
+
+		# # now mark it as read
+		# self.reader.set_read(entry_id)
+		# entries = self.get_tag_items('gris-test', is_read = True)
+		# entry = entries[0]
+		# assert len(entries) == 1
+		# assert entry_id == entry['google_id']
+		# entry = entries[0]
