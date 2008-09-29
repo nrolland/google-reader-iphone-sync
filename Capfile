@@ -155,6 +155,7 @@ namespace :package do
 		local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app/GRiS #{$ipod_user}@#{$ipod_server}:/tmp"
 		run "ldid -S /tmp/GRiS"
 		local "rsync #{$rsync_opts} #{$ipod_user}@#{$ipod_server}:/tmp/GRiS iphone-native/build/Release-iphoneos/GRiS.app/"
+		local "chmod +x iphone-native/build/Release-iphoneos/GRiS.app/GRiS"
 		run "rm /tmp/GRiS"
 	end
 
@@ -171,6 +172,10 @@ namespace :package do
 		local "cp -r iphone-native/build/Release-iphoneos/GRiS.app #{app_dir}/Applications/"
 		local "cp -r template #{app_dir}/var/mobile/GRiS/"
 		local "cp -r src #{app_dir}/var/mobile/GRiS/"
+		
+		version = `grep -i '^Version' cydia/control`.chomp.split[-1].split('-')[0]
+		puts "version: #{version}"
+		local "echo '#{version}' > #{app_dir}/var/mobile/GRiS/VERSION"
 
 		# control file, install scripts
 		local "cp -r cydia/* #{build_dir}/#{app}/DEBIAN/"

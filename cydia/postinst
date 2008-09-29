@@ -7,7 +7,3 @@ if [ -f "$config" ]; then
 fi
 chown -R mobile.mobile /var/mobile/GRiS
 chmod +x /Applications/GRiS.app/GRiS
-
-if [ "$1" == 'configure' ]; then
-	echo "$2" > /var/mobile/GRiS/VERSION
-fi
