@@ -56,7 +56,7 @@ class ItemTest(unittest.TestCase):
 		item = Item(item_with_title('<openTag attr="dsdjas">some title</openTag>'), 'feed-name')
 		self.assertEqual(item.title, 'some title')
 
-	@test_helper.pending
+	@test_helper.pending("using beautiful soup breaks this")
 	def test_dont_remove_tags_when_there_is_no_matching_open_or_close_tag(self):
 		item = Item(item_with_title('<notATag>some title'), 'feed-name')
 		self.assertEqual(item.title, '<notATag>some title')

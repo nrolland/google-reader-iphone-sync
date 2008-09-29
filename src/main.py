@@ -52,14 +52,11 @@ def execute():
 	
 	if app_globals.OPTIONS['no_download']:
 		info("not downloading any new items...")
-		return
 	else:
 		app_globals.DATABASE.prepare_for_download()
 		download_new_items()
-
-	new_task("Cleaning up old resources")
-	app_globals.DATABASE.cleanup() # remove old _resources files
-	app_globals.DATABASE.close()
+		new_task("Cleaning up old resources")
+		app_globals.DATABASE.cleanup() # remove old _resources files
 
 def retry_failed_items():
 	new_task("Re-trying failed image downloads")
@@ -162,10 +159,18 @@ def main():
 	Main program entry point - loads config, parses otions and kicks off the sync process
 	"""
 	setup()
-	execute()
-	puts("Sync complete.")
-	log_end()
-	return 0
+	retval = 0
+	try:
+		execute()
+		puts("Sync complete.")
+	except KeyboardInterrupt:
+		puts("Sync interrupted")
+		status("Cancelled")
+		retval = 1
+	finally:
+		app_globals.DATABASE.close()
+		log_end()
+	return retval
 
 
 if __name__ == '__main__':

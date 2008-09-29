@@ -4,7 +4,7 @@ from misc import *
 from output import *
 
 # don't bother downloading images smaller than this
-MIN_IMAGE_BYTES = 1024
+MIN_IMAGE_BYTES = 512
 
 ## processing modules:
 def insert_alt_text(soup):

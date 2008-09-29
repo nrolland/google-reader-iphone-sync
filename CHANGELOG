@@ -1,3 +1,7 @@
+0.3.7:
+	- Cancelling a sync now keeps whatever work the sync had done
+	- Better error checking for google-reader operations (mark as read, etc)
+
 0.3.6:
 	- Bug fix. When installed, gris was not chmodded +x for many users.
 	- No longer downloads trivially small images (<1k)
