@@ -67,7 +67,7 @@ def log_start():
 		version = vfile.readline()
 		vfile.close()
 		debug("app version: %s" % (version,))
-	except Exception,e:
+	except IOError,e:
 		log_error("Failed to find app version", e)
 
 def in_debug_mode():

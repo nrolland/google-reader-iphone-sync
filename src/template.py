@@ -33,7 +33,7 @@ def get_str(obj):
 		return ""
 	try:
 		res = str(obj())
-	except Exception:
+	except TypeError:
  		res = str(obj)
 	return res
 
@@ -142,9 +142,9 @@ def get_attribute(obj, attr):
 	ret = None
 	try:
 		ret = getattr(obj, attr)
-	except Exception:
+	except AttributeError:
 		try:
 			ret = obj[attr]
-		except Exception:
+		except (TypeError, KeyError):
 			pass
 	return ret

@@ -52,11 +52,11 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 		href = absolute_url(img['src'], base_href)
 		
 		filename = get_filename(img['src'])
-
 		try:
 			filename = download_file(href, filename, base_path=dest_folder)
 			if filename is not None:
 				img['src'] = urllib2.quote(href_prefix + filename)
+		except KeyboardInterrupt: raise
 		except Exception, e:
 			info("Image %s failed to download: %s" % (img['src'], e))
 			success = False
@@ -86,7 +86,7 @@ def absolute_url(url, base = None):
 		return url
 	
 	if base is None:
-		raise Exception("No base given, and \"%s\" is a relative URL!" % url)
+		raise ValueError("No base given, and \"%s\" is a relative URL!" % url)
 	if re.match('/', url):
 		protocol, path = base.split('://',1)
 		server = path.split('/',1)[0]
@@ -97,11 +97,10 @@ def absolute_url(url, base = None):
 	return base + url
 
 def get_filename(url):
+	""" TODO: doctests """
 	url = url.split('?',1)[0] # chomp query strings
-	try:
-		return url.split('/')[-1]
-	except:
-		return urllib2.escape(url)
+	url = url.split('/')[-1]
+	return urllib2.quote(url)
 
 
 def unique_filename(output_filename, base_path=None):
@@ -159,6 +158,7 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	try:
 		if headers.getmaintype().lower() == 'image':
 			filetype = headers.subtype
+	except KeyboardInterrupt: raise
 	except: pass
 	
 	try:
@@ -166,11 +166,11 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 			debug("not downloading image - it's only %s bytes long" % headers['Content-Length'])
 			dl.close()
 			return None
+	except KeyboardInterrupt: raise
 	except: pass
 
 	if filetype is None:
-		try: filetype = output_filename.split('.')[-1].lower()
-		except: pass
+		filetype = output_filename.split('.')[-1].lower()
 	
 	if filetype not in image_extensions:
 		debug("not downloading image of type: %s" % filetype)

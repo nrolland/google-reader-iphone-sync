@@ -22,7 +22,7 @@ def try_remove(elem, lst):
 	"""
 	try:
 		lst.remove(elem)
-	except:
+	except ValueError:
 		pass
 
 def matches_any_regex(s, regexes, flags = 0):
@@ -43,12 +43,12 @@ def try_shell(cmd):
 		>>> try_shell('[ 0 = 0 ]')
 		>>> try_shell('[ 0 = 1 ]')
 		Traceback (most recent call last):
-		Exception: shell command failed:
+		RuntimeError: shell command failed:
 		[ 0 = 1 ]
 	"""
 	debug("running command: " + cmd)
 	if os.system(cmd) != 0:
-		raise Exception("shell command failed:\n%s" % cmd)
+		raise RuntimeError("shell command failed:\n%s" % cmd)
 
 def url_dirname(url):
 	"""

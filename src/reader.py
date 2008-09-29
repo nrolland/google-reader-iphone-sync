@@ -27,9 +27,10 @@ class Reader:
 		self.gr.identify(user, password)
 		try:
 			if not self.gr.login():
-				raise Exception("Login failed")
+				raise RuntimeError("Login failed")
+		except KeyboardInterrupt: raise
 		except:
-			raise Exception("Login failed")
+			raise RuntimeError("Login failed")
 		
 	def get_tag_list(self):
 		if self._tag_list is None:
@@ -47,7 +48,7 @@ class Reader:
 		for utag in user_tags:
 			if utag not in self.tag_list:
 				print "Valid tags are: %s" %(self.tag_list,)
-				raise Exception("No such tag: %r" % (utag,))
+				raise ValueError("No such tag: %r" % (utag,))
 
 	def save_tag_list(self):
 		write_file_lines(os.path.join(app_globals.OPTIONS['output_path'], 'tag_list'), self.tag_list)

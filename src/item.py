@@ -32,7 +32,7 @@ class Item:
 		self.had_errors = False
 		if feed_item is not None:
 			try: self.feed_name = feed_item['feed_name']
-			except:
+			except KeyError, TypeError:
 				self.feed_name = feed_name
 			self.title = strip_html_tags(feed_item['title'])
 			self.title = unicode(BeautifulSoup(self.title, convertEntities = BeautifulSoup.HTML_ENTITIES))
@@ -73,7 +73,7 @@ class Item:
 		self.soup = BeautifulSoup(self.content)
 		try:
 			self.base = url_dirname(self.original_id)
-		except:
+		except TypeError:
 			self.base = None
 	
 	def soup_teardown(self):

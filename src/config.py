@@ -143,7 +143,7 @@ def load(filename = None):
 	
 		for key,val in conf.items():
 			set_opt(key, val)
-	except Exception, e:
+	except (ImportError, IOError), e:
 		info("Config file %s not loaded: %s" % (filename,e))
 
 def check():

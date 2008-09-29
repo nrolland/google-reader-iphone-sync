@@ -109,6 +109,7 @@ def process_item(item):
 			item.process()
 			item.save()
 			app_globals.STATS['new'] += 1
+		except KeyboardInterrupt: raise
 		except Exception,e:
 			puts(" ** FAILED **: " + str(e))
 			log_error("Failed processing item: %s" % repr(item), e)
