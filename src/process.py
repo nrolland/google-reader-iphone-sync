@@ -22,6 +22,7 @@ def insert_alt_text(soup):
 		img.append(desc)
 	return True
 
+
 def download_images(soup, dest_folder, href_prefix, base_href = None):
 	"""
 	Download all referenced images to the {dest} folder
@@ -41,7 +42,7 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 	
 		# (make sure the file was downloaded from the correct URL:)
 		>>> process.download_file.call_args
-		((u'http://google.com/image.jpg?a=b&c=d', u'image.jpg'), {'base_path': 'dest_folder'})
+		((u'http://google.com/image.jpg?a=b&c=d', 'image.jpg'), {'base_path': 'dest_folder'})
 	"""
 	images = soup.findAll('img',{'src':True})
 	success = True
@@ -146,7 +147,7 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	         - None if the file was not downloaded (because its type is not in image_extensions)
 	"""
 	# timeout in seconds
-	socket.setdefaulttimeout(30)
+	socket.setdefaulttimeout(20)
 
 	debug("downloading file: " + url)
 	dl = urllib2.urlopen(url)
