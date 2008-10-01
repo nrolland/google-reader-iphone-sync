@@ -126,7 +126,7 @@ def process_item(item):
 			item.process()
 			item.save()
 			app_globals.STATS['new'] += 1
-		except Exception,e:
+		except StandardError,e:
 			puts(" ** FAILED **: " + str(e))
 			log_error("Failed processing item: %s" % repr(item), e)
 			if in_debug_mode():

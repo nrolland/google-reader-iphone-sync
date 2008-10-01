@@ -21,7 +21,7 @@ def test_migrated_persistance():
 	schema = ['create table items(id TEXT)', 'create table items2(id TEXT)']
 	try:
 		os.remove(fname)
-	except:
+	except EnvironmentError:
 		pass # that's ok...
 	db = sqlite.connect(fname)
 	assert VersionDB.migrate(db, schema) == 2 # 2 steps applied

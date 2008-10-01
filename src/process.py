@@ -56,7 +56,7 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 			filename = download_file(href, filename, base_path=dest_folder)
 			if filename is not None:
 				img['src'] = urllib2.quote(href_prefix + filename)
-		except Exception, e:
+		except StandardError, e:
 			info("Image %s failed to download: %s" % (img['src'], e))
 			success = False
 	
@@ -157,14 +157,14 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	try:
 		if headers.getmaintype().lower() == 'image':
 			filetype = headers.subtype
-	except: pass
+	except StandardError: pass
 	
 	try:
 		if int(headers['Content-Length']) < MIN_IMAGE_BYTES:
 			debug("not downloading image - it's only %s bytes long" % headers['Content-Length'])
 			dl.close()
 			return None
-	except: pass
+	except StandardError: pass
 
 	if filetype is None:
 		filetype = output_filename.split('.')[-1].lower()

@@ -4,7 +4,7 @@ import app_globals
 from lib.GoogleReader import GoogleReader, CONST
 import os
 
-class ReaderError(Exception):
+class ReaderError(StandardError):
 	pass
 
 class Reader:
@@ -28,7 +28,7 @@ class Reader:
 		try:
 			if not self.gr.login():
 				raise RuntimeError("Login failed")
-		except:
+		except StandardError:
 			raise RuntimeError("Login failed")
 		
 	def get_tag_list(self):
