@@ -28,7 +28,6 @@ class Reader:
 		try:
 			if not self.gr.login():
 				raise RuntimeError("Login failed")
-		except KeyboardInterrupt: raise
 		except:
 			raise RuntimeError("Login failed")
 		

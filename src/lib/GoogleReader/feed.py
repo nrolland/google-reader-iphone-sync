@@ -84,7 +84,6 @@ class GoogleFeed(object) :
 						entry[entry_key] = None
 				if 'content' not in entry :
 					entry['content'] = entry['summary']
-			except KeyboardInterrupt: raise
 			except Exception,e:
 				print "Exception retrieving entry: " + str(e)
 				entry = None

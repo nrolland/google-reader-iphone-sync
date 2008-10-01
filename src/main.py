@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # general includes
-import sys, glob, urllib2
+import sys, glob, urllib2, signal
 
 # local includes
 import config
@@ -18,6 +18,19 @@ def new_task(description=""):
 	global TASK_PROGRESS
 	status("TASK_PROGRESS", TASK_PROGRESS, description)
 	TASK_PROGRESS += 1
+
+def handle_signal(signum, stack):
+	info("Signal caught: %s" % (signum,))
+	status("TASK_PROGRESS", TASK_PROGRESS, "Cancelled")
+	cleanup()
+	
+def cleanup():
+	app_globals.DATABASE.close()
+	log_end()
+	
+def init_signals():
+	signal.signal(signal.SIGINT, handle_signal)
+	signal.signal(signal.SIGTERM, handle_signal)
 
 def execute():
 	"""
@@ -48,6 +61,10 @@ def execute():
 
 	line()
 	app_globals.DATABASE = DB()
+	
+	# we now have something we need to clean up on interrupt:
+	init_signals()
+	
 	app_globals.DATABASE.sync_to_google()
 	
 	if app_globals.OPTIONS['no_download']:
@@ -109,7 +126,6 @@ def process_item(item):
 			item.process()
 			item.save()
 			app_globals.STATS['new'] += 1
-		except KeyboardInterrupt: raise
 		except Exception,e:
 			puts(" ** FAILED **: " + str(e))
 			log_error("Failed processing item: %s" % repr(item), e)
@@ -144,7 +160,6 @@ def download_new_items():
 	if app_globals.STATS['failed'] > 0:
 		puts("%s items failed to parse" % app_globals.STATS['failed'])
 
-
 def setup(opts=None):
 	if opts is None:
 		opts = sys.argv[1:]
@@ -154,25 +169,17 @@ def setup(opts=None):
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	log_start()
 	config.check()
+	init_signals()
 
 def main():
 	"""
 	Main program entry point - loads config, parses otions and kicks off the sync process
 	"""
 	setup()
-	retval = 0
-	try:
-		execute()
-		puts("Sync complete.")
-	except KeyboardInterrupt:
-		puts("Sync interrupted")
-		status("Cancelled")
-		retval = 1
-	finally:
-		app_globals.DATABASE.close()
-		log_end()
-	return retval
-
+	execute()
+	puts("Sync complete.")
+	cleanup()
+	return 0
 
 if __name__ == '__main__':
 	sys.exit(main())

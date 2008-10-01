@@ -104,7 +104,7 @@ end
 
 
 # installing & running the code on your iPhone
-build_dir = "GRiS.pkg-build"
+build_dir = ".GRiS.pkg-build"
 app = "GRiS"
 app_dir = "#{build_dir}/#{app}"
 

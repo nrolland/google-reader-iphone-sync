@@ -61,7 +61,7 @@ static FILE * my_popen (char * command, const char * type, pid * tid);
 - (void) cancel {
 	[super cancel];
 	// kill the worker thread:
-	if(killpg(shellPid, SIGINT) != 0) {
+	if(killpg(shellPid, SIGTERM) != 0) {
 		dbg(@"Cancel failed to kill pid %d", shellPid);
 	}
 	wait(NULL);
