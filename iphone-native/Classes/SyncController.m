@@ -60,7 +60,13 @@ NSString * escape_single_quotes(NSString * str) {
 		dbg(@"NOT sorting newest first");
 	}
 	
-	NSString * shellString = [NSString stringWithFormat:@"python '%@' --no-html --show-status --flush-output --quiet --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
+	#ifndef SIMULATOR
+		[tag_string appendString: @" --quiet"];
+	#else
+		[tag_string appendString: @" --verbose"];
+	#endif
+	
+	NSString * shellString = [NSString stringWithFormat:@"python '%@' --show-status --flush-output --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
 		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"src/main.py"]),
 		escape_single_quotes([settings docsPath]),
 		[settings itemsPerFeed],
@@ -227,6 +233,7 @@ NSString * escape_single_quotes(NSString * str) {
 			}
 		}
 	} else {
+		dbg_s(line);
 		[last_output_line release];
 		last_output_line = [line retain];
 	}

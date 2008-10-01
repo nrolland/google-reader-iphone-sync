@@ -151,7 +151,6 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	# timeout in seconds
 	socket.setdefaulttimeout(20)
 
-	debug("downloading file: " + url)
 	dl = urllib2.urlopen(url)
 	headers = dl.headers
 
@@ -168,7 +167,7 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 			dl.close()
 			return None
 	except StandardError: pass
-
+	
 	if filetype is None:
 		filetype = output_filename.split('.')[-1].lower()
 	
@@ -183,6 +182,7 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	if not allow_overwrite:
 		output_filename = unique_filename(output_filename, base_path=base_path)
 
+	debug("downloading file: " + url)
 	contents = dl.read()
 	dl.close()
 

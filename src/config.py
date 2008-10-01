@@ -27,7 +27,6 @@ main_options = ("n:Cdth", [
 		'password=',
 		'tag=',
 		'output-path=',
-		'no-html',
 		'only-tags',
 		'newest-first',
 		'flush-output',
@@ -94,9 +93,6 @@ Usage:
 		elif key == '-h' or key == '--help':
 			print parse_options.__doc__
 			sys.exit(1)
-
-		elif key == '--no-html':
-			set_opt('do_output', False)
 		elif key == '--flush-output':
 			set_opt('flush_output', True)
 		elif key == '--only-tags':

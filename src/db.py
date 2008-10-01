@@ -91,9 +91,9 @@ class DB:
 		self.db = sqlite.connect(self.filename)
 
 	def sql(self, stmt, data = None):
-		debug("SQL statement: %s" % stmt)
+		debug_verbose("SQL statement: %s" % stmt)
 		if data is not None:
-			debug("    data: %r" % (data,))
+			debug_verbose("    data: %r" % (data,))
 			result = self.db.execute(stmt, data)
 		else:
 			result = self.db.execute(stmt)

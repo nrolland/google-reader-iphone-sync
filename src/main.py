@@ -12,6 +12,7 @@ from lib.GoogleReader import GoogleReader, CONST
 import app_globals
 import template
 from reader import Reader
+from thread_pool import ThreadPool
 
 TASK_PROGRESS = 0
 def new_task(description=""):
@@ -20,7 +21,7 @@ def new_task(description=""):
 	TASK_PROGRESS += 1
 
 def handle_signal(signum, stack):
-	info("Signal caught: %s" % (signum,))
+	debug("Signal caught: %s" % (signum,))
 	status("TASK_PROGRESS", TASK_PROGRESS, "Cancelled")
 	cleanup()
 	
@@ -70,6 +71,7 @@ def execute():
 	if app_globals.OPTIONS['no_download']:
 		info("not downloading any new items...")
 	else:
+#		retry_failed_items() # TODO: Re-enable this
 		app_globals.DATABASE.prepare_for_download()
 		download_new_items()
 		new_task("Cleaning up old resources")
@@ -85,6 +87,7 @@ def retry_failed_items():
 def download_feed(feed, feed_tag):
 	item_number = 0
 	status("SUBTASK_TOTAL", len(feed))
+	item_thread_pool = ThreadPool()
 	for entry in feed.get_entries():
 		item_number += 1
 		status("SUBTASK_PROGRESS", item_number)
@@ -100,9 +103,20 @@ def download_feed(feed, feed_tag):
 		
 		debug_verbose(entry.__repr__())
 		item = Item(entry, feed_tag)
-		process_item(item)
+		process_item(item, item_thread_pool)
+		item_thread_pool.collect()
+	item_thread_pool.collect_all()
 
-def process_item(item):
+def error_reporter_for_item(item):
+	def error_report(exception):
+		puts(" ** FAILED **: " + str(exception))
+		log_error("Failed processing item: %s" % repr(item), exception)
+		if in_debug_mode():
+			raise exception
+		app_globals.STATS['failed'] += 1
+	return error_report
+
+def process_item(item, item_thread_pool):
 	state = app_globals.DATABASE.is_read(item.google_id)
 	name = item.basename
 	
@@ -123,15 +137,12 @@ def process_item(item):
 		try:
 			puts("NEW: " + item.title)
 			danger("About to output item")
-			item.process()
-			item.save()
 			app_globals.STATS['new'] += 1
+			
+			item_thread_pool.spawn(item.process, on_success = item.save, on_error = error_reporter_for_item(item))
+
 		except StandardError,e:
-			puts(" ** FAILED **: " + str(e))
-			log_error("Failed processing item: %s" % repr(item), e)
-			if in_debug_mode():
-				raise
-			app_globals.STATS['failed'] += 1
+			error_reporter_for_item(item)(e)
 		
 def download_new_items():
 	"""
