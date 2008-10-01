@@ -1,6 +1,7 @@
 0.3.7:
 	- Cancelling a sync now keeps whatever work the sync had done
 	- Better error checking for google-reader operations (mark as read, etc)
+	- Faster sync for items with images (running multiple download threads)
 
 0.3.6:
 	- Bug fix. When installed, gris was not chmodded +x for many users.
