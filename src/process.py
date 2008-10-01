@@ -18,8 +18,10 @@ def insert_alt_text(soup):
 	"""
 	images = soup.findAll('img',{'title':True})
 	for img in images:
-		desc = BeautifulSoup('<p><b>( %s )</b></p>' % img['title'])
-		img.append(desc)
+		title = img['title'].strip()
+		if len(title) > 0:
+			desc = BeautifulSoup('<p><b>( %s )</b></p>' % title)
+			img.append(desc)
 	return True
 
 
