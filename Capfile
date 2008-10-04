@@ -3,9 +3,8 @@ require 'YAML'
 config_filename = 'config.yml'
 config = YAML.load_file(config_filename)
 # sanity-check
-missing_items = ['iphone_user','iphone_destination_path', 'iphone_hostname'].select{ |item| not (config.has_key?(item)) }
+missing_items = ['iphone_user', 'iphone_hostname'].select{ |item| not (config.has_key?(item)) }
 raise "You need to specify #{missing_itemsjoin(", ")} in #{config_filename}" unless missing_items.empty?
-
 
 $ipod_user = config['iphone_user']
 set :user, $ipod_user
@@ -15,16 +14,13 @@ $mac_user = config['mac_user'] || `whoami`.chomp!
 $mac_server = `hostname`.chomp!
 
 $branch = `git-branch | grep '^\\*' | cut -b 3-`.chomp
-$deploy_branches = ['master', 'iphone-native']
+$deploy_branches = ['master'] # when deploying from any other branch name, you'll get a "test" branded icon
 
 # servers & paths
 $ipod_path = "/var/mobile/GRiS/"
 
 ipod_ip = ENV['ip']
 ipod_ip = "192.168.1.#{ipod_ip}" if ipod_ip =~ /^[0-9]+$/ # shortcut
-# puts "IP = #{ipod_ip.inspect}"
-# puts "HOSNTAME = #{config['iphone_hostname'].inspect}"
-# puts "SERVER = #{$ipod_server.inspect}"
 
 $ipod_server = ipod_ip || config['iphone_hostname']
 
@@ -41,19 +37,6 @@ $run_opts = {}
 
 task :default do nose end
 
-# -----------------------------------------
-# application options
-$app_opts = []
-
-desc "set CAUTIOUS mode on"
-task :carefully do $app_opts << '--cautious' end
-
-desc "set VERBOSE mode on"
-task :loudly do $app_opts << '--verbose' end
-
-$dry = false
-desc "use --dry-run only (no actual filesystem changes)"
-task :fake do $dry = true; $rsync_opts += " --dry-run" end
 # -----------------------------------------
 
 desc "flush the dns cache"
@@ -73,33 +56,10 @@ task :nose do
 	system("nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}'")
 end
 
-$only_one = true
-task :many do $only_one = false end
-
-desc "run a web-sync in test mode"
-task :t do
-	opts = ['--test']
-	opts << '--num-items=1' if $only_one
-	do_sync(opts.join(" "))
-end
-
-desc "pause between steps"
-task :pause do $run_opts[:pause] = true end
-
-desc "Copy the template files (buttons, styles) to iPod"
-task :push_template do
-	local "rsync #{$rsync_opts} --exclude='*.psd' 'template' '#{$remote_ipod_path}'"
-end
-
-desc "copy python code to iPod"
-task :push_python_code do
-	local "rsync #{$rsync_opts} --exclude='*.psd' 'src' '#{$remote_ipod_path}'"
-end
-
-desc "copy ~/.ssh/id_rsa.pub to ipod / iphone"
+desc "copy ~/.ssh/id_rsa.pub to ipod / iphone authorized keys"
 task :ssh_auth do
 	upload '~/.ssh/id_rsa.pub', "~/.ssh_id_#{$mac_user}"
-	run "cat '~/.ssh_id_#{$mac_user}' >> '~/.ssh/authorrized_keys'"
+	run "cat '~/.ssh_id_#{$mac_user}' >> '~/.ssh/authorized_keys'"
 end
 
 
@@ -123,6 +83,7 @@ namespace :package do
 		do_package
 	end
 
+	desc "install .deb package on your device"
 	task :install do
 		default
 		local "scp #{build_dir}/#{app}.deb #{$ipod_user}@#{$ipod_server}:/tmp"
@@ -201,17 +162,6 @@ def pause(desc = " (do something)")
 		puts("  [press return to continue]")
 		$stdin.gets
 	end
-end
-
-def local(cmd, error_msg="Command Failed")
-	puts "running locally:\n >#{cmd}"
-	system(cmd) or loud_error("> #{cmd}\n#{error_msg}")
-end
-
-def do_sync(*opts)
-	return if $dry
-	synced = system "./src/main.py #{opts.join(' ')} #{$app_opts.join(' ')}"
-	puts "*** Sync failed ***" unless synced
 end
 
 def local(cmd, error=nil)

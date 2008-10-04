@@ -10,27 +10,47 @@ GRis (Google Reader iPhone Sync) is an RSS feed reader for the iPhone. There are
 ## Using it:
 The best way to install is via my cydia repository at [gfxmonk.sysprosoft.com/cydia/](http://gfxmonk.sysprosoft.com/cydia/)
 
-If you want to install a modified package, you should update the `cydia/control` file so that it won't clash with official versions. Then, run `cap package`. Copy this package file to your iPhone and run `dpkg -i GRiS.deb`
+If you want to distribute a modified package, you *must* edit the `cydia/control` file so that it won't clash with official versions. You should also probably change the icon, so people don't get confused.
 
 See [saurik's tutorial](http://www.saurik.com/id/7) for instructions on creating your own repository.
 
-## Build Dependencies:
-Since the tool is thrown together with what I had around, its
-dependencies are a bit all over the place:
+## Running / building / installing:
+To build and run on the iPhone simulator, you'll need
+* The iPhone SDK
+* Python (I use 2.5.1)
+* [nose](http://code.google.com/p/python-nose/)
 
-* some kind of *nix environment (OSX or Linux should be fine. Using cygwin _hopefully_ works on windows)
-* Python
+To install on a device, you'll need (for your mac):
 * Ruby
-* Capistrano (sudo gem install capistrano)
+* [capistrano](http://www.capify.org/)
+* dpkg binaries (specifically dpkg-deb and dpkg-scanpackages. These come with fink, and presumably all other apt ports)
 
-On your iPhone / iPod Touch, you will need:
+...and the device will need to have:
+* Cydia
+* OpenSSH
+* Link Identity Editor
 
-* To be jailbroken, for starters.
-* python
-* OpenSSH (to transfer a modified program)
+the python package is a dependency of GRiS, so it'll be installed if you do not already have it.
+
+### Configuration required:
+* see config_example.yml
+
+# Running tasks:
+Run `cap -T` to see what you can do.
+
+Most of the time, you'll want to run one of:
+* `cap nose` - run the tests
+* `cap package:install` - build package and install it on your device
+
+Note that currently, the google\_reader\_test.py tests are very brittle, and require you to have an actual google reader account. I hope to fix this up in the future.
+
+----
+#Problems:
+
+If you have any issues building / running, please post them to the [issue tracker](http://code.google.com/p/gris/issues/list).
+
 
 ## Thanks:
 
 * [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/)
 * [pyrfeed](http://code.google.com/p/pyrfeed/)
-
