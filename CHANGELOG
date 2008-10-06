@@ -1,3 +1,7 @@
+0.3.8:
+	- fixed "mark all items as read / unread" buttons so that status is
+	  actually synced to google after using either of them.
+
 0.3.7:
 	- Cancelling a sync now keeps whatever work the sync had done
 	- Better error checking for google-reader operations (mark as read, etc)
