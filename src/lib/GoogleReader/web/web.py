@@ -98,7 +98,6 @@ class webUrllib2 :
 		#print "[ %s ]" % self._cookiejar._cookies_for_request(request)
 		self._cookiejar.add_cookie_header(request)
 
-
 		f = urllib2.urlopen( request )
 		result = f.read()
 		if file != None :
@@ -106,6 +105,7 @@ class webUrllib2 :
 			handle.write(result)
 			handle.close()
 			result = file
+			
 		return result
 
 	def post ( self, *args, **kwargs ) :

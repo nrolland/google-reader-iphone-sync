@@ -1,10 +1,18 @@
-from lib.BeautifulSoup import BeautifulSoup
+from lib.BeautifulSoup import BeautifulSoup, Tag
 import urllib2, re, os
 from misc import *
 from output import *
 
 # don't bother downloading images smaller than this
 MIN_IMAGE_BYTES = 512
+
+image_extensions = ['jpg','jpeg','gif','png','bmp', 'tif','tiff']
+
+def is_image(url):
+	filetype = url.split('.')[-1].lower()
+	if filetype not in image_extensions:
+		return False
+	return True
 
 ## processing modules:
 def insert_alt_text(soup):
@@ -24,6 +32,34 @@ def insert_alt_text(soup):
 			img.append(desc)
 	return True
 
+def insert_enclosure_images(soup, url_list):
+	"""
+		>>> from lib.mock import Mock
+		>>> ensure_dir_exists = Mock()
+		>>> import process
+		>>> process.download_file = Mock()
+		>>> process.download_file.return_value = "image.jpg"
+		
+		>>> soup = BeautifulSoup('<p>some text is here</p>')
+		>>> insert_enclosure_images(soup, ['http://example.com/image.jpg', 'not-an-image.txt'])
+		True
+		>>> soup
+		<p>some text is here</p><br /><img src="http://example.com/image.jpg" />
+
+		>>> soup = BeautifulSoup('what about without a root element?')
+		>>> insert_enclosure_images(soup, ['http://example.com/image.jpg', 'another-image.gif'])
+		True
+		>>> soup
+		what about without a root element?<br /><img src="http://example.com/image.jpg" /><br /><img src="another-image.gif" />
+	
+	"""
+	for image_url in filter(is_image, url_list):
+		img = Tag(soup, 'img')
+		img['src'] = image_url
+		soup.append(Tag(soup, 'br'))
+		soup.append(img)
+	return True
+	
 
 def download_images(soup, dest_folder, href_prefix, base_href = None):
 	"""
@@ -104,7 +140,6 @@ def get_filename(url):
 	url = url.split('/')[-1]
 	return urllib2.quote(url)
 
-
 def unique_filename(output_filename, base_path=None):
 	"""
 	get the next filename for a pattern that doesn't already exist
@@ -134,7 +169,6 @@ def unique_filename(output_filename, base_path=None):
 
 
 import socket
-image_extensions = ['jpg','jpeg','gif','png','bmp', 'tif','tiff']
 def download_file(url, output_filename=None, base_path='', allow_overwrite=False):
 	"""
 	Download an arbitrary URL. If output_filename is given, contents are written a file that looks a lot like output_filename.

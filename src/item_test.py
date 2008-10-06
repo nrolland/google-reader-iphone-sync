@@ -31,6 +31,11 @@ def item_with_title(title):
 	item['title'] = title
 	return item
 
+def item_with(**kwargs):
+	item = sample_item.copy()
+	item.update(kwargs)
+	return item
+
 class ItemTest(unittest.TestCase):
 
 	def setUp(self):
@@ -89,4 +94,12 @@ class ItemTest(unittest.TestCase):
 	def test_strip_unicode_from_basename(self):
 		item = Item(item_with_title('caf&eacute;&#39;s'), 'feed-name')
 		self.assertTrue(' cafs .||' in item.basename)
+		
+	def test_insert_media_items(self):
+		global process
+		item = Item(item_with(media = 'http://example.com/image.jpg'))
+		process = Mock()
+		item.download_images()
+		print process.call_args
+		self.assertEqual(process.insert_enclosure_images.call_args[1][url_list], ['http://example.com/image.jpg'])
 		

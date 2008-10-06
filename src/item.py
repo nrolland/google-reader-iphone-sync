@@ -31,7 +31,7 @@ class Item:
 	def __init__(self, feed_item = None, feed_name = '(unknown)', raw_data = None):
 		self.had_errors = False
 		if feed_item is not None:
-			try: self.feed_name = feed_item['feed_name']
+			try: self.feed_name = feed_item['feedname']
 			except KeyError, TypeError:
 				self.feed_name = feed_name
 			self.title = strip_html_tags(feed_item['title'])
@@ -43,6 +43,7 @@ class Item:
 			self.url = feed_item['link']
 			self.content = feed_item['content']
 			self.original_id = feed_item['original_id']
+			self.media = try_lookup(feed_item, 'media')
 			self.is_dirty = False
 			self.is_stale = False
 		else:
@@ -93,8 +94,17 @@ class Item:
 	
 	def download_images(self, need_soup=True):
 		self.had_errors = False
+
 		if need_soup:
 			self.soup_setup()
+		
+		try: media = self.media
+		except AttributeError: media = None
+
+		if media is not None:
+			success = process.insert_enclosure_images(self.soup, url_list = self.media)
+			if not success:
+				self.had_errors = True
 		
 		success = process.download_images(self.soup,
 			dest_folder = self.resources_path,

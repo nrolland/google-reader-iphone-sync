@@ -38,6 +38,7 @@ class GoogleFeed(object) :
 				entry['sources'] = {}
 				entry['crawled'] = int(dom_entry.getAttribute('gr:crawl-timestamp-msec'))
 				for dom_entry_element in dom_entry.childNodes :
+					print repr(dom_entry_element)
 					if dom_entry_element.localName == 'id' :
 						entry['google_id'] = dom_entry_element.firstChild.data
 						entry['original_id'] = dom_entry_element.getAttribute('gr:original-id')
@@ -72,6 +73,14 @@ class GoogleFeed(object) :
 						entry['title'] = dom_entry_element.firstChild.data
 					elif dom_entry_element.localName == 'source' :
 						entry['sources'][dom_entry_element.getAttribute('gr:stream-id')] = dom_entry_element.getElementsByTagName('id')[0].firstChild.data
+						entry['feedname'] = dom_entry_element.getElementsByTagName('title')[0].firstChild.data ## added by gfxmonk
+					elif dom_entry_element.nodeName == 'media:group' : ## added by gfxmonk
+						for dom_entry_element in dom_entry_element.childNodes :
+							print '  ' + repr(dom_entry_element)
+							if dom_entry_element.nodeName == 'media:content' :
+								if not 'media' in entry:
+									entry['media'] = []
+						entry['media'].append(dom_entry_element.getAttribute('url'))
 					elif dom_entry_element.localName == 'published' :
 						entry['published'] = self.iso2time(dom_entry_element.firstChild.data)
 					elif dom_entry_element.localName == 'updated' :

@@ -18,23 +18,23 @@ class ThreadPoolTest(unittest.TestCase):
 	# ------------------------------------------------------------------
 	#TODO: seriously... do some of these!
 	
-	@pending
+	@test_helper.pending
 	def test_sucessful_callback(self):
 		pass
 	
-	@pending
+	@test_helper.pending
 	def test_error_callback(self):
 		pass
 	
-	@pending
+	@test_helper.pending
 	def test_maximum_pool(self):
 		pass
 	
-	@pending
+	@test_helper.pending
 	def test_callback_is_not_called_before_collect(self):
 		pass
 	
-	@pending
+	@test_helper.pending
 	def test_collect_all_waits_for_all_threads(self):
 		pass
 	

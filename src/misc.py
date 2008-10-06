@@ -24,6 +24,12 @@ def try_remove(elem, lst):
 		lst.remove(elem)
 	except ValueError:
 		pass
+	
+def try_lookup(obj, key):
+	try:
+		return obj[key]
+	except KeyError:
+		return None
 
 def matches_any_regex(s, regexes, flags = 0):
 	"""

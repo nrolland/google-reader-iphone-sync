@@ -116,7 +116,7 @@ def error_reporter_for_item(item):
 		app_globals.STATS['failed'] += 1
 	return error_report
 
-def process_item(item, item_thread_pool):
+def process_item(item, item_thread_pool = None):
 	state = app_globals.DATABASE.is_read(item.google_id)
 	name = item.basename
 	
@@ -138,8 +138,11 @@ def process_item(item, item_thread_pool):
 			puts("NEW: " + item.title)
 			danger("About to output item")
 			app_globals.STATS['new'] += 1
-			
-			item_thread_pool.spawn(item.process, on_success = item.save, on_error = error_reporter_for_item(item))
+			if item_thread_pool is None:
+				item.process()
+				item.save()
+			else:
+				item_thread_pool.spawn(item.process, on_success = item.save, on_error = error_reporter_for_item(item))
 
 		except StandardError,e:
 			error_reporter_for_item(item)(e)
