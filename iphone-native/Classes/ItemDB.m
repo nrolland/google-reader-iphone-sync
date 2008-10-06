@@ -197,9 +197,9 @@ NSString * all_items_tag = @"All Items";
 - (void) setAllItemsReadState: (BOOL) readState forTag:(NSString *) tag {
 	dbg(@"DB: marking all items as %s", read ? "read" : "unread");
 	if(tag == nil || [tag isEqualToString: all_items_tag]) {
-		[db executeUpdate: @"update items set is_read=?", [NSNumber numberWithBool: readState]];
+		[db executeUpdate: @"update items set is_read=?, is_dirty=?", [NSNumber numberWithBool: readState], [NSNumber numberWithBool: YES]];
 	} else {
-		[db executeUpdate: @"update items set is_read=? where feed_name = ?", [NSNumber numberWithBool: readState], tag];
+		[db executeUpdate: @"update items set is_read=?, is_dirty=? where feed_name = ?", [NSNumber numberWithBool: readState], [NSNumber numberWithBool: YES], tag];
 	}
 	if_error [NSException raise:@"UpdateFailed" format:@"updating marking all items as %s failed", readState ? "read":"unread"];
 }
