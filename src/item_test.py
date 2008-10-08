@@ -97,9 +97,11 @@ class ItemTest(unittest.TestCase):
 		
 	def test_insert_media_items(self):
 		global process
-		item = Item(item_with(media = 'http://example.com/image.jpg'))
-		process = Mock()
+		media = ['http://example.com/image.jpg']
+		item = Item(item_with(media = media))
+		self.assertEqual(item.media, media)
+		process.insert_enclosure_images = Mock()
+		process.download_images = Mock()
 		item.download_images()
-		print process.call_args
-		self.assertEqual(process.insert_enclosure_images.call_args[1][url_list], ['http://example.com/image.jpg'])
+		self.assertEqual(process.insert_enclosure_images.call_args[1]['url_list'], media)
 		
