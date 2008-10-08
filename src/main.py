@@ -26,7 +26,8 @@ def handle_signal(signum, stack):
 	cleanup()
 	
 def cleanup():
-	app_globals.DATABASE.close()
+	if app_globals.DATABASE is not None:
+		app_globals.DATABASE.close()
 	log_end()
 	
 def init_signals():
