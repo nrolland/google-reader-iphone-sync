@@ -68,10 +68,10 @@ class GoogleReaderLiveTest(unittest.TestCase):
 		entry = entries[0]
 		assert entry_id == entry['google_id']
 
-		# # now mark it as read
-		# self.reader.set_read(entry_id)
-		# entries = self.get_tag_items('gris-test', is_read = True)
-		# entry = entries[0]
-		# assert len(entries) == 1
-		# assert entry_id == entry['google_id']
-		# entry = entries[0]
+		# now mark it as read
+		self.reader.set_read(entry_id)
+		entries = self.get_tag_items('gris-test', is_read = True)
+		entry = entries[0]
+		assert len(entries) == 1
+		assert entry_id == entry['google_id']
+		entry = entries[0]

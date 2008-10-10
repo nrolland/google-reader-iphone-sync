@@ -108,7 +108,7 @@ class DBTest(unittest.TestCase):
 		item = items[0]
 		
 		# and check it still looks the same:
-		for attr in ['url','title','feed_name','google_id','is_read','is_dirty','is_starred','date','content']:
+		for attr in ['url','title','feed_name','tag_name','google_id','is_read','is_dirty','is_starred','date','content']:
 			assert getattr(item, attr) == getattr(input_item, attr)
 
 		# test updating
@@ -134,10 +134,10 @@ class DBTest(unittest.TestCase):
 	
 	def test_changing_item_feed(self):
 		# add to DB
-		input_item = fake_item(feed_name=u'feedname_1')
+		input_item = fake_item(tag_name=u'tagname_1')
 		self.db.add_item(input_item)
 		
-		input_item.feed_name = 'feedname_2'
+		input_item.tag_name = 'tagname_2'
 		self.db.update_feed_for_item(input_item)
 
 		# grab it out
@@ -145,7 +145,7 @@ class DBTest(unittest.TestCase):
 		assert len(items) == 1
 		item = items[0]
 
-		self.assertEqual(item.feed_name, u'feedname_2')
+		self.assertEqual(item.tag_name, u'tagname_2')
 
 	def test_deleting_an_item(self):
 		a = fake_item(google_id = 'a')

@@ -73,7 +73,7 @@ class GoogleFeed(object) :
 						entry['title'] = dom_entry_element.firstChild.data
 					elif dom_entry_element.localName == 'source' :
 						entry['sources'][dom_entry_element.getAttribute('gr:stream-id')] = dom_entry_element.getElementsByTagName('id')[0].firstChild.data
-						entry['feedname'] = dom_entry_element.getElementsByTagName('title')[0].firstChild.data ## added by gfxmonk
+						entry['feed_name'] = dom_entry_element.getElementsByTagName('title')[0].firstChild.data ## added by gfxmonk
 					elif dom_entry_element.nodeName == 'media:group' : ## added by gfxmonk
 						for dom_entry_element in dom_entry_element.childNodes :
 							print '  ' + repr(dom_entry_element)

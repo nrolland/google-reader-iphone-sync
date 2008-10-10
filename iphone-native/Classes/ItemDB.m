@@ -87,6 +87,7 @@ NSString * all_items_tag = @"All Items";
 			title:			[rs stringForColumn:@"title"]
 			content:		[rs stringForColumn:@"content"]
 			feedName:		[rs stringForColumn:@"feed_name"]
+			tagName:		[rs stringForColumn:@"tag_name"]
 			is_read:		[rs boolForColumn:@"is_read"]
 			is_starred:		[rs boolForColumn:@"is_starred"]
 			db: self]
@@ -96,7 +97,7 @@ NSString * all_items_tag = @"All Items";
 - (id) tagItemFromResultSet: (FMResultSet *)rs {
 	dbg(@"making a tag item from result set %@", rs);
 	return [[[TagItem alloc]
-			initWithTag:	[rs stringForColumn:@"feed_name"]
+			initWithTag:	[rs stringForColumn:@"tag_name"]
 			count:			[rs intForColumn:@"num_items"]
 			db: self]
 		autorelease];
@@ -146,7 +147,7 @@ NSString * all_items_tag = @"All Items";
 	if(!tag || [tag isEqualToString:all_items_tag]) {
 		count = [db intForQuery:[NSString stringWithFormat: @"select count(google_id) from items %@", [self isReadConditionStringWithPrefix:@"where"]]];
 	} else {
-		count = [db intForQuery:[NSString stringWithFormat: @"select count(google_id) from items where feed_name = ? %@", [self isReadConditionStringWithPrefix:@"and"]], tag];
+		count = [db intForQuery:[NSString stringWithFormat: @"select count(google_id) from items where tag_name = ? %@", [self isReadConditionStringWithPrefix:@"and"]], tag];
 	}
 		
 	if_error {
@@ -167,14 +168,14 @@ NSString * all_items_tag = @"All Items";
 
 - (NSArray *) itemsInTag:(NSString *) tag {
 	if(!tag) {
-		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:[NSString stringWithFormat:@"select feed_name, count(google_id) as num_items from items %@ GROUP BY feed_name ORDER BY feed_name", [self isReadConditionStringWithPrefix:@"where"]]];
+		return [self enumeratorWithConstructor:@selector(tagItemFromResultSet:) forQuery:[NSString stringWithFormat:@"select tag_name, count(google_id) as num_items from items %@ GROUP BY tag_name ORDER BY tag_name", [self isReadConditionStringWithPrefix:@"where"]]];
 	} else {
 		NSString * condition = [[self globalAppSettings] showReadItems] ? nil : @"is_read = 0";
 		id result;
 		if([tag isEqualToString:all_items_tag]) {
 			result = [self itemsMatchingCondition: condition];
 		} else {
-			NSString * additionalCondition = @"feed_name = ?";
+			NSString * additionalCondition = @"tag_name = ?";
 			condition = (condition && condition)? [condition stringByAppendingFormat: @" and %@", additionalCondition] : additionalCondition;
 			result = [self itemsMatchingCondition: condition, tag ];
 		}
@@ -199,7 +200,7 @@ NSString * all_items_tag = @"All Items";
 	if(tag == nil || [tag isEqualToString: all_items_tag]) {
 		[db executeUpdate: @"update items set is_read=?, is_dirty=?", [NSNumber numberWithBool: readState], [NSNumber numberWithBool: YES]];
 	} else {
-		[db executeUpdate: @"update items set is_read=?, is_dirty=? where feed_name = ?", [NSNumber numberWithBool: readState], [NSNumber numberWithBool: YES], tag];
+		[db executeUpdate: @"update items set is_read=?, is_dirty=? where tag_name = ?", [NSNumber numberWithBool: readState], [NSNumber numberWithBool: YES], tag];
 	}
 	if_error [NSException raise:@"UpdateFailed" format:@"updating marking all items as %s failed", readState ? "read":"unread"];
 }

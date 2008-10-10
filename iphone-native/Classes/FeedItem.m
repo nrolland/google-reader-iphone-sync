@@ -2,7 +2,7 @@
 #import "TCHelpers.h"
 
 @implementation FeedItem
-@synthesize google_id, original_id, url, date, title, content, feed_name, is_read, is_starred, is_dirty;
+@synthesize google_id, original_id, url, date, title, content, feed_name, tag_name, is_read, is_starred, is_dirty;
 - (id) initWithId: (NSString *) ngoogle_id
 	originalId: (NSString *) noriginal_id
 	date: (NSString *) ndate
@@ -10,6 +10,7 @@
 	title: (NSString *) ntitle
 	content: (NSString *) ncontent
 	feedName: (NSString *) nfeed_name
+	tagName: (NSString *) ntag_name
 	is_read: (BOOL) nis_read
 	is_starred:	(BOOL) nis_starred
 	db: (id) ndb
@@ -23,6 +24,7 @@
 	content = [ncontent retain];
 	source_db = [ndb retain];
 	feed_name = [nfeed_name retain];
+	tag_name = [ntag_name retain];
 
 	// booleans don't need no retaining
 	is_read = nis_read;
@@ -54,12 +56,19 @@
 		domainRange.length = firstSlash.location;
 		domain = [domain substringWithRange: domainRange];
 	}
-	if([domain length] > 25) {
-		domainRange.location = 0;
-		domainRange.length = 25;
-		domain = [[domain substringWithRange: domainRange] stringByAppendingString: @"..."];
-	}
+	domain = [self truncateString: domain toMaxLength: 20];
 	return domain;
+}
+
+- (NSString *) truncateString: (NSString *)str toMaxLength: (int) len {
+	if([str length] < len) {
+		return str;
+	}
+	NSRange range;
+	range.location = 0;
+	range.length = len - 2;
+	str = [[str substringWithRange: range] stringByAppendingString: @"..."];
+	return str;
 }
 
 - (void) dealloc {
@@ -71,6 +80,7 @@
 	[title release];
 	[content release];
 	[feed_name release];
+	[tag_name release];
 	[super dealloc];
 }
 
@@ -118,11 +128,11 @@
 						<a href='%@'>%@</a>                                <!-- url, title -->              \n\
 					</h1>                                                                                   \n\
 					<div class='date'>                                                                      \n\
-						%@, tag: <b>%@</b>                                 <!-- date, feed_name -->         \n\
+						%@ tag: <b>%@</b>                                   <!-- date, tag_name -->          \n\
 						%@                                                 <!-- position_info -->           \n\
 					</div>                                                                                  \n\
 					<div class='via'>                                                                       \n\
-						on <em>%@</em>                                     <!-- domainName -->              \n\
+						From <em>%@</em> (<i>%@</i>)                    <!-- feed_name, domain -->       \n\
 					</div>                                                                                  \n\
 				</div>                                                                                      \n\
 				<div class='content'><p>                                                                    \n\
@@ -130,7 +140,7 @@
 				</div>                                                                                      \n\
 			</body>                                                                                         \n\
 		</html>",
-		url, title, [self dateStr:YES], feed_name, position_info, [self domainName], content] autorelease];
+		url, title, [self dateStr:YES], tag_name, position_info, [self truncateString: feed_name toMaxLength: 25], [self domainName], content] autorelease];
 }
 
 - (void) userDidScrollPast {

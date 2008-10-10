@@ -20,6 +20,7 @@ schema_history = [
 	'CREATE UNIQUE INDEX item_id_index on items(google_id)',
 	'ALTER TABLE items ADD COLUMN had_errors BOOLEAN default 0',
 	'ALTER TABLE items ADD COLUMN is_stale BOOLEAN default 0',
+	'ALTER TABLE items ADD COLUMN tag_name BOOLEAN default ""',
 	]
 
 class VersionDB:
@@ -72,6 +73,7 @@ class DB:
 				('title', 'TEXT'),
 				('content', 'TEXT'),
 				('feed_name', 'TEXT'),
+				('tag_name', 'TEXT'),
 				('is_read', 'BOOLEAN'),
 				('is_starred', 'BOOLEAN'),
 				('is_dirty', 'BOOLEAN default 0'),
@@ -193,7 +195,7 @@ class DB:
 			return None
 		
 	def update_feed_for_item(self, item):
-		self.sql('update items set feed_name = ? where google_id = ?', (item.feed_name, item.google_id))
+		self.sql('update items set tag_name = ? where google_id = ?', (item.tag_name, item.google_id))
 	
 	def sync_to_google(self):
 		puts("Syncing with google...")

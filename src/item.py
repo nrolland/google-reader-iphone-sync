@@ -28,12 +28,13 @@ class Item:
 	"""
 	A wrapper around a GoogleReader item
 	"""
-	def __init__(self, feed_item = None, feed_name = '(unknown)', raw_data = None):
+	def __init__(self, feed_item = None, tag_name = '(unknown)', raw_data = None):
 		self.had_errors = False
 		if feed_item is not None:
-			try: self.feed_name = feed_item['feedname']
+			try: self.feed_name = feed_item['feed_name']
 			except KeyError, TypeError:
-				self.feed_name = feed_name
+				self.feed_name = tag_name
+			self.tag_name = tag_name
 			self.title = strip_html_tags(feed_item['title'])
 			self.title = unicode(BeautifulSoup(self.title, convertEntities = BeautifulSoup.HTML_ENTITIES))
 			self.google_id = feed_item['google_id']

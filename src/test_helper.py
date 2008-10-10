@@ -34,6 +34,7 @@ def fake_item(**kwargs):
 		'is_dirty' : False,
 		'is_starred' : False,
 		'feed_name' : 'feedname',
+		'tag_name' : 'tagname',
 		'date' : '20080812140000',
 		'content' : '<h1>content!</h1>',
 		'had_errors' : False,

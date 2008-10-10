@@ -9,6 +9,7 @@
 	NSString* content;
 	NSString* original_id;
 	NSString* feed_name;
+	NSString* tag_name;
 
 	id source_db;
 	BOOL is_read;
@@ -37,6 +38,7 @@
 @property(readonly) NSString* content;
 @property(readonly) NSString* original_id;
 @property(readonly) NSString* feed_name;
+@property(readonly) NSString* tag_name;
 @property(readonly) BOOL is_read;
 @property(readonly) BOOL is_starred;
 @property(readonly) BOOL is_dirty;

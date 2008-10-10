@@ -46,7 +46,7 @@
 
 	[buttonPrev setEnabled:[self canGoPrev]];
 
-	[self loadItem: currentItem withPositionDescription:[NSString stringWithFormat:@" (%d / %d)", index+1, [allItems count]]];
+	[self loadItem: currentItem withPositionDescription:[NSString stringWithFormat:@" (%d&nbsp;/&nbsp;%d)", index+1, [allItems count]]];
 	[self setButtonStates];
 }
 
