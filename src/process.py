@@ -6,6 +6,7 @@ from output import *
 # don't bother downloading images smaller than this
 MIN_IMAGE_BYTES = 512
 
+
 image_extensions = ['jpg','jpeg','gif','png','bmp', 'tif','tiff']
 
 def is_image(url):
@@ -19,21 +20,28 @@ def insert_alt_text(soup):
 	"""
 	insert bolded image title text after any image on the page
 		>>> soup = BeautifulSoup('<p><img src="blah" title="some texts" /></p>')
-		>>> insert_alt_text( soup )
+		>>> insert_alt_text(soup)
 		True
 		>>> soup
-		<p><img src="blah" title="some texts" /><p><b>( some texts )</b></p></p>
+		<p><img src="blah" title="some texts" /><p><b>(&nbsp;some texts&nbsp;)</b></p></p>
 	"""
 	images = soup.findAll('img',{'title':True})
 	for img in images:
 		title = img['title'].strip()
 		if len(title) > 0:
-			desc = BeautifulSoup('<p><b>( %s )</b></p>' % title)
+			desc = BeautifulSoup('<p><b>(&nbsp;%s&nbsp;)</b></p>' % title)
 			img.append(desc)
 	return True
 
 def insert_enclosure_images(soup, url_list):
 	"""
+	Insert a set of images (url_list) into the soup as html tags.
+	A <br /> tag will be inserted before each added image.
+	
+	Images from the content will not be duplicated.
+	NOTE: no attempt is made to compare absolute / canonical URLs (it's just a string comparison)
+
+	
 		>>> from lib.mock import Mock
 		>>> ensure_dir_exists = Mock()
 		>>> import process
@@ -51,9 +59,22 @@ def insert_enclosure_images(soup, url_list):
 		True
 		>>> soup
 		what about without a root element?<br /><img src="http://example.com/image.jpg" /><br /><img src="another-image.gif" />
+		
+		>>> soup = BeautifulSoup('<img src="a.gif" />')
+		>>> insert_enclosure_images(soup, ['b.jpg', 'a.gif'])
+		True
+		>>> soup
+		<img src="a.gif" /><br /><img src="b.jpg" />
+		
 	
 	"""
-	for image_url in filter(is_image, url_list):
+	existing_image_urls = []
+	for existing_image in soup.findAll('img'):
+		try:
+			existing_image_urls.append(existing_image['src'])
+		except KeyError: pass
+	
+	for image_url in [url for url in url_list if url not in existing_image_urls and is_image(url)]:
 		img = Tag(soup, 'img')
 		img['src'] = image_url
 		soup.append(Tag(soup, 'br'))
