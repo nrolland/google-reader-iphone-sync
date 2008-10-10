@@ -112,8 +112,10 @@
 	return self;
 }
 
--(void) awakeFromNib {
+- (void) awakeFromNib {
 	dbg(@"AppSettings: awakeFromNib");
+	[smallText setFont: [UIFont systemFontOfSize: 14.0]];
+	[mainScrollView setContentSize: CGSizeMake(320, 255)];
 	[self setUIElements];
 	[super awakeFromNib];
 }

@@ -10,6 +10,7 @@ body {
 	font-size:1.6em;
 	margin:0;
 	padding:0;
+	display:table-cell;
 }
 
 a{ color:#acF; }
@@ -37,7 +38,6 @@ h1 a{
 }
 
 .post-info {
-	width:100%;
 	background:#111;
 	border-bottom:1px solid #888;
 	color:#777;

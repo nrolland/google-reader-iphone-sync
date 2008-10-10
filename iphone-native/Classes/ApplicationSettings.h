@@ -30,6 +30,9 @@
 	IBOutlet id noFeedsView;
 	IBOutlet id feedSelectionView;
 	IBOutlet id feedsPlaceholderView;
+	
+	IBOutlet id smallText;
+	IBOutlet id mainScrollView;
 }
 -(NSString *) docsPath;
 -(NSString *) email;

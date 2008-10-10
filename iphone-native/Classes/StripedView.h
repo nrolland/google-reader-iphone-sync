@@ -2,3 +2,5 @@
 @interface StripedView : UIView {
 }
 @end
+
+@end

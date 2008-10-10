@@ -4,11 +4,7 @@
 
 -(void) awakeFromNib {
 	[self setBackgroundColor: [UIColor groupTableViewBackgroundColor]];
+	[super awakeFromNib];
 }
-
-- (void)dealloc {
-	[super dealloc];
-}
-
 
 @end
