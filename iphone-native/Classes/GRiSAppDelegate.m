@@ -7,9 +7,13 @@
 @synthesize window;
 
 - (void) applicationWillTerminate:(id) sender {
-	dbg(@"teminating...");
+	dbg(@"terminating...");
 	[appSettings dealloc];
 	[db dealloc];
+}
+
+- (void) applicationDidReceiveMemoryWarning: (id) app {
+	dbg(@"oh dear. we are out of memory...");
 }
 
 - (BOOL) inItemViewMode { return inItemViewMode; }

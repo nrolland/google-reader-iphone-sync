@@ -139,10 +139,12 @@ class Item:
 			actions.append(app_globals.READER.set_read)
 
 		# stars
-		actions.append(app_globals.READER.add_star if self.is_starred else app_globals.READER.del_star)
+		if self.is_starred:
+			actions.append(app_globals.READER.add_star)
 		
 		# share
-		actions.append(app_globals.READER.add_public if self.is_shared else app_globals.READER.del_public)
+		if self.is_shared:
+			actions.append(app_globals.READER.add_public)
 
 		# apply the actions
 		for action in actions:

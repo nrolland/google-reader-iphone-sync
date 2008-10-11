@@ -38,7 +38,7 @@ class GoogleFeed(object) :
 				entry['sources'] = {}
 				entry['crawled'] = int(dom_entry.getAttribute('gr:crawl-timestamp-msec'))
 				for dom_entry_element in dom_entry.childNodes :
-					print repr(dom_entry_element)
+					# print repr(dom_entry_element)
 					if dom_entry_element.localName == 'id' :
 						entry['google_id'] = dom_entry_element.firstChild.data
 						entry['original_id'] = dom_entry_element.getAttribute('gr:original-id')

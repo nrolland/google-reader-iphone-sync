@@ -52,14 +52,14 @@
 	UIImage * image = nil;
 	if([item hasChildren]) {
 		image = [self folderImage];
-	} else if([item is_starred]) {
-		image = [self starredImage];
+	} else {
+		if([item is_starred]) {
+			image = [item is_shared] ? [self sharedAndStarredImage] : [self starredImage];
+		} else {
+			image = [item is_shared] ? [self sharedImage] : nil;
+		}
 	}
-	// if([item userHasMarkedAsUnread]) {
-	// 	image = [item is_starred] ? [self readAndStarredImage] : [self readImage];
-	// } else {
-	// 	image = [item is_starred] ? [self starredImage] : nil;
-	// }
+
 	[cell setImage: image];
 	
 	UITableViewCellSelectionStyle selStyle = [item is_read]? UITableViewCellSelectionStyleGray : UITableViewCellSelectionStyleBlue;
@@ -83,11 +83,11 @@
 	return starredImage;
 }
 
-- (UIImage *) readImage {
-	if(readImage == nil) {
-		readImage = [UIImage imageNamed: @"emblem_read.png"];
+- (UIImage *) sharedImage {
+	if(sharedImage == nil) {
+		sharedImage = [UIImage imageNamed: @"emblem_shared.png"];
 	}
-	return readImage;
+	return sharedImage;
 }
 
 - (UIImage *) folderImage {
@@ -98,11 +98,11 @@
 }
 
 
-- (UIImage *) readAndStarredImage {
-	if(readAndStarredImage == nil) {
-		readAndStarredImage = [UIImage imageNamed: @"emblem_read_and_starred.png"];
+- (UIImage *) sharedAndStarredImage {
+	if(sharedAndStarredImage == nil) {
+		sharedAndStarredImage = [UIImage imageNamed: @"emblem_shared_and_starred.png"];
 	}
-	return readAndStarredImage;
+	return sharedAndStarredImage;
 }
 
 - (int)numberOfSectionsInTableView:(id)view {
@@ -264,8 +264,8 @@
 	dbg(@"dealloc: %@", self);
 	[starredImage release];
 	[folderImage release];
-	[readImage release];
-	[readAndStarredImage release];
+	[sharedImage release];
+	[sharedAndStarredImage release];
 	[itemSet release];
 	[cellFont release];
 	[db release];

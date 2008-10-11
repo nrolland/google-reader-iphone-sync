@@ -8,8 +8,8 @@
 	id itemSet;
 	UIImage * folderImage;
 	UIImage * starredImage;
-	UIImage * readImage;
-	UIImage * readAndStarredImage;
+	UIImage * sharedImage;
+	UIImage * sharedAndStarredImage;
 	UIFont * cellFont;
 	IBOutlet id settings;
 	IBOutlet id navigationController;

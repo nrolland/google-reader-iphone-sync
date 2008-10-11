@@ -39,6 +39,7 @@ def fake_item(**kwargs):
 		'content' : '<h1>content!</h1>',
 		'had_errors' : False,
 		'is_stale': False,
+		'is_shared': False,
 		}
 	args.update(kwargs)
 	return OpenStruct(**args)

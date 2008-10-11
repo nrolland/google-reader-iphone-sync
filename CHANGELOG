@@ -1,6 +1,8 @@
 0.3.9:
+	- Mark items as shared (public) from GRiS
 	- Support for image media enclosures (sometimes called photocasts)
-	- Proper feed names in item view
+	- Proper feed titles in item view
+	- Various visual improvements
 
 0.3.8:
 	- fixed "mark all items as read / unread" buttons so that status is

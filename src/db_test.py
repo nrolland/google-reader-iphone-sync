@@ -108,7 +108,7 @@ class DBTest(unittest.TestCase):
 		item = items[0]
 		
 		# and check it still looks the same:
-		for attr in ['url','title','feed_name','tag_name','google_id','is_read','is_dirty','is_starred','date','content']:
+		for attr in ['url','title','feed_name','tag_name','google_id','is_read','is_dirty','is_shared','is_starred','date','content']:
 			self.assertEqual( getattr(item, attr), getattr(input_item, attr) )
 
 		# test updating

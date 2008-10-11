@@ -80,7 +80,7 @@ class DB:
 				('had_errors', 'BOOLEAN default 0'),
 				('is_stale', 'BOOLEAN default 0'),
 				('tag_name', 'TEXT'),
-				('is_shared', 'TEXT'),
+				('is_shared', 'BOOLEAN'),
 			],
 			'indexes' : [ ('item_id_index', 'items(google_id)') ]
 		}
@@ -130,8 +130,8 @@ class DB:
 		self.sql("delete from items where google_id = ?", (google_id,))
 	
 	def update_item(self, item):
-		self.sql("update items set is_read=?, is_starred=?, is_dirty=? where google_id=?",
-			(item.is_read, item.is_starred, item.is_dirty, item.google_id));
+		self.sql("update items set is_read=?, is_starred=?, is_shared=?, is_dirty=? where google_id=?",
+			(item.is_read, item.is_starred, item.is_shared, item.is_dirty, item.google_id));
 
 	def get_items(self, condition=None, args=None):
 		sql = "select * from items"

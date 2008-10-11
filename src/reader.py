@@ -75,6 +75,7 @@ class Reader:
 			result = getattr(self.gr, f.__name__)(*args, **kwargs)
 			if result != 'OK':
 				raise ReaderError("Result (%s) is not 'OK'" % (result,))
+		pass_func.__name__ = f.__name__
 		return pass_func
 	
 	@passthrough_and_check
@@ -87,7 +88,13 @@ class Reader:
 	def add_star(): pass
 	
 	@passthrough_and_check
-	def remove_star(): pass
+	def del_star(): pass
+	
+	@passthrough_and_check
+	def add_public(): pass
+	
+	@passthrough_and_check
+	def del_public(): pass
 	
 	@passthrough
 	def get_feed(): pass
