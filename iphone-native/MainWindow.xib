@@ -8,10 +8,10 @@
 		<string key="IBDocument.HIToolboxVersion">352.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="223"/>
-			<integer value="615"/>
-			<integer value="309"/>
 			<integer value="575"/>
+			<integer value="309"/>
+			<integer value="580"/>
+			<integer value="615"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -39,7 +39,7 @@
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{320, 416}</string>
 						<reference key="NSSuperview" ref="623046861"/>
-						<object class="NSColor" key="IBUIBackgroundColor">
+						<object class="NSColor" key="IBUIBackgroundColor" id="109460566">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
 						</object>
@@ -271,14 +271,14 @@
 					</object>
 					<object class="IBUIActivityIndicatorView" id="269713384">
 						<reference key="NSNextResponder" ref="623046861"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{263, 20}, {37, 37}}</string>
+						<int key="NSvFlags">289</int>
+						<string key="NSFrame">{{294, 5}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="623046861"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
+						<float key="IBUIAlpha">2.887324e-01</float>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<bool key="IBUIHidesWhenStopped">NO</bool>
-						<int key="IBUIStyle">0</int>
 					</object>
 					<object class="IBUIButton" id="976136433">
 						<reference key="NSNextResponder" ref="623046861"/>
@@ -534,10 +534,7 @@
 										<bool key="IBUIBouncesZoom">NO</bool>
 										<bool key="IBUIEditable">NO</bool>
 										<string key="IBUIText">(affects both sort and download order)</string>
-										<object class="NSColor" key="IBUITextColor">
-											<int key="NSColorSpace">3</int>
-											<bytes key="NSWhite">MAA</bytes>
-										</object>
+										<reference key="IBUITextColor" ref="109460566"/>
 										<int key="IBUIMarginTop">0</int>
 										<int key="IBUITextAlignment">1</int>
 									</object>
@@ -2069,6 +2066,23 @@ dGluZ3MiKQ</string>
 					</object>
 					<int key="connectionID">622</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">toggleSharedForCurrentItem:</string>
+						<reference key="source" ref="976136433"/>
+						<reference key="destination" ref="735352380"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">623</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">buttonShare</string>
+						<reference key="source" ref="735352380"/>
+						<reference key="destination" ref="976136433"/>
+					</object>
+					<int key="connectionID">624</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -2120,13 +2134,13 @@ dGluZ3MiKQ</string>
 							<reference ref="735352380"/>
 							<reference ref="892256781"/>
 							<reference ref="980119707"/>
-							<reference ref="269713384"/>
 							<reference ref="62096717"/>
 							<reference ref="675114516"/>
 							<reference ref="716476859"/>
 							<reference ref="200785066"/>
 							<reference ref="745316949"/>
 							<reference ref="976136433"/>
+							<reference ref="269713384"/>
 						</object>
 						<reference key="parent" ref="957960031"/>
 						<string key="objectName">ViewerView</string>
@@ -3003,7 +3017,7 @@ dGluZ3MiKQ</string>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">622</int>
+			<int key="maxID">624</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3265,10 +3279,12 @@ dGluZ3MiKQ</string>
 							<string>emailCurrentItem:</string>
 							<string>loadUnread</string>
 							<string>toggleReadForCurrentItem:</string>
+							<string>toggleSharedForCurrentItem:</string>
 							<string>toggleStarForCurrentItem:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -3283,6 +3299,7 @@ dGluZ3MiKQ</string>
 							<string>buttonNext</string>
 							<string>buttonPrev</string>
 							<string>buttonRead</string>
+							<string>buttonShare</string>
 							<string>buttonStar</string>
 							<string>db</string>
 							<string>nextCursor</string>
@@ -3291,6 +3308,7 @@ dGluZ3MiKQ</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>

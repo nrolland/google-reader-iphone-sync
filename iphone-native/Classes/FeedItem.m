@@ -2,7 +2,7 @@
 #import "TCHelpers.h"
 
 @implementation FeedItem
-@synthesize google_id, original_id, url, date, title, content, feed_name, tag_name, is_read, is_starred, is_dirty;
+@synthesize google_id, original_id, url, date, title, content, feed_name, tag_name, is_read, is_starred, is_shared, is_dirty;
 - (id) initWithId: (NSString *) ngoogle_id
 	originalId: (NSString *) noriginal_id
 	date: (NSString *) ndate
@@ -13,6 +13,7 @@
 	tagName: (NSString *) ntag_name
 	is_read: (BOOL) nis_read
 	is_starred:	(BOOL) nis_starred
+	is_shared:	(BOOL) nis_shared
 	db: (id) ndb
 {
 	self = [super init];
@@ -29,6 +30,7 @@
 	// booleans don't need no retaining
 	is_read = nis_read;
 	is_starred = nis_starred;
+	is_shared = nis_shared;
 	is_dirty = NO;
 	
 	sticky_read_state = NO;
@@ -177,6 +179,13 @@
 	is_dirty = YES;
 	[self save];
 	return is_starred;
+}
+
+- (BOOL) toggleSharedState {
+	is_shared = !is_shared;
+	is_dirty = YES;
+	[self save];
+	return is_shared;
 }
 
 @end

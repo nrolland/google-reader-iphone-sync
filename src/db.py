@@ -21,6 +21,7 @@ schema_history = [
 	'ALTER TABLE items ADD COLUMN had_errors BOOLEAN default 0',
 	'ALTER TABLE items ADD COLUMN is_stale BOOLEAN default 0',
 	'ALTER TABLE items ADD COLUMN tag_name BOOLEAN default ""',
+	'ALTER TABLE items ADD COLUMN is_shared BOOLEAN default 0',
 	]
 
 class VersionDB:
@@ -79,6 +80,7 @@ class DB:
 				('had_errors', 'BOOLEAN default 0'),
 				('is_stale', 'BOOLEAN default 0'),
 				('tag_name', 'TEXT'),
+				('is_shared', 'TEXT'),
 			],
 			'indexes' : [ ('item_id_index', 'items(google_id)') ]
 		}

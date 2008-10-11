@@ -27,6 +27,7 @@
 
 
 - (void) loadItemAtIndex:(int) index {
+	[[self delegate] showSpinner: YES];
 	dbg(@"Loading item at index: %d", index);
 	if(index < 0) {
 		currentItem = nil;
@@ -120,12 +121,17 @@
 }
 
 - (void) setButtonStates {
-	[buttonStar setSelected: [currentItem is_starred]];
-	[buttonRead setSelected: [currentItem userHasMarkedAsUnread]];
+	[buttonStar setSelected:  [currentItem is_starred]];
+	[buttonShare setSelected: [currentItem is_shared]];
+	[buttonRead setSelected:  [currentItem userHasMarkedAsUnread]];
 }
 
 - (IBAction) toggleStarForCurrentItem:(id) sender {
 	[buttonStar setSelected: [currentItem toggleStarredState]];
+}
+
+- (IBAction) toggleSharedForCurrentItem:(id) sender {
+	[buttonShare setSelected: [currentItem toggleSharedState]];
 }
 
 - (IBAction) toggleReadForCurrentItem:(id) sender {

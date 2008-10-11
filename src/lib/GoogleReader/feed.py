@@ -76,7 +76,6 @@ class GoogleFeed(object) :
 						entry['feed_name'] = dom_entry_element.getElementsByTagName('title')[0].firstChild.data ## added by gfxmonk
 					elif dom_entry_element.nodeName == 'media:group' : ## added by gfxmonk
 						for dom_entry_element in dom_entry_element.childNodes :
-							print '  ' + repr(dom_entry_element)
 							if dom_entry_element.nodeName == 'media:content' :
 								if not 'media' in entry:
 									entry['media'] = []

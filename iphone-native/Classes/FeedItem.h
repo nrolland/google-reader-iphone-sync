@@ -14,6 +14,7 @@
 	id source_db;
 	BOOL is_read;
 	BOOL is_starred;
+	BOOL is_shared;
 	BOOL is_dirty;
 	BOOL sticky_read_state;
 }
@@ -41,6 +42,7 @@
 @property(readonly) NSString* tag_name;
 @property(readonly) BOOL is_read;
 @property(readonly) BOOL is_starred;
+@property(readonly) BOOL is_shared;
 @property(readonly) BOOL is_dirty;
 
 - (NSString *) html;

@@ -71,9 +71,10 @@ NSString * all_items_tag = @"All Items";
 	
 
 - (void) updateItem:(id) item {
-	[db executeUpdate:@"update items set is_read=?, is_starred=? , is_dirty=1 where google_id=?" ,
+	[db executeUpdate:@"update items set is_read=?, is_starred=?, is_shared=?, is_dirty=1 where google_id=?" ,
 		[NSNumber numberWithBool: [item is_read]],
 		[NSNumber numberWithBool: [item is_starred]],
+		[NSNumber numberWithBool: [item is_shared]],
 		[item google_id]];
 	if_error [NSException raise:@"UpdateFailed" format:@"updating item id %@ failed", [item google_id]];
 }
@@ -90,6 +91,7 @@ NSString * all_items_tag = @"All Items";
 			tagName:		[rs stringForColumn:@"tag_name"]
 			is_read:		[rs boolForColumn:@"is_read"]
 			is_starred:		[rs boolForColumn:@"is_starred"]
+			is_shared:		[rs boolForColumn:@"is_shared"]
 			db: self]
 		autorelease];
 }

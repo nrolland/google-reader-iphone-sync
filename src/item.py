@@ -41,6 +41,7 @@ class Item:
 			self.date = time.strftime('%Y%m%d%H%M%S', time.localtime(float(feed_item['updated'])))
 			self.is_read = 'read' in feed_item['categories']
 			self.is_starred = 'starred' in feed_item['categories']
+			self.is_shared = 'broadcast' in feed_item['categories']
 			self.url = feed_item['link']
 			self.content = feed_item['content']
 			self.original_id = feed_item['original_id']
@@ -138,8 +139,10 @@ class Item:
 			actions.append(app_globals.READER.set_read)
 
 		# stars
-		if self.is_starred:
-			actions.append(app_globals.READER.add_star)
+		actions.append(app_globals.READER.add_star if self.is_starred else app_globals.READER.del_star)
+		
+		# share
+		actions.append(app_globals.READER.add_public if self.is_shared else app_globals.READER.del_public)
 
 		# apply the actions
 		for action in actions:

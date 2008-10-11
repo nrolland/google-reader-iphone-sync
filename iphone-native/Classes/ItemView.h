@@ -8,6 +8,7 @@
 	IBOutlet id buttonPrev;
 	IBOutlet id buttonNext;
 	IBOutlet id buttonStar;
+	IBOutlet id buttonShare;
 	IBOutlet id buttonRead;
 	
 	IBOutlet ItemDB * db;
@@ -30,5 +31,6 @@
 
 - (IBAction) toggleStarForCurrentItem:(id) sender;
 - (IBAction) toggleReadForCurrentItem:(id) sender;
+- (IBAction) toggleSharedForCurrentItem:(id) sender;
 - (IBAction) emailCurrentItem:(id) sender;
 @end
