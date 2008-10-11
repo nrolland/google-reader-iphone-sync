@@ -78,7 +78,6 @@
 }
 
 - (IBAction) goForward{
-	NSLog(@"FWD");
 	[currentItem userDidScrollPast];
 	if([self canGoNext]){
 		[self loadItemAtIndex:currentItemIndex + 1];
@@ -89,7 +88,6 @@
 }
 
 - (IBAction) goBack{
-	NSLog(@"back");
 	[self loadItemAtIndex:currentItemIndex - 1];
 }
 
