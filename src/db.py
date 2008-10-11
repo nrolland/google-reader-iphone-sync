@@ -73,12 +73,12 @@ class DB:
 				('title', 'TEXT'),
 				('content', 'TEXT'),
 				('feed_name', 'TEXT'),
-				('tag_name', 'TEXT'),
 				('is_read', 'BOOLEAN'),
 				('is_starred', 'BOOLEAN'),
 				('is_dirty', 'BOOLEAN default 0'),
 				('had_errors', 'BOOLEAN default 0'),
 				('is_stale', 'BOOLEAN default 0'),
+				('tag_name', 'TEXT'),
 			],
 			'indexes' : [ ('item_id_index', 'items(google_id)') ]
 		}

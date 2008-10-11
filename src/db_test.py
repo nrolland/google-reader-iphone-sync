@@ -109,7 +109,7 @@ class DBTest(unittest.TestCase):
 		
 		# and check it still looks the same:
 		for attr in ['url','title','feed_name','tag_name','google_id','is_read','is_dirty','is_starred','date','content']:
-			assert getattr(item, attr) == getattr(input_item, attr)
+			self.assertEqual( getattr(item, attr), getattr(input_item, attr) )
 
 		# test updating
 		item.is_read = True
@@ -224,9 +224,10 @@ class DBTest(unittest.TestCase):
 		app_globals.READER.gr.set_read.return_value = False
 		self.assertRaises(Exception, self.db.sync_to_google)
 		
-		# item should still be marked as read
+		# item should still be marked as read (and dirty)
 		assert self.db.get_items_list('is_dirty = 0') == []
 		assert len(self.db.get_items_list('is_dirty = 1')) == 1
+		assert len(self.db.get_items_list('is_read = 1')) == 1
 	
 	def test_cleanup(self):
 		res_folders = ['a','b','blah','blah2','c','d']
