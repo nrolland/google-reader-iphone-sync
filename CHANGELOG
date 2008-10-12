@@ -1,3 +1,6 @@
+0.3.10:
+	- Option to have item navigation bar above content
+
 0.3.9:
 	- Mark items as shared (public) from GRiS
 	- Support for image media enclosures (sometimes called photocasts)
