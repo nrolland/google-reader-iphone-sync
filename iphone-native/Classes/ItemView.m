@@ -3,6 +3,11 @@
 #import "TCHelpers.h"
 
 @implementation ItemView
+- (void) awakeFromNib {
+	[self blacken];
+	[super awakeFromNib];
+}
+
 - (void) load {
 	[self allItems];
 	if(currentItem == nil) {
@@ -27,7 +32,6 @@
 
 
 - (void) loadItemAtIndex:(int) index {
-	[[self delegate] showSpinner: YES];
 	dbg(@"Loading item at index: %d", index);
 	if(index < 0) {
 		currentItem = nil;
@@ -74,7 +78,11 @@
 
 - (void) deactivate {
 	[self setAllItems: nil];
-	[self loadHTMLString:@""];
+	[self blacken];
+}
+
+- (void) blacken {
+	[self loadHTMLString:@"<html><style>body{background-color:#000000;}</style></html>"];
 }
 
 - (IBAction) goForward{
@@ -99,6 +107,7 @@
 		NSString *str = [item htmlForPosition:position_description];
 		[self loadHTMLString:str];
 	}
+	[[self delegate] showSpinner: NO];
 }
 - (void) loadHTMLString: (NSString *) newHTML {
 	[newHTML retain];

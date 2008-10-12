@@ -23,6 +23,7 @@
 	IBOutlet id showReadItemsToggle;
 	IBOutlet id rotationLockToggle;
 	IBOutlet id openLinksInSafariToggle;
+	IBOutlet id navBarOnTopToggle;
 	IBOutlet id newestItemsFirstToggle;
 	BOOL rotationLock;
 	

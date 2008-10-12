@@ -30,6 +30,7 @@
 	dbg(@"Loaded...");
 
 	[window setBackgroundColor: [UIColor groupTableViewBackgroundColor]];
+	
 	loading = YES;
 	[self loadFirstView];
 }
@@ -59,7 +60,11 @@
 	
 	// tab / navigation bar:
 	[[mainController tabBar] setHidden: showItemView];
-	[[[mainController selectedViewController] navigationBar] setHidden: showItemView];
+	
+	id viewController = [mainController selectedViewController];
+	if([viewController respondsToSelector: @selector(navigationBar)]) {
+		[[viewController navigationBar] setHidden: showItemView];
+	}
 	
 	// viewer
 	if(showItemView) {

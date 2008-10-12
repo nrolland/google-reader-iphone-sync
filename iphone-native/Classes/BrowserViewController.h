@@ -2,8 +2,10 @@
 #import <Foundation/Foundation.h>
 
 @interface BrowserViewController : UIViewController {
+	IBOutlet id webViewContainer;
 	IBOutlet id webView;
-    IBOutlet id browseScreenView;
+	IBOutlet id navigationView;
+	IBOutlet id browseScreenView;
 	IBOutlet id topLevelWindow;
 }
 - (void) activate;

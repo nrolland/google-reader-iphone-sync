@@ -12,16 +12,19 @@
 			dbg(@"opening url in safari: %@", [request URL]);
 			[[self globalApp] openURL: [request URL]];
 			return NO;
-		} else {
-			[self showSpinner: YES];
 		}
 	}
 	return YES;
 }
 
 - (void) showSpinner:(BOOL) doShow {
+	dbg(@"setting spinner to %s", doShow ? "VISIBLE" : "HIDDEN");
 	[spinner setHidden: !doShow];
 	doShow ? [spinner startAnimating] : [spinner stopAnimating];
+}
+
+- (void) webViewDidStartLoad:(id) sender {
+	[self showSpinner: YES];
 }
 
 - (void) webViewDidFinishLoad:(id) sender {

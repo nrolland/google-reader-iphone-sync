@@ -1,6 +1,8 @@
 #import "ApplicationSettings.h"
 #import "TCHelpers.h"
 
+#define CONTENT_HEIGHT 285
+
 @implementation ApplicationSettings
 - (NSString *) docsPath{ return docsPath; }
 - (void) setDocsPath:newPath{
@@ -115,7 +117,7 @@
 - (void) awakeFromNib {
 	dbg(@"AppSettings: awakeFromNib");
 	[smallText setFont: [UIFont systemFontOfSize: 14.0]];
-	[mainScrollView setContentSize: CGSizeMake(320, 255)];
+	[mainScrollView setContentSize: CGSizeMake(320, CONTENT_HEIGHT)];
 	[self setUIElements];
 	[super awakeFromNib];
 }
@@ -169,6 +171,7 @@
 	[itemsPerFeedSlider setValue:[self itemsPerFeed]];
 	[itemsPerFeedLabel setText:[NSString stringWithFormat:@"%d", [self itemsPerFeed]]];
 	[showReadItemsToggle setOn: [self showReadItems]];
+	[navBarOnTopToggle setOn: [self navBarOnTop]];
 	[openLinksInSafariToggle setOn:[self openLinksInSafari]];
 	[newestItemsFirstToggle setOn: [self sortNewestItemsFirst]];
 	[feedList setSelectedFeeds: [self tagList]];
@@ -193,7 +196,8 @@
 	NSNumber * val = [plistData valueForKey:key];
 	return val && [val boolValue];
 }
-	
+
+- (BOOL) navBarOnTop       { return [self boolFromKey:@"navBarOnTop"]; }
 - (BOOL) openLinksInSafari { return [self boolFromKey:@"openInSafari"]; }
 - (BOOL) showReadItems     { return [self boolFromKey:@"showReadItems"]; }
 - (BOOL) rotationLock      { return rotationLock; }
@@ -224,6 +228,7 @@
 	[plistData setValue: [NSNumber numberWithBool: val] forKey:key];
 }
 
+- (void) setNavBarOnTop:(BOOL) newVal       { [self setBool:newVal forKey:@"navBarOnTop"];  }
 - (void) setOpenLinksInSafari:(BOOL) newVal { [self setBool:newVal forKey:@"openInSafari"];  }
 - (void) setReadItems:(BOOL) newVal         { [self setBool:newVal forKey:@"showReadItems"]; }
 - (void) setRotationLock:(BOOL) newVal      { rotationLock = newVal; } // this is intentionally not persisted
@@ -270,6 +275,8 @@
 		[self setOpenLinksInSafari: newValue];
 	} else if(sender == newestItemsFirstToggle) {
 		[self setSortNewestItemsFirst: newValue];
+	} else if(sender == navBarOnTopToggle) {
+		[self setNavBarOnTop: newValue];
 	} else {
 		dbg(@"unknown sender sent switchValueDidChange to ApplicationSettings");
 	}
