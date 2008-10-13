@@ -88,6 +88,7 @@
 	for(id controller in [[mainController navController] viewControllers]) {
 		[controller refresh:self];
 	}
+	[feedList reloadData];
 }
 
 - (IBAction) toggleOptions: (id) sender {
