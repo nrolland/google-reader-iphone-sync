@@ -1,5 +1,6 @@
 0.3.10:
 	- Option to have item navigation bar above content
+	- better support for different types of image enclosures
 
 0.3.9:
 	- Mark items as shared (public) from GRiS

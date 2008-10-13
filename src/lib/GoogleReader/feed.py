@@ -12,6 +12,7 @@ class GoogleFeed(object) :
 	def __init__(self,xmlfeed) :
 		# Need a lot more check !!!
 		self._document = minidom.parseString(xmlfeed)
+		# print xmlfeed
 		self._entries = []
 		self._properties = {}
 		self._continuation = None
@@ -29,6 +30,13 @@ class GoogleFeed(object) :
 
 	def __len__(self):
 		return len(self._entries)
+	
+	@staticmethod
+	def _add_enclosure(entry, url):
+		if not 'media' in entry:
+			entry['media'] = []
+		# print "entry getting url: %s" % url
+		entry['media'].append(url)
 		
 	def get_entries(self) :
 		for dom_entry in self._entries :
@@ -43,8 +51,14 @@ class GoogleFeed(object) :
 						entry['google_id'] = dom_entry_element.firstChild.data
 						entry['original_id'] = dom_entry_element.getAttribute('gr:original-id')
 					elif dom_entry_element.localName == 'link' :
-						if dom_entry_element.getAttribute('rel')=='alternate' :
+						if dom_entry_element.getAttribute('rel') == 'alternate':
 							entry['link'] = dom_entry_element.getAttribute('href')
+							
+						## <added by gfxmonk>
+						elif dom_entry_element.getAttribute('rel') == 'enclosure':
+							self._add_enclosure(entry, dom_entry_element.getAttribute('href'))
+						## </ added by gfxmonk>
+
 					elif dom_entry_element.localName == 'category' :
 						if dom_entry_element.getAttribute('scheme')==CONST.GOOGLE_SCHEME :
 							term = dom_entry_element.getAttribute('term')
@@ -73,13 +87,15 @@ class GoogleFeed(object) :
 						entry['title'] = dom_entry_element.firstChild.data
 					elif dom_entry_element.localName == 'source' :
 						entry['sources'][dom_entry_element.getAttribute('gr:stream-id')] = dom_entry_element.getElementsByTagName('id')[0].firstChild.data
-						entry['feed_name'] = dom_entry_element.getElementsByTagName('title')[0].firstChild.data ## added by gfxmonk
-					elif dom_entry_element.nodeName == 'media:group' : ## added by gfxmonk
+
+					## <added by gfxmonk>
+						entry['feed_name'] = dom_entry_element.getElementsByTagName('title')[0].firstChild.data
+					elif dom_entry_element.nodeName == 'media:group' :
 						for dom_entry_element in dom_entry_element.childNodes :
 							if dom_entry_element.nodeName == 'media:content' :
-								if not 'media' in entry:
-									entry['media'] = []
-						entry['media'].append(dom_entry_element.getAttribute('url'))
+								self._add_enclosure(entry, dom_entry_element.getAttribute('url'))
+					## </added by gfxmonk>
+					
 					elif dom_entry_element.localName == 'published' :
 						entry['published'] = self.iso2time(dom_entry_element.firstChild.data)
 					elif dom_entry_element.localName == 'updated' :
