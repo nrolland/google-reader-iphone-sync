@@ -22,7 +22,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1{
-	font-size:1.25em;
+	font-size:1.1em;
 	line-height:1.0em;
 	padding:0;
 	margin:3px 0;
@@ -33,16 +33,16 @@ h1 a{
 	text-decoration:none;
 }
 
-.post-info, .content {
+.post-info {
+	background:#111;
+	border: 0px solid #666;
+	color:#777;
+	line-height:1.1em;
 	padding:10px;
 }
 
-.post-info {
-	background:#111;
-	border-bottom:1px solid #888;
-	color:#777;
-	line-height:1.3em;
-}
+.post-info.header { border-bottom-width: 1px; }
+.post-info.footer { border-top-width: 1px; font-size:0.8em; margin-top:20px; text-align:center; max-width:570px; }
 
 .post-info b, .post-info em{
 	font-style:normal;
@@ -50,5 +50,11 @@ h1 a{
 }
 
 .content {
+	margin-bottom:20px;
+	padding:0 10px;
+}
+
+.content p {
+	margin-top:10px;
 	margin-bottom:10px;
 }

@@ -58,7 +58,7 @@
 		domainRange.length = firstSlash.location;
 		domain = [domain substringWithRange: domainRange];
 	}
-	domain = [self truncateString: domain toMaxLength: 20];
+	domain = [self truncateString: domain toMaxLength: 42];
 	return domain;
 }
 
@@ -125,24 +125,26 @@
 				<link rel='stylesheet' href='template/style.css' type='text/css' />                         \n\
 			</head>                                                                                         \n\
 			<body>                                                                                          \n\
-				<div class='post-info'>                                                                     \n\
+				<div class='post-info header'>                                                              \n\
 					<h1 id='title'>                                                                         \n\
 						<a href='%@'>%@</a>                                <!-- url, title -->              \n\
 					</h1>                                                                                   \n\
-					<div class='date'>                                                                      \n\
-						%@ tag: <b>%@</b>                                   <!-- date, tag_name -->          \n\
-						%@                                                 <!-- position_info -->           \n\
-					</div>                                                                                  \n\
-					<div class='via'>                                                                       \n\
-						From <em>%@</em> (<i>%@</i>)                    <!-- feed_name, domain -->       \n\
-					</div>                                                                                  \n\
 				</div>                                                                                      \n\
 				<div class='content'><p>                                                                    \n\
 					%@                                                     <!-- content -->                 \n\
 				</div>                                                                                      \n\
+				<div class='post-info footer'>                                                              \n\
+					<div class='date'>                                                                      \n\
+						%@ in <b>%@</b>                                   <!-- date, tag_name -->           \n\
+						%@                                                 <!-- position_info -->           \n\
+					</div>                                                                                  \n\
+					<div class='via'>                                                                       \n\
+						From <em>%@</em><br />(<i>%@</i>)                    <!-- feed_name, domain -->     \n\
+					</div>                                                                                  \n\
+				</div>                                                                                      \n\
 			</body>                                                                                         \n\
 		</html>",
-		url, title, [self dateStr:YES], tag_name, position_info, [self truncateString: feed_name toMaxLength: 25], [self domainName], content] autorelease];
+		url, title, content, [self dateStr:YES], tag_name, position_info, [self truncateString: feed_name toMaxLength: 34], [self domainName]] autorelease];
 }
 
 - (void) userDidScrollPast {
