@@ -121,7 +121,7 @@
 	return [[NSString stringWithFormat:
 		@"<html>                                                                                            \n\
 			<head>                                                                                          \n\
-				<meta name='viewport' content='width=500' />                                                \n\
+				<meta name='viewport' content='width=580' />                                                \n\
 				<link rel='stylesheet' href='template/style.css' type='text/css' />                         \n\
 			</head>                                                                                         \n\
 			<body>                                                                                          \n\
@@ -129,22 +129,25 @@
 					<h1 id='title'>                                                                         \n\
 						<a href='%@'>%@</a>                                <!-- url, title -->              \n\
 					</h1>                                                                                   \n\
+					<div class='via'>                                                                       \n\
+						%@                                                 <!-- feed_name -->               \n\
+					</div>                                                                                  \n\
 				</div>                                                                                      \n\
 				<div class='content'><p>                                                                    \n\
 					%@                                                     <!-- content -->                 \n\
 				</div>                                                                                      \n\
 				<div class='post-info footer'>                                                              \n\
 					<div class='date'>                                                                      \n\
-						%@ in <b>%@</b>                                   <!-- date, tag_name -->           \n\
+						<b>%@</b> in <b>%@</b>                             <!-- date, tag_name -->          \n\
 						%@                                                 <!-- position_info -->           \n\
 					</div>                                                                                  \n\
-					<div class='via'>                                                                       \n\
-						From <em>%@</em><br />(<i>%@</i>)                    <!-- feed_name, domain -->     \n\
+					<div>                                                                                   \n\
+						(<i>%@</i>)                                        <!-- domain -->                  \n\
 					</div>                                                                                  \n\
 				</div>                                                                                      \n\
 			</body>                                                                                         \n\
 		</html>",
-		url, title, content, [self dateStr:YES], tag_name, position_info, [self truncateString: feed_name toMaxLength: 34], [self domainName]] autorelease];
+		url, title, [self truncateString: feed_name toMaxLength: 84], content, [self dateStr:YES], tag_name, position_info, [self domainName]] autorelease];
 }
 
 - (void) userDidScrollPast {
