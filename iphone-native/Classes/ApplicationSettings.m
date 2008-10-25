@@ -13,11 +13,15 @@
 	NSString * testingPath;
 	NSFileManager * fileManager = [NSFileManager defaultManager];
 	NSString * path = nil;
+	
+	NSArray * here_path = [[NSString stringWithCString: __FILE__ encoding: NSASCIIStringEncoding] pathComponents];  // path to this file
+	NSArray * base_code_path = [here_path subarrayWithRange: NSMakeRange(0, [here_path count] - 3)];                // minus file, and then up 2 directories
+
 	NSArray * paths = [NSArray arrayWithObjects:
-		@"/var/mobile/GRiS",
-		@"/Users/tim/.GRiS",
-		[@"~/GRiS" stringByExpandingTildeInPath],
-		[@"~/.GRiS" stringByExpandingTildeInPath],
+		[NSString stringWithFormat: @"/var/%@/GRiS", NSUserName()],     // iPhone
+		[NSString stringWithFormat: @"/Users/%@/.GRiS", NSUserName()],  // simulator (in home directory)
+		// (we can't use ~/.GRiS because the simulator puts ~ somewhere deep within the simulated filesystem
+		[base_code_path componentsJoinedByString: @"/"],                // simulator (inside the code package - no setup required)
 		nil];
 
 	int i;
