@@ -13,7 +13,7 @@ body {
 	display:table-cell;
 }
 
-a{ color:#acF; }
+a{ color:#acF !important; }
 
 h1, h2, h3, h4, h5, h6 {
 	color:#acF !important;
@@ -32,6 +32,12 @@ h1{
 h1 a{
 	text-decoration:none;
 }
+
+pre {
+	max-width:580px;
+	white-space: pre-wrap;
+}
+
 
 .post-info {
 	background:#111;
