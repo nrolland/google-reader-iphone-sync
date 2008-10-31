@@ -290,8 +290,7 @@
 - (void) textElementDidFinishEditing:(id) sender {
 	dbg(@"string value changed");
 	[sender resignFirstResponder];
-	[self stringValueDidChange: sender];
-	
+
 	// hide any done buttons if necessary)
 	id btn = nil;
 	id navItem = nil;
