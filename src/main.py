@@ -38,7 +38,7 @@ def execute():
 	"""
 	Logs in, syncs and downloads new items
 	"""
-	steps = 4
+	steps = 3
 	download_steps = 0
 	if not app_globals.OPTIONS['no_download']:
 		download_steps = len(app_globals.OPTIONS['tag_list'])
