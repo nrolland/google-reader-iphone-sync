@@ -176,6 +176,7 @@ def download_new_items():
 		puts("%s items failed to parse" % app_globals.STATS['failed'])
 
 def setup(opts=None):
+	"""Parse options. If none given, opts is set to sys.argv"""
 	if opts is None:
 		opts = sys.argv[1:]
 	config.bootstrap(opts)
