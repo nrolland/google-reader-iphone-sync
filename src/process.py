@@ -33,12 +33,29 @@ def insert_alt_text(soup):
 			img.append(desc)
 	return True
 
+def strip_params_from_image_url(url):
+	"""
+	returns the url without query parameters, but only if the url location ends in a known image extension
+	
+		>>> strip_params_from_image_url('abc/de?x=y')
+		'abc/de?x=y'
+		>>> strip_params_from_image_url('abc/de.JPG?x=y')
+		'abc/de.JPG'
+		>>> strip_params_from_image_url('abc')
+		'abc'
+	"""
+	if not '?' in url: return url
+	location = url.split('?')[0]
+	if is_image(location): return location
+	return url
+
 def insert_enclosure_images(soup, url_list):
 	"""
 	Insert a set of images (url_list) into the soup as html tags.
 	A <br /> tag will be inserted before each added image.
 	
 	Images from the content will not be duplicated.
+	If an image URL ends in a known image format (eg ".jpg"), query parameters will be stripped off when comparing URLs
 	NOTE: no attempt is made to compare absolute / canonical URLs (it's just a string comparison)
 
 	
@@ -66,15 +83,26 @@ def insert_enclosure_images(soup, url_list):
 		>>> soup
 		<img src="a.gif" /><br /><img src="b.jpg" />
 		
-	
+		>>> soup = BeautifulSoup('<img src="a.gif?query=foo" />')
+		>>> insert_enclosure_images(soup, ['a.gif?query=bar'])
+		True
+		>>> soup
+		<img src="a.gif?query=foo" />
+
+		>>> soup = BeautifulSoup('<img src="a?query=foo" />')
+		>>> insert_enclosure_images(soup, ['a?query=bar'])
+		True
+		>>> soup
+		<img src="a?query=foo" /><br /><img src="a?query=bar" />
+
 	"""
 	existing_image_urls = []
 	for existing_image in soup.findAll('img'):
 		try:
-			existing_image_urls.append(existing_image['src'])
+			existing_image_urls.append(strip_params_from_image_url(existing_image['src']))
 		except KeyError: pass
 	
-	for image_url in [url for url in url_list if url not in existing_image_urls and is_image(url)]:
+	for image_url in [url for url in url_list if strip_params_from_image_url(url) not in existing_image_urls and is_image(url)]:
 		img = Tag(soup, 'img')
 		img['src'] = image_url
 		soup.append(Tag(soup, 'br'))
