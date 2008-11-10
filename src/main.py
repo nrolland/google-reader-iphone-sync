@@ -34,6 +34,11 @@ def init_signals():
 	signal.signal(signal.SIGINT, handle_signal)
 	signal.signal(signal.SIGTERM, handle_signal)
 
+def save_db_state():
+	puts("saving database state...")
+	app_globals.DATABASE.close()
+	app_globals.DATABASE = DB()
+
 def execute():
 	"""
 	Logs in, syncs and downloads new items
@@ -162,6 +167,7 @@ def download_new_items():
 
 	for feed_tag in tag_list:
 		line()
+		save_db_state()
 		_feed_tag = "All Items" if feed_tag is None else feed_tag
 		new_task("Downloading tag \"%s\"" % (_feed_tag,))
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], _feed_tag))
