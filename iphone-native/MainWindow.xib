@@ -9,10 +9,10 @@
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<integer value="494"/>
-			<integer value="242"/>
-			<integer value="145"/>
 			<integer value="309"/>
 			<integer value="575"/>
+			<integer value="242"/>
+			<integer value="145"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2179,6 +2179,14 @@ dGluZ3MiKQ</string>
 					</object>
 					<int key="connectionID">636</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">syncController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="590635521"/>
+					</object>
+					<int key="connectionID">637</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -3153,7 +3161,7 @@ dGluZ3MiKQ</string>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">636</int>
+			<int key="maxID">637</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3320,6 +3328,7 @@ dGluZ3MiKQ</string>
 							<string>mainController</string>
 							<string>optionsUnderlayView</string>
 							<string>optionsView</string>
+							<string>syncController</string>
 							<string>window</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -3330,6 +3339,7 @@ dGluZ3MiKQ</string>
 							<string>id</string>
 							<string>id</string>
 							<string>MainTabBarController</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>UIWindow</string>

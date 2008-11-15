@@ -8,6 +8,7 @@
 
 - (void) applicationWillTerminate:(id) sender {
 	dbg(@"terminating...");
+	[syncController cencelSync:self];
 	[appSettings dealloc];
 	[db dealloc];
 }

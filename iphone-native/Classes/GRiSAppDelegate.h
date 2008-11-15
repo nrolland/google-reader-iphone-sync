@@ -10,6 +10,7 @@
 	IBOutlet id appSettings;
 	IBOutlet id itemListDelegate;
 	IBOutlet id feedList;
+	IBOutlet id syncController;
 
 	IBOutlet id optionsView;
 	IBOutlet id optionsUnderlayView;
