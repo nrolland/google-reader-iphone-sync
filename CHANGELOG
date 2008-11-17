@@ -1,3 +1,12 @@
+0.3.13:
+	- Reverted the semi-transparent stuff from 0.3.12 (it didn't go so well)
+	
+0.3.12:
+	- Allow semi-transparent navigation bar to give more viewing area
+	- Prevent a running sync from continuing after the app is closed
+	- More "database checkpoints" so that minimal downloaded items are lost
+	  when sync fails
+
 0.3.11:
 	- Layout / style improvements
 

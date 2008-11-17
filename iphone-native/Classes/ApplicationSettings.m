@@ -191,9 +191,9 @@
 }
 
 #pragma mark GETTING values
-- (int) itemsPerFeedValue: (id) sender {
-	// - [UISlider value] just returns the UISlider object itself. How useful!
-	return (int)(([[sender valueForKey:@"value"] floatValue] / 5) + 0.5) * 5;
+- (int) itemsPerFeedValue: (UISlider *) sender {
+	float raw_val = [sender value];
+	return (int)(roundf(raw_val / 5)) * 5; // round to the nearest multiple of 5
 }
 
 - (BOOL) boolFromKey:(NSString *) key {
