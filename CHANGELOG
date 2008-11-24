@@ -1,3 +1,6 @@
+0.3.14:
+	- Fixed bug where exiting the app during a sync would not cancel the sync properly
+
 0.3.13:
 	- Reverted the semi-transparent stuff from 0.3.12 (it didn't go so well)
 	
