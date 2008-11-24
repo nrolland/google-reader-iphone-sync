@@ -182,6 +182,10 @@ task :clean do
 	`rm -rf '#{build_dir}'`
 end
 
+task :';' do top.end end
+task :'.' do top.end end
+
+
 task :end do
 	`growlnotify -m 'Completed' 'capistrano task'`
 	clean
