@@ -1,6 +1,7 @@
 .*
 *.pyc
 config.yml
+config.plist
 *.app
 *.sqlite
 GRiS.pkg-build
