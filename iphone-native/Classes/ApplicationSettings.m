@@ -55,7 +55,6 @@
 }
 
 - (void) load {
-	dbg(@"loading plist");
 	plistData = [[NSMutableDictionary dictionaryWithContentsOfFile:[docsPath stringByAppendingPathComponent: plistName]] retain];
 	if(!plistData) {
 		NSLog(@"FAILED loading plist");
@@ -71,11 +70,10 @@
 }
 
 - (NSArray *) loadFeedList {
-	dbg(@"loading feed list");
 	NSString * contents = [NSString stringWithContentsOfFile: [docsPath stringByAppendingPathComponent: @"tag_list"] encoding:NSUTF8StringEncoding error:nil];
 	id result;
 	if(!contents) {
-		dbg(@"no feed_list loaded");
+		dbg(@"no feed list loaded");
 		result = nil;
 	} else {
 		NSArray * originalList = [contents componentsSeparatedByString:@"\n"];
@@ -105,7 +103,6 @@
 			[result addObject: tag];
 		}
 	}
-	dbg(@"returning activeTagList: %@", result);
 	return result;
 }
 
@@ -119,7 +116,6 @@
 }
 
 - (void) awakeFromNib {
-	dbg(@"AppSettings: awakeFromNib");
 	[smallText setFont: [UIFont systemFontOfSize: 14.0]];
 	[mainScrollView setContentSize: CGSizeMake(320, CONTENT_HEIGHT)];
 	[self setUIElements];
@@ -158,7 +154,6 @@
 	*btn = nil;
 	*navItem = nil;
 	if (sender == emailField || sender == passwordField) {
-		dbg(@"\"done\" button for account");
 		*btn = stopEditingAccountButton;
 		*navItem = accountNavItem;
 	} else {
@@ -228,7 +223,6 @@
 	
 #pragma mark SETTING values
 - (void) setBool:(BOOL) val forKey:(NSString *) key {
-	dbg(@"Setting boolean value %@ to %s", key, val ? "TRUE" : "FALSE");
 	[plistData setValue: [NSNumber numberWithBool: val] forKey:key];
 }
 
@@ -264,9 +258,7 @@
 		NSLog(@"unknown item sent ApplicationSettings stringValueDidChange: %@", sender);
 		return;
 	}
-	dbg(@"setting %@ = %@", key, [sender text]);
 	[plistData setValue: [sender text] forKey:key];
-	dbg(@"plist is now %@", plistData);
 }
 
 - (IBAction) switchValueDidChange:(id) sender {
@@ -288,25 +280,21 @@
 
 // general handler for text view & text fields
 - (void) textElementDidFinishEditing:(id) sender {
-	dbg(@"string value changed");
 	[sender resignFirstResponder];
 
 	// hide any done buttons if necessary)
 	id btn = nil;
 	id navItem = nil;
 	if([self getNavItem:&navItem andDoneButton:&btn forTextField:sender]) {
-		dbg(@"removing button %@ from %@", btn, navItem);
 		[navItem setRightBarButtonItem: nil];
 	}
 	[self stringValueDidChange:sender];
 }
 
 - (IBAction) textElementDidBeginEditing:(UITextField *)sender {
-	dbg(@"text field %@ did begin editing...", sender);
 	id btn = nil;
 	id navItem = nil;
 	if([self getNavItem:&navItem andDoneButton:&btn forTextField:sender]) {
-		dbg(@"adding button %@ to %@", btn, navItem);
 		[navItem setRightBarButtonItem: btn];
 	}
 }

@@ -186,7 +186,6 @@ class DB:
 		check if an item is marked as read in the DB.
 		If the id is not in the database, returns None
 		"""
-		debug('is_read = %s' % (google_id))
 		cursor = self.sql('select is_read from items where google_id = ?', (google_id,))
 		try:
 			is_read = cursor.next()[0] == 1 # truth is 1 in sqlite's mind

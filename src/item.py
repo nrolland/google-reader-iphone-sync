@@ -154,6 +154,5 @@ class Item:
 
 	@staticmethod
 	def google_do_with_id(action, google_id):
-		debug("Applying function %s to item %s" % (action, google_id))
 		danger("Applying function %s to item %s" % (action, google_id))
 		return action(google_id)

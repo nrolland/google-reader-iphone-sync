@@ -29,12 +29,11 @@
 }
 
 - (void) setListScrollToTop:(BOOL) doScroll {
-	dbg(@"scrolling list view to top? %s -- %@", doScroll ? "YES" : "NO", [[navController topViewController] listView]);
+	dbg_s(@"scrolling list view to top? %s -- %@", doScroll ? "YES" : "NO", [[navController topViewController] listView]);
 	[[[navController topViewController] listView] setScrollsToTop:doScroll];
 }
 
 - (void) deactivate {
-	dbg(@"%@ deactivating", self);
 	[self setListScrollToTop:NO];
 	isActive = NO;
 }

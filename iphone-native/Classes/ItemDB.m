@@ -41,7 +41,6 @@ NSString * all_items_tag = @"All Items";
 		[[NSException exceptionWithName:@"ItemDBException" reason:@"Couldn't open the DB" userInfo:nil] raise];
 		return;
 	}
-	dbg(@"success!");
 }
 
 - (void) dealloc {
@@ -97,7 +96,6 @@ NSString * all_items_tag = @"All Items";
 }
 
 - (id) tagItemFromResultSet: (FMResultSet *)rs {
-	dbg(@"making a tag item from result set %@", rs);
 	return [[[TagItem alloc]
 			initWithTag:	[rs stringForColumn:@"tag_name"]
 			count:			[rs intForColumn:@"num_items"]
@@ -107,7 +105,7 @@ NSString * all_items_tag = @"All Items";
 
 
 - (NSEnumerator *) enumeratorWithConstructor:(SEL)constructor forQuery: (NSString *) sql arguments: (va_list) args {
-	dbg(@"** SQL: enumeratorForQuery: %@, ", sql);
+	dbg_s(@"** SQL: enumeratorForQuery: %@, ", sql);
 	FMResultSet *rs = [db executeQuery:sql arguments:args];
 	if_error return nil;
 	
@@ -181,7 +179,7 @@ NSString * all_items_tag = @"All Items";
 			condition = (condition && condition)? [condition stringByAppendingFormat: @" and %@", additionalCondition] : additionalCondition;
 			result = [self itemsMatchingCondition: condition, tag ];
 		}
-		dbg(@"condition = %@", condition);
+		dbg_s(@"condition = %@", condition);
 		return result;
 	}
 }

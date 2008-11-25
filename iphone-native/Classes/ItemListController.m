@@ -46,13 +46,11 @@
 }
 
 - (void) redraw{
-	dbg(@"redrawing listView");
+	dbg_s(@"redrawing listView");
 	[listView reloadData];
 }
 
 -(IBAction) refresh: (id) sender {
-	dbg(@"refreshing itemListController");
-	dbg(@"delegate = %@", delegate);
 	[delegate reloadItems];
 	[listView reloadData];
 	[self redraw];
@@ -74,7 +72,6 @@
 }
 
 - (void) alertView:(id)_view clickedButtonAtIndex:(NSInteger) index {
-	dbg(@"answer: %d", index);
 	if(index == 1 && _view == markAsReadAlert) {
 		[[self delegate] setAllItemsReadState: alertWasForMarkingAsRead];
 		[[self delegate] reloadItems];

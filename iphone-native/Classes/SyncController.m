@@ -200,7 +200,7 @@ NSString * escape_single_quotes(NSString * str) {
 }
 
 - (void) backgroundShell:(id)shell didProduceOutput:(NSString *) line {
-	dbg(@"sync output: %@", line);
+	dbg_s(@"sync output: %@", line);
 	int numStatusComponents;
 
 	if([line hasPrefix:@"STAT:"]){

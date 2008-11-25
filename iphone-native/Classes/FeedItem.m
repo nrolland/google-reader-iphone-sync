@@ -151,17 +151,14 @@
 }
 
 - (void) userDidScrollPast {
-	dbg(@"user scrolled past item %@",[self title]);
 	if(sticky_read_state == NO && is_read == NO){
 		is_read = YES;
 		is_dirty = YES;
 		[self save];
-		dbg(@"is_read is now YES!");
 	}
 }
 
 - (BOOL) userHasMarkedAsUnread {
-	NSLog(@"user has marked as unread? %d", sticky_read_state && !is_read);
 	return sticky_read_state && !is_read;
 }
 

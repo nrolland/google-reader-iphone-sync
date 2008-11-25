@@ -17,7 +17,6 @@
 
 - (id) allItems {
 	if(allItems == nil) {
-		dbg(@"allItems is nil - getting a fresh pack from the DB");
 		[self setAllItems: [[db allItems] allObjects]];
 	}
 	return allItems;
@@ -32,7 +31,6 @@
 
 
 - (void) loadItemAtIndex:(int) index {
-	dbg(@"Loading item at index: %d", index);
 	if(index < 0) {
 		currentItem = nil;
 		currentItemIndex = 0;
@@ -90,7 +88,6 @@
 	if([self canGoNext]){
 		[self loadItemAtIndex:currentItemIndex + 1];
 	} else {
-		dbg(@"showing navigation");
 		[[[UIApplication sharedApplication] delegate] showNavigation: self];
 	}
 }

@@ -33,8 +33,6 @@
 - (void) animateSlideInToRect:(CGRect) targetRect fromDirection:(NSString *) direction {
 	float targetHeight = targetRect.size.height - targetRect.origin.y;
 	float targetWidth = targetRect.size.width - targetRect.origin.x;
-	dbg(@"targetWidth = %0.1f", targetWidth);
-	dbg(@"targetHeight = %0.1f", targetHeight);
 	CGPoint targetCenter = CGPointMake(targetRect.origin.x + (targetWidth / 2) , targetRect.origin.y + (targetHeight / 2));
 	CGPoint initialCenter = targetCenter;
 
@@ -51,7 +49,6 @@
 }
 
 - (void) animateSlideFromCenter:(CGPoint) fromPoint toCenter:(CGPoint) toPoint{
-	dbg(@"animating item %@ from (%0.1f,%0.1f) to (%0.1f,%0.1f)", self, fromPoint.x, fromPoint.y, toPoint.x, toPoint.y);
 	[self setAlpha:0.0];
 	[self setCenter: fromPoint];
 	[self startAnimating];

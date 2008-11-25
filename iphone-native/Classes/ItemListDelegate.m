@@ -141,13 +141,11 @@
 	int itemIndex = [self itemIndexFromIndexPath:indexPath];
 	id item = [[self itemSet] objectAtIndex: itemIndex];
 	if([item hasChildren]) {
-		dbg(@"pushing item onto nav: %@", item);
 		ItemListController * newItemListController = [self createControllerForTag: [item tagValue]];
 		
 		[navigationController pushViewController: newItemListController animated:YES];
 	} else {
 		// load it
-		dbg(@"listdelegate: loading item: %@", item);
 		[[[UIApplication sharedApplication] delegate] loadItemAtIndex: itemIndex fromSet: [self itemSet]];
 	}
 }
@@ -158,14 +156,12 @@
 		return;
 	}
 	if(![_tag isEqualToString:tag]) {
-		dbg(@"i am not the controller for tag %@ - making one", _tag);
 		id tagController = [self createControllerForTag: _tag];
 		[navigationController pushViewController: tagController animated:NO];
 		[[tagController delegate] loadItemWithID: google_id fromTag: _tag];
 		return;
 	}
 	
-	dbg(@"loading item from tag: %@ with id: %@", _tag, google_id);
 	int index;
 	id items = [self itemSet];
 	id item;
@@ -189,7 +185,6 @@
 	for(index = 0; index < count; index++) {
 		if([[[itemSet objectAtIndex:index] google_id] isEqualToString: google_id]) {
 			// found it!
-			dbg(@"found item with id %@ at index %d", google_id, index);
 			foundAtIndex = index;
 			break;
 		}
@@ -205,7 +200,6 @@
 
 
 - (void) reloadItems {
-	dbg(@"dropping itemSet for %@", self);
 	[itemSet release];
 	itemSet = nil;
 }
@@ -218,7 +212,6 @@
 
 - (id) itemSet {
 	if(!itemSet) {
-		dbg(@"getting a new itemSet");
 		itemSet = [[[ItemSet alloc] initWithTag: tag db: db] getItems];
 		if(tag == nil && [itemSet count] > 1) {
 			// add the "All Items" tag

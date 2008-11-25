@@ -98,7 +98,6 @@ def download_feed(feed, feed_tag):
 		item_number += 1
 		status("SUBTASK_PROGRESS", item_number)
 	
-		debug(" -- %s -- " % app_globals.STATS['items'])
 		app_globals.STATS['items'] += 1
 
 		if entry is None:

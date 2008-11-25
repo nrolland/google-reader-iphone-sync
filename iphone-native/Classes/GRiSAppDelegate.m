@@ -37,7 +37,6 @@
 }
 
 - (void) loadItemAtIndex: (int) index fromSet:(id) items {
-	//dbg(@"appdelegate - loading item at index: %d from set %@", index, items);
 	[[browseController webView] loadItemAtIndex: index fromSet:items];
 	[self showViewer:self];
 }
@@ -97,13 +96,11 @@
 	UIView * currentView = [[[[mainController navController] topViewController] view] superview];
 	id subviews = [currentView subviews];
 	if([subviews containsObject: optionsView]) {
-		dbg(@"hiding options");
 		[optionsUnderlayView removeFromSuperview];
 		[optionsView removeFromSuperview];
 		[self refreshItemLists];
 		[optionsButton setTitle: @"Options"];
 	} else {
-		dbg(@"showing options");
 		[currentView addSubview: optionsUnderlayView];
 		[optionsUnderlayView fitToSuperview];
 		[currentView addSubview: optionsView];
@@ -148,7 +145,6 @@
 - (NSString *) currentItemID {
 	NSString * itemID = nil;
 	if(inItemViewMode) {
-		dbg(@"item view is currently active");
 		itemID = [browseController currentItemID];
 	}
 	return itemID;
