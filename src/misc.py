@@ -135,7 +135,7 @@ def save_pickle(obj, filename):
 		{'key': 'value'}
 	"""
 	f = file(filename,'w')
-	ret = pickle.dump(obj, f)
+	pickle.dump(obj, f)
 	f.close()
 
 def load_pickle(filename):

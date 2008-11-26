@@ -1,14 +1,9 @@
-# the tested module
-from lib import GoogleReader
-
 import main
 
 # test helpers
 import test_helper
-from lib.mock import Mock
-from StringIO import StringIO
-from lib.OpenStruct import OpenStruct
-import unittest, sys
+from test_helper import *
+import unittest
 import config
 import app_globals
 from reader import Reader, CONST
@@ -27,8 +22,7 @@ class GoogleReaderLiveTest(unittest.TestCase):
 		self.reader = app_globals.READER = Reader()
 		
 	def tearDown(self):
-		pass
-		# rm_rf('/tmp/gris-test')
+		rm_rf('/tmp/gris-test')
 	
 	# these don't explicitly check anything, their acceptance is by virtue of not throwing any exceptions
 	def test_standard_tag(self):
@@ -55,23 +49,25 @@ class GoogleReaderLiveTest(unittest.TestCase):
 			
 	# For this test to pass, you need to have exactly one item tagged with "gris-test" in your google reader account.
 	# I'm afraid you're on your own setting this up - doing it in code is just too cumbersome.
+	@pending("behaviour is not reliable")
 	def test_changing_item_status(self):
-		entries = self.get_tag_items('gris-test')
-		assert len(entries) == 1
-		entry = entries[0]
-		entry_id = entry['google_id']
-
-		# make sure it's unread
-		self.reader.set_unread(entry_id)
-		entries = self.get_tag_items('gris-test', is_read = False)
-		assert len(entries) == 1
-		entry = entries[0]
-		assert entry_id == entry['google_id']
-
-		# now mark it as read
-		self.reader.set_read(entry_id)
-		entries = self.get_tag_items('gris-test', is_read = True)
-		entry = entries[0]
-		assert len(entries) == 1
-		assert entry_id == entry['google_id']
-		entry = entries[0]
+		pass
+		# entries = self.get_tag_items('gris-test')
+		# assert len(entries) == 1
+		# entry = entries[0]
+		# entry_id = entry['google_id']
+		# 
+		# # make sure it's unread
+		# self.reader.set_unread(entry_id)
+		# entries = self.get_tag_items('gris-test', is_read = False)
+		# assert len(entries) == 1
+		# entry = entries[0]
+		# assert entry_id == entry['google_id']
+		# 
+		# # now mark it as read
+		# self.reader.set_read(entry_id)
+		# entries = self.get_tag_items('gris-test', is_read = True)
+		# entry = entries[0]
+		# assert len(entries) == 1
+		# assert entry_id == entry['google_id']
+		# entry = entries[0]

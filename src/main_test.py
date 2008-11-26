@@ -2,17 +2,12 @@
 import main
 from item import Item
 from output import *
-import os
 
 # test helpers
 import test_helper
 import item_test
 from lib.mock import Mock
-import pickle
-from StringIO import StringIO
-from lib.OpenStruct import OpenStruct
 import unittest
-import config
 
 class MainTest(unittest.TestCase):
 	def setUp(self):

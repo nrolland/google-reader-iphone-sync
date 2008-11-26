@@ -1,18 +1,12 @@
 # the tested module
 from db import *
-from item import Item
 from output import *
 import os
 
 # test helpers
 import test_helper
 from test_helper import fake_item, google_ids
-from lib.mock import Mock
-import pickle
-from StringIO import StringIO
-from lib.OpenStruct import OpenStruct
 import unittest
-import config
 
 def test_migrated_persistance():
 	# make sure the migrations actually get saved to disk.
@@ -74,7 +68,6 @@ class VersionDBTest(unittest.TestCase):
 		assert VersionDB.version(self.db) == 2
 	
 	def test_invalid_migration(self):
-		schema = ['create_table items(id TEXT)']
 		self.assertRaises(sqlite.OperationalError, VersionDB.migrate, self.db, ['clearly this is invalid sql'])
 		assert VersionDB.version(self.db) == 0
 

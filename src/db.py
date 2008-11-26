@@ -2,8 +2,8 @@
 Exports:
 DB class
 """
-import pickle, re, urllib, glob, shutil, os
-from sets import Set
+import glob
+import os
 
 # local imports
 import app_globals
@@ -228,8 +228,8 @@ class DB:
 	def cleanup_resources_directory(self):
 		res_prefix = "%s/%s/" % (app_globals.OPTIONS['output_path'], app_globals.CONFIG['resources_path'])
 		glob_str = res_prefix + "*"
-		current_keys = Set([os.path.basename(x) for x in glob.glob(glob_str)])
-		unread_keys = Set([Item.escape_google_id(row[0]) for row in self.sql('select google_id from items where is_read = 0')])
+		current_keys = set([os.path.basename(x) for x in glob.glob(glob_str)])
+		unread_keys = set([Item.escape_google_id(row[0]) for row in self.sql('select google_id from items where is_read = 0')])
 
 		current_but_read = current_keys.difference(unread_keys)
 		if len(current_but_read) > 0:

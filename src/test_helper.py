@@ -1,6 +1,3 @@
-# the tested module
-from item import *
-
 # test helpers
 from lib.mock import Mock
 import pickle
@@ -8,7 +5,9 @@ from StringIO import StringIO
 from lib.OpenStruct import OpenStruct
 import unittest
 import config
+from misc import *
 from reader import Reader
+import app_globals
 
 def init_output_folder():
 	output_folder = '/tmp/GRiS/test_entries'

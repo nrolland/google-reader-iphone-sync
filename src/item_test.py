@@ -4,11 +4,7 @@ from item import *
 # test helpers
 import test_helper
 from lib.mock import Mock
-import pickle
-from StringIO import StringIO
-from lib.OpenStruct import OpenStruct
 import unittest
-import config
 
 sample_item = {
 	'author': u'pizzaburger',

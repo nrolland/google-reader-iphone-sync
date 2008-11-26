@@ -1,17 +1,19 @@
-import glob, time, os, re, urllib
+import glob
+import time
+import re
+import urllib
 
 # local imports
 import app_globals
 from misc import *
 from output import *
-import template
 
 # processing modules
 from lib.BeautifulSoup import BeautifulSoup
 import process
 
 
-def esc(s):   return urllib.quote(string)
+def esc(s):   return urllib.quote(s)
 def unesc(s): return urllib.unquote(s)
 
 def strip_html_tags(s):
@@ -32,7 +34,7 @@ class Item:
 		self.had_errors = False
 		if feed_item is not None:
 			try: self.feed_name = feed_item['feed_name']
-			except KeyError, TypeError:
+			except (KeyError, TypeError):
 				self.feed_name = tag_name
 			self.tag_name = tag_name
 			self.title = strip_html_tags(feed_item['title'])
