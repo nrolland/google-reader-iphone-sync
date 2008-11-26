@@ -89,11 +89,12 @@ def insert_enclosure_images(soup, url_list):
 		>>> soup
 		<img src="a.gif?query=foo" />
 
+		# no query culling when url does not look like an image
 		>>> soup = BeautifulSoup('<img src="a?query=foo" />')
-		>>> insert_enclosure_images(soup, ['a?query=bar'])
+		>>> insert_enclosure_images(soup, ['a?query=bar.jpg'])
 		True
 		>>> soup
-		<img src="a?query=foo" /><br /><img src="a?query=bar" />
+		<img src="a?query=foo" /><br /><img src="a?query=bar.jpg" />
 
 	"""
 	existing_image_urls = []
@@ -102,7 +103,7 @@ def insert_enclosure_images(soup, url_list):
 			existing_image_urls.append(strip_params_from_image_url(existing_image['src']))
 		except KeyError: pass
 	
-	for image_url in [url for url in url_list if strip_params_from_image_url(url) not in existing_image_urls and is_image(url)]:
+	for image_url in [url for url in url_list if is_image(url) and strip_params_from_image_url(url) not in existing_image_urls]:
 		img = Tag(soup, 'img')
 		img['src'] = image_url
 		soup.append(Tag(soup, 'br'))
