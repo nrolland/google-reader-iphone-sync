@@ -44,6 +44,7 @@ task :dns do `sudo dscacheutil -flushcache` end
 
 desc "test the source code with nosetest"
 task :nose do
+	args = ENV['args'] || ''
 	if ENV['file']
 		where = ENV['file']
 	else
@@ -52,8 +53,9 @@ task :nose do
 	end
 	packages = Dir['src/*.py'].collect {|p| p.gsub(/\.py$/i, '').gsub('/','.') }
 	packages.reject! {|p| p =~ /__init__/ }
-	puts "nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}'"
-	system("nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}'")
+	
+	puts "nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}' #{args}"
+	system("nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}' #{args}")
 end
 
 desc "copy ~/.ssh/id_rsa.pub to ipod / iphone authorized keys"
