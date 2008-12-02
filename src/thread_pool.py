@@ -51,7 +51,7 @@ class ThreadPool:
 	def _thread_finished(self, next_action):
 		self._action_buffer.append(next_action)
 		self._count -= 1
-		debug("thread finished")
+		debug("thread finished - there remain %s threads" % (self._count,))
 	
 	@locking
 	def collect(self):
