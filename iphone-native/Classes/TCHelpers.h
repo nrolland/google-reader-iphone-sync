@@ -1,3 +1,5 @@
+#import <Foundation/Foundation.h>
+
 #ifdef DEBUG
 	#define dbg NSLog
 #else

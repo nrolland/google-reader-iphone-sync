@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "browserViewController.h"
+#import "BrowserViewController.h"
 #import "MainTabBarController.h"
 
 @interface GRiSAppDelegate : NSObject {

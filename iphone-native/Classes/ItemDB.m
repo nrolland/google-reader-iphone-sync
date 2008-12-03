@@ -196,7 +196,7 @@ NSString * all_items_tag = @"All Items";
 }
 
 - (void) setAllItemsReadState: (BOOL) readState forTag:(NSString *) tag {
-	dbg(@"DB: marking all items as %s", read ? "read" : "unread");
+	dbg(@"DB: marking all items as %s", readState ? "read" : "unread");
 	if(tag == nil || [tag isEqualToString: all_items_tag]) {
 		[db executeUpdate: @"update items set is_read=?, is_dirty=?", [NSNumber numberWithBool: readState], [NSNumber numberWithBool: YES]];
 	} else {

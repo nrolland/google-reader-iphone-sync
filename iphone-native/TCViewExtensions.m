@@ -1,4 +1,4 @@
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 #import "TCViewExtensions.h"
 
 @implementation UIView (TCViewExtensions)

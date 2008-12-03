@@ -1,5 +1,5 @@
 #import "TagItem.h"
-#import "tcHelpers.h"
+#import "TCHelpers.h"
 
 
 @implementation TagItem

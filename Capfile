@@ -1,4 +1,4 @@
-require 'YAML'
+require 'yaml'
 
 config_filename = 'config.yml'
 config = YAML.load_file(config_filename)

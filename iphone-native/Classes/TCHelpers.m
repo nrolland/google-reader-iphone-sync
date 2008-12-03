@@ -1,4 +1,5 @@
 #import "TCHelpers.h"
+#import <UIKit/UIKit.h>
 
 char * PLURAL(int objects) { return objects == 1 ? "" : "s"; }
 
