@@ -45,7 +45,7 @@
 }
 
 - (void) save {
-	[self setLastViewedItem];
+	[self saveLastViewedItem];
 	BOOL success = [plistData writeToFile:[docsPath stringByAppendingPathComponent: plistName] atomically:YES];
 	if(!success) {
 		NSLog(@"FAILED saving plist");
@@ -147,7 +147,6 @@
 - (IBAction) deactivateBothFields:(id)sender {
 	[passwordField resignFirstResponder];
 	[emailField resignFirstResponder];
-	[self save];
 }
 
 - (BOOL) getNavItem:(id *)navItem andDoneButton:(id*)btn forTextField:(id)sender {
@@ -222,8 +221,13 @@
 - (NSString *) getLastViewedTag { return [plistData valueForKey:@"lastItemTag"]; }
 	
 #pragma mark SETTING values
+- (void) saveValue:(id) val forKey:(NSString *) key {
+	[plistData setValue:val forKey:key];
+	[self save];
+}
+
 - (void) setBool:(BOOL) val forKey:(NSString *) key {
-	[plistData setValue: [NSNumber numberWithBool: val] forKey:key];
+	[self saveValue: [NSNumber numberWithBool: val] forKey:key];
 }
 
 - (void) setNavBarOnTop:(BOOL) newVal       { [self setBool:newVal forKey:@"navBarOnTop"];  }
@@ -235,15 +239,17 @@
 	[[self globalAppDelegate] refreshItemLists];
 }
 
-- (void) setLastViewedItem {
-	[plistData setValue: [[[UIApplication sharedApplication] delegate] currentItemID] forKey:@"lastItemID"];
-	[plistData
-		setValue: [[[[[[[UIApplication sharedApplication] delegate] mainController] navController] topViewController] delegate] tag]
+- (void) saveLastViewedItem {
+	[plistData setValue:
+		[[[UIApplication sharedApplication] delegate] currentItemID]
+		forKey:@"lastItemID"];
+	[plistData setValue:
+		[[[[[[[UIApplication sharedApplication] delegate] mainController] navController] topViewController] delegate] tag]
 		forKey:@"lastItemTag"];
 }
 
 - (void) setTagList: (NSArray *) selectedTags {
-	[plistData setValue:selectedTags forKey:@"tagList"];
+	[self saveValue:selectedTags forKey:@"tagList"];
 }
 
 #pragma mark event handlers
@@ -258,7 +264,8 @@
 		NSLog(@"unknown item sent ApplicationSettings stringValueDidChange: %@", sender);
 		return;
 	}
-	[plistData setValue: [sender text] forKey:key];
+	dbg(@"setting plist value '%@' to '%@'", key, [sender text]);
+	[self saveValue: [sender text] forKey:key];
 }
 
 - (IBAction) switchValueDidChange:(id) sender {
@@ -312,7 +319,7 @@
 - (IBAction) itemsPerFeedDidChange: (id) sender {
 	int itemsPerFeed = [self itemsPerFeedValue: sender];
 	[itemsPerFeedLabel setText: [NSString stringWithFormat: @"%d", itemsPerFeed]];
-	[plistData setValue:[NSNumber numberWithInt:itemsPerFeed] forKey:@"num_items"];
+	[self saveValue:[NSNumber numberWithInt:itemsPerFeed] forKey:@"num_items"];
 	[sender setValue: itemsPerFeed];
 }
 
