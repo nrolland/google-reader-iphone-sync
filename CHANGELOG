@@ -1,3 +1,8 @@
+0.3.15:
+	- Fixed issue 64 which prevented email / password from being saved properly
+	  between application runs
+	- Code changes to allow a build on linux
+	
 0.3.14:
 	- Fixed bug where exiting the app during a sync would not cancel the sync properly
 
