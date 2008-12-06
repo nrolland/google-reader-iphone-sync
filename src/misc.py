@@ -116,6 +116,12 @@ def write_file_lines(filename, content):
 			f.write("\n")
 	f.close()
 
+def read_file(filename):
+	f = file(filename,'r')
+	ret = unicode(f.read(), 'utf-8')
+	f.close()
+	return ret
+	
 def read_file_lines(filename):
 	f = file(filename,'r')
 	ret = [unicode(line, 'utf-8') for line in f.readlines()]
