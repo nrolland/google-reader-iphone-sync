@@ -20,6 +20,7 @@ bootstrap_options = ('qvc:s', ['verbose','quiet','config=','show-status'])
 main_options = ("n:Cdth", [
 		'num-items=',
 		'cautious',
+		'aggressive',
 		'no-download',
 		'test',
 		'help',
@@ -67,6 +68,8 @@ Usage:
   --tag=[tag_name]       add a tag to the list of tags to be downloaded. Can be used multiple times
   --output-path=[path]   set the base output path (where items and resources are saved)
   --flush-output         flush stdout after printing each line
+  --aggressive           KILL any other running sync process
+                         (the default is to fail to start if another sync process is running)
 """
 	tag_list = []
 	argv = unicode_argv(argv)
@@ -97,6 +100,8 @@ Usage:
 			set_opt('flush_output', True)
 		elif key == '--only-tags':
 			set_opt('tag_list_only', True)
+		elif key == '--aggressive':
+			set_opt('aggressive', True)
 
 		# settings that are usually put in yaml...
 		elif key == '--user':

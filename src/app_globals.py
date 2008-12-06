@@ -24,6 +24,7 @@ OPTIONS = {
 	'tag_list_only': False,
 	'newest_first':  False,
 	'show_status':   False,
+	'aggressive':    False,
 	'tag_list':      [],
 }
 

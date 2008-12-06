@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # general includes
-import sys, glob, urllib2, signal
+import sys, glob, urllib2, signal, os, commands
 
 # local includes
 import config
@@ -180,6 +180,59 @@ def download_new_items():
 	if app_globals.STATS['failed'] > 0:
 		puts("%s items failed to parse" % app_globals.STATS['failed'])
 
+def ensure_singleton_process():
+	"""
+	ensure only one sync process is ever running.
+	if --aggressive is given as a flag, this process will kill the existing one
+	otherwise, it will exit when there is already a process running
+	"""
+	filename = "%s/sync.pid" % (app_globals.OPTIONS['output_path'],)
+	try:
+		pid = int(read_file(filename).strip())
+	except (IOError, ValueError):
+		write_pid_file(filename)
+		return
+	
+	if pid == os.getpid():
+		# it's me! it must have been stale, and happened to be reused. we don't want to kill it
+		return
+	
+	status, output = commands.getstatusoutput("ps ux | grep -v grep | grep 'python.*GRiS' | awk '{print $2}'") # classy!
+	if output.endswith("Operation not permitted"):
+		# this is hopefully just on the simulator
+		puts("Error fetching running pids: %s" % (output,))
+		puts(" - This is known to happen on the iphone simulator.")
+		puts(" - if you see it on a real device, please file a bug report")
+		status, output = (0, '') # lets just pretend it worked, and everything is fine
+	if status != 0:
+		puts("could not execute pid-checking command. got status of %s, output:\n%s" % (status, output))
+		sys.exit(2)
+	
+	running_pids = output.split()
+	try:
+		running_pids = [int(x) for x in running_pids if len(x) > 0]
+	except ValueError:
+		puts("one or more pids could not be converted to an integer: %r" % (running_pids,))
+		sys.exit(2)
+	
+	if pid in running_pids:
+		if not app_globals.OPTIONS['aggressive']:
+			puts("There is already a sync process running, pid=%s" % (pid,))
+			sys.exit(2)
+		else:
+			try:
+				debug("killing PID %s " %(pid,))
+				os.kill(pid, signal.SIGKILL)
+			except OSError, e:
+				msg = "couldn't kill pid %s - %s" % (pid,e)
+				puts(msg)
+				sys.exit(2)
+	# if we haven't exited by now, we're the new running pid!
+	write_pid_file(filename)
+
+def write_pid_file(filename):
+	write_file(filename, str(os.getpid()))
+
 def setup(opts=None):
 	"""Parse options. If none given, opts is set to sys.argv"""
 	if opts is None:
@@ -189,6 +242,7 @@ def setup(opts=None):
 	config.parse_options(opts)
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	log_start()
+	ensure_singleton_process()
 	config.check()
 	init_signals()
 

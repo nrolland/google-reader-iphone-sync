@@ -66,7 +66,7 @@ NSString * escape_single_quotes(NSString * str) {
 		[tag_string appendString: @" --verbose"];
 	#endif
 	
-	NSString * shellString = [NSString stringWithFormat:@"python '%@' --show-status --flush-output --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
+	NSString * shellString = [NSString stringWithFormat:@"python '%@' --show-status --aggressive --flush-output --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
 		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"src/main.py"]),
 		escape_single_quotes([settings docsPath]),
 		[settings itemsPerFeed],
