@@ -170,7 +170,7 @@ def download_new_items():
 		_feed_tag = "All Items" if feed_tag is None else feed_tag
 		new_task("Downloading tag \"%s\"" % (_feed_tag,))
 		puts("Fetching maximum %s items from feed %s" % (app_globals.OPTIONS['num_items'], _feed_tag))
-		feed = app_globals.READER.get_tag_feed(feed_tag, oldest_first = app_globals.OPTIONS['newest_first'])
+		feed = app_globals.READER.get_tag_feed(feed_tag, oldest_first = not app_globals.OPTIONS['newest_first'])
 		download_feed(feed, _feed_tag)
 		
 	line()
