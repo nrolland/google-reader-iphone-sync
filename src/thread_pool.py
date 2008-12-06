@@ -45,8 +45,7 @@ class ThreadPool:
 	@locking
 	def _thread_error(self, e):
 		self._count -= 1
-		debug("thread raised an exception and ended")
-		log_error(e)
+		log_error("thread raised an exception and ended", e)
 		
 	@locking
 	def _thread_finished(self, next_action):

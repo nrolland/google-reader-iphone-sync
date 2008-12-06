@@ -233,7 +233,6 @@ NSString * escape_single_quotes(NSString * str) {
 			}
 		}
 	} else {
-		dbg_s(line);
 		[last_output_line release];
 		last_output_line = [line retain];
 	}
