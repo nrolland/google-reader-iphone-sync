@@ -35,7 +35,7 @@ class ThreadPool:
 				ret = fn(*args, **kwargs)
 				self._thread_finished(on_success)
 			except StandardError, e:
-				self._thread_error()
+				self._thread_error(e)
 				if on_error is not None:
 					on_error(e)
 				else:
@@ -43,9 +43,10 @@ class ThreadPool:
 		thread.start_new_thread(function_with_callback, (function, args), **kwargs)
 	
 	@locking
-	def _thread_finished(self, next_action):
+	def _thread_error(self, e):
 		self._count -= 1
 		debug("thread raised an exception and ended")
+		log_error(e)
 		
 	@locking
 	def _thread_finished(self, next_action):
