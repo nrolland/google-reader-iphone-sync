@@ -1,3 +1,6 @@
+0.3.16:
+	- fixed bug where "newest items first" was in fact doing the opposite
+	
 0.3.15:
 	- Fixed issue 64 which prevented email / password from being saved properly
 	  between application runs
