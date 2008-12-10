@@ -130,22 +130,50 @@ def set_opt(key, val, disguise = False):
 
 def load(filename = None):
 	"""
-	Loads config.yml (or CONFIG['user_config_file']) and merges ith with the global OPTIONS hash
+	Loads config.yml (or CONFIG['user_config_file']) and merges it with the global OPTIONS hash
 	"""
 	if filename is None:
 		filename = app_globals.CONFIG['user_config_file']
 
 	info("Loading configuration from %s" % filename)
+	
+	
+	try:
+		extension = filename.split('.')[-1].lower()
+		if extension == 'yml':
+			config_hash = load_yaml(filename)
+		elif extension == 'plist':
+			config_hash = load_plist(filename)
+		else:
+			info("unknwon filetype: %s" % (extension,))
+			config_hash = {}
 
+		print config_hash
+		for key,val in config_hash.items():
+			set_opt(key, val)
+
+	except IOError, e:
+		info("Config file %s not loaded: %s" % (filename,e))
+
+def load_yaml(filename):
 	try:
 		f = file(filename,'r')
 		import yaml
 		conf = yaml.load(f)
-	
-		for key,val in conf.items():
-			set_opt(key, val)
-	except (ImportError, IOError), e:
-		info("Config file %s not loaded: %s" % (filename,e))
+		
+	except ImportError, e:
+		info("YAML library failed to load: %s" % (e, ))
+	finally:
+		f.close()
+
+def load_plist(filename):
+	try:
+		f = file(filename,'r')
+		import plistlib
+		conf = plistlib.load(f)
+	finally:
+		f.close()
+
 
 def check():
 	for k in required_keys:

@@ -19,9 +19,9 @@ def puts_array(s, level=lvl_quiet):
 	output_str = " ".join(map(ascii, s))
 	if logfile is not None and (level < lvl_debug):
 		print >> logfile, output_str
-	if app_globals.OPTIONS['verbosity'] < level: return
+	if app_globals.OPTIONS['verbosity', lvl_debug] < level: return
 	print output_str
-	if app_globals.OPTIONS['flush_output']:
+	if app_globals.OPTIONS['flush_output', lvl_debug]:
 		sys.stdout.flush()
 
 
@@ -47,7 +47,6 @@ def status(*s):
 	"""output a machine-readable status message"""
 	if app_globals.OPTIONS['show_status']:
 		puts("STAT:%s" % ":".join([utf8(x) for x in s]))
-
 
 # level is actually an output function, i.e. one of the above
 def line(level = info):
