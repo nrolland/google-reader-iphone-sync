@@ -7,6 +7,7 @@ load_config()
 """
 from getopt import getopt
 import sys
+import re
 
 # local imports
 from misc import *
@@ -59,7 +60,7 @@ Usage:
   -q, --quiet            decrease verbosity
   -c, --config=[file]    load config from file (must be in yaml format)
   -d, --no-download      don't download new items, just tell google reader about read items
-  -t, --test             run in test mode. Don't notify google reader of anything, and clobber "test_entries" for output
+  -t, --test             run in test mode (don't notify google reader of anything)
   -c, --cautious         cautious mode - prompt before performing destructive actions
   --only-tags            just get the current list of tags and exit
   --newest-first         get newest items first instead of oldest
@@ -92,7 +93,6 @@ Usage:
 			info("Downloading turned off..")
 		elif key == '-t' or key == '--test':
 			set_opt('test', True)
-			info("Test mode enabled - using %s" % app_globals.CONFIG['test_output_dir'])
 		elif key == '-h' or key == '--help':
 			print parse_options.__doc__
 			sys.exit(1)
@@ -124,19 +124,44 @@ Usage:
 		set_opt('num_items', int(argv[0]))
 		info("Number of items set to %s" % app_globals.OPTIONS['num_items'])
 
+def pythonise_option_key(key):
+	"""
+	Convert `CamelCase` and `option-style` keys into `python_style` keys
+		>>> pythonise_option_key('Capital')
+		'capital'
+		>>> pythonise_option_key('CamelCase')
+		'camel_case'
+		>>> pythonise_option_key('Camel_Case')
+		'camel_case'
+		>>> pythonise_option_key('option-Style')
+		'option_style'
+		>>> pythonise_option_key('option-style')
+		'option_style'
+	"""
+	key = re.sub('([a-z0-9])([A-Z])', '\\1_\\2', key)
+	key = key.replace('-', '_')
+	key = key.replace('__', '_')
+	key = key.lower()
+	return key
+
 def set_opt(key, val, disguise = False):
-	app_globals.OPTIONS[key] = val
+	key = pythonise_option_key(key)
+	if key.startswith("pass"):
+		disguise = True
 	debug("set option %s = %s" % (key, val if disguise is False else "*****"))
+	if key not in app_globals.OPTIONS:
+		debug("Ignoring key: %s" % (key,))
+		return
+	app_globals.OPTIONS[key] = val
 
 def load(filename = None):
 	"""
-	Loads config.yml (or CONFIG['user_config_file']) and merges it with the global OPTIONS hash
+	Loads config.yml (or OPTIONS['user_config_file']) and merges it with the global OPTIONS hash
 	"""
 	if filename is None:
-		filename = app_globals.CONFIG['user_config_file']
+		filename = os.path.join(app_globals.OPTIONS['output_path'], app_globals.OPTIONS['user_config_file'])
 
 	info("Loading configuration from %s" % filename)
-	
 	
 	try:
 		extension = filename.split('.')[-1].lower()
@@ -145,38 +170,35 @@ def load(filename = None):
 		elif extension == 'plist':
 			config_hash = load_plist(filename)
 		else:
-			info("unknwon filetype: %s" % (extension,))
+			info("unknown filetype: %s" % (extension,))
 			config_hash = {}
 
 		print config_hash
-		for key,val in config_hash.items():
-			set_opt(key, val)
+		if config_hash is not None:
+			for key,val in config_hash.items():
+				set_opt(key, val)
 
 	except IOError, e:
 		info("Config file %s not loaded: %s" % (filename,e))
 
 def load_yaml(filename):
 	try:
-		f = file(filename,'r')
 		import yaml
-		conf = yaml.load(f)
-		
+		return do_with_file(filename, 'r', yaml.load)
 	except ImportError, e:
 		info("YAML library failed to load: %s" % (e, ))
-	finally:
-		f.close()
 
 def load_plist(filename):
-	try:
-		f = file(filename,'r')
-		import plistlib
-		conf = plistlib.load(f)
-	finally:
-		f.close()
+	import plistlib
+	return do_with_file(filename, 'r', plistlib.readPlist)
 
 
 def check():
 	for k in required_keys:
-		if not k in app_globals.OPTIONS:
+		if not k in app_globals.OPTIONS or app_globals.OPTIONS[k] is app_globals.PLACEHOLDER:
 			print repr(app_globals.OPTIONS)
 			raise Exception("Required setting \"%s\" is not set." % (k,))
+
+if __name__ == '__main__':
+	import doctest
+	doctest.testmod()

@@ -3,14 +3,16 @@
 
 import output
 
+PLACEHOLDER = object()
+
 CONFIG = {
 	'pickle_file': '.entries.pickle',
-	'user_config_file': 'config.yml',
 	'test_output_dir': 'test_entries',
 	'resources_path': '_resources',
 }
 
 OPTIONS = {
+	'user_config_file': 'config.plist',
 	'output_path':   '/tmp/GRiS_test',
 	'num_items':     300,
 	'no_download':   False,
@@ -26,6 +28,8 @@ OPTIONS = {
 	'show_status':   False,
 	'aggressive':    False,
 	'tag_list':      [],
+	'user':          PLACEHOLDER,
+	'password':      PLACEHOLDER,
 }
 
 STATS = {

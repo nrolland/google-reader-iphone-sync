@@ -19,11 +19,10 @@ def puts_array(s, level=lvl_quiet):
 	output_str = " ".join(map(ascii, s))
 	if logfile is not None and (level < lvl_debug):
 		print >> logfile, output_str
-	if app_globals.OPTIONS['verbosity', lvl_debug] < level: return
+	if app_globals.OPTIONS.get('verbosity', lvl_debug) < level: return
 	print output_str
-	if app_globals.OPTIONS['flush_output', lvl_debug]:
+	if app_globals.OPTIONS.get('flush_output', lvl_debug):
 		sys.stdout.flush()
-
 
 def puts(*s):
 	puts_array(s, level=lvl_quiet)
