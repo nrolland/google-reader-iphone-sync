@@ -38,16 +38,20 @@ class Reader:
 		return self._tag_list
 	tag_list = property(get_tag_list)
 		
-	def validate_tag_list(self, user_tags = None):
+	def validate_tag_list(self, user_tags = None, strict=True):
 		"""
 		Raise an error if any tag (in config) does not exist in your google account
 		"""
 		if user_tags is None:
 			user_tags = app_globals.OPTIONS['tag_list']
+		valid_tags = []
 		for utag in user_tags:
-			if utag not in self.tag_list:
+			if utag in self.tag_list:
+				valid_tags.append(utag)
+			elif strict:
 				print "Valid tags are: %s" %(self.tag_list,)
 				raise ValueError("No such tag: %r" % (utag,))
+		return valid_tags
 
 	def save_tag_list(self):
 		write_file_lines(os.path.join(app_globals.OPTIONS['output_path'], 'tag_list'), self.tag_list)

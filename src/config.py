@@ -18,7 +18,7 @@ import app_globals
 required_keys = ['user','password']
 
 bootstrap_options = ('qvc:s', ['verbose','quiet','config=','show-status'])
-main_options = ("n:Cdth", [
+main_options = ("n:Co:dth", [
 		'num-items=',
 		'cautious',
 		'aggressive',
@@ -62,12 +62,12 @@ Usage:
   -d, --no-download      don't download new items, just tell google reader about read items
   -t, --test             run in test mode (don't notify google reader of anything)
   -c, --cautious         cautious mode - prompt before performing destructive actions
+  -o, --output-path=[p]  set the base output path (where items and resources are saved)
   --only-tags            just get the current list of tags and exit
   --newest-first         get newest items first instead of oldest
   --user=[username]      set the username
   --password=[pass]      set password
   --tag=[tag_name]       add a tag to the list of tags to be downloaded. Can be used multiple times
-  --output-path=[path]   set the base output path (where items and resources are saved)
   --flush-output         flush stdout after printing each line
   --aggressive           KILL any other running sync process
                          (the default is to fail to start if another sync process is running)
@@ -108,8 +108,8 @@ Usage:
 			set_opt('user', val);
 		elif key == '--password':
 			set_opt('password',val, disguise = True);
-		elif key == '--output-path':
-			set_opt('output_path',val)
+		elif key == '--output-path' or key == '-o':
+			set_opt('output_path', val)
 		elif key == '--tag':
 			tag_list.append(val)
 			set_opt('tag_list', tag_list)
@@ -159,7 +159,9 @@ def load(filename = None):
 	Loads config.yml (or OPTIONS['user_config_file']) and merges it with the global OPTIONS hash
 	"""
 	if filename is None:
-		filename = os.path.join(app_globals.OPTIONS['output_path'], app_globals.OPTIONS['user_config_file'])
+		filename = app_globals.OPTIONS['user_config_file']
+		if not (os.path.isfile(filename) or os.path.isabs(filename)):
+			filename = os.path.join(app_globals.OPTIONS['output_path'], filename)
 
 	info("Loading configuration from %s" % filename)
 	

@@ -36,43 +36,33 @@ NSString * escape_single_quotes(NSString * str) {
 	}
 	
 	id settings = [[[UIApplication sharedApplication] delegate] settings];
-	NSMutableString * tag_string = [NSMutableString string];
-	for(NSString * tag in [settings activeTagList]) {
-		dbg(@"tag = %@", tag);
-		tag = [tag stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-		if([tag length] > 0) {
-			[tag_string appendFormat: @" --tag='%@'", escape_single_quotes(tag)];
-		}
-	}
-	
+	NSMutableString * extra_opts = [NSMutableString string];
 	switch(syncType) {
 		case FeedList:
-			[tag_string appendString: @" --only-tags"];
+			[extra_opts appendString: @" --only-tags"];
 			break;
 		case Status:
-			[tag_string appendString: @" --no-download"];
+			[extra_opts appendString: @" --no-download"];
 			break;
 	}
 	
 	if( [[self globalAppSettings] sortNewestItemsFirst] ) {
-		[tag_string appendString: @" --newest-first"];
+		[extra_opts appendString: @" --newest-first"];
 	} else {
 		dbg(@"NOT sorting newest first");
 	}
 	
 	#ifndef SIMULATOR
-		[tag_string appendString: @" --quiet"];
+		[extra_opts appendString: @" --quiet"];
 	#else
-		[tag_string appendString: @" --verbose"];
+		[extra_opts appendString: @" --verbose"];
 	#endif
 	
-	NSString * shellString = [NSString stringWithFormat:@"python '%@' --show-status --aggressive --flush-output --output-path='%@' --num-items='%d' --user='%@' --password='%@' %@ 2>&1",
+	NSString * shellString = [NSString stringWithFormat:@"python '%@' --show-status --aggressive --flush-output --config='%@' --output-path='%@' %@ 2>&1",
 		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"src/main.py"]),
+		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"config.plist"]),
 		escape_single_quotes([settings docsPath]),
-		[settings itemsPerFeed],
-		escape_single_quotes([settings email]),
-		escape_single_quotes([settings password]),
-		tag_string];
+		extra_opts];
 	
 	NSString * proxy = [self proxySettings];
 	if(proxy) {

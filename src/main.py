@@ -62,7 +62,7 @@ def execute():
 		info("Got all tags.")
 		return
 
-	app_globals.READER.validate_tag_list()
+	app_globals.OPTIONS['tag_list'] = app_globals.READER.validate_tag_list(app_globals.OPTIONS['tag_list'], False)
 
 	new_task("Pushing status to google")
 

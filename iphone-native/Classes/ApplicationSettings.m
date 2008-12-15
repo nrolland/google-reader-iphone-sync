@@ -199,7 +199,7 @@
 - (BOOL) openLinksInSafari { return [self boolFromKey:@"openInSafari"]; }
 - (BOOL) showReadItems     { return [self boolFromKey:@"showReadItems"]; }
 - (BOOL) rotationLock      { return rotationLock; }
-- (BOOL) sortNewestItemsFirst{ return [self boolFromKey:@"sortNewestItemsFirst"]; }
+- (BOOL) sortNewestItemsFirst{ return [self boolFromKey:@"newestFirst"]; }
 
 - (NSString *) email       { return [plistData valueForKey:@"user"]; }
 - (NSString *) password    { return [plistData valueForKey:@"password"]; }
@@ -235,7 +235,7 @@
 - (void) setReadItems:(BOOL) newVal         { [self setBool:newVal forKey:@"showReadItems"]; }
 - (void) setRotationLock:(BOOL) newVal      { rotationLock = newVal; } // this is intentionally not persisted
 - (void) setSortNewestItemsFirst:(BOOL) newVal {
-	[self setBool:newVal forKey:@"sortNewestItemsFirst"];
+	[self setBool:newVal forKey:@"newestFirst"];
 	[[self globalAppDelegate] refreshItemLists];
 }
 
