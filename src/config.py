@@ -175,7 +175,6 @@ def load(filename = None):
 			info("unknown filetype: %s" % (extension,))
 			config_hash = {}
 
-		print config_hash
 		if config_hash is not None:
 			for key,val in config_hash.items():
 				set_opt(key, val)
