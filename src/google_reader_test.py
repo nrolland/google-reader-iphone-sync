@@ -1,3 +1,4 @@
+import os
 import main
 
 # test helpers
@@ -13,7 +14,8 @@ from reader import Reader, CONST
 class GoogleReaderLiveTest(unittest.TestCase):
 
 	def setUp(self):
-		config.load('../config.yml')
+		yaml_file = os.path.join(os.path.dirname(__file__), '..', 'config.yml')
+		config.load(yaml_file)
 		config.bootstrap(['-vv'])
 		# make sure we're not mocking out google reader
 		app_globals.OPTIONS['test'] = False
