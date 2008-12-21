@@ -31,6 +31,7 @@ main_options = ("n:Co:dth", [
 		'output-path=',
 		'tag-list-only',
 		'newest-first',
+		'report-pid',
 		'flush-output',
 		])
 all_options = (bootstrap_options[0] + main_options[0],
@@ -72,6 +73,7 @@ Usage:
   --password=[pass]      set password
   --tag=[tag_name]       add a tag to the list of tags to be downloaded. Can be used multiple times
   --flush-output         flush stdout after printing each line
+  --report-pid           report any existing sync PID
   --aggressive           KILL any other running sync process
                          (the default is to fail to start if another sync process is running)
 """
@@ -112,6 +114,8 @@ Usage:
 			set_opt('password',val, disguise = True);
 		elif key == '--output-path' or key == '-o':
 			set_opt('output_path', val)
+		elif key == '--report-pid':
+			set_opt('report_pid', val)
 		elif key == '--tag':
 			tag_list.append(val)
 			set_opt('tag_list', tag_list)

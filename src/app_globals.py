@@ -24,6 +24,7 @@ OPTIONS = {
 	'flush_output':  False,
 	'verbosity':     output.lvl_default,
 	'tag_list_only': False,
+	'report_pid':    False,
 	'newest_first':  False,
 	'show_status':   False,
 	'aggressive':    False,

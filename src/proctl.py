@@ -11,6 +11,18 @@ def get_pid_filename():
 def write_pid_file(filename):
 	write_file(filename, str(os.getpid()))
 
+def report_pid():
+	none = 'None'
+	try:
+		pid = get_running_pid()
+		if pid is None:
+			print none
+		else:
+			print pid
+	except Exception, e:
+		log_error(e, "Error getting running pid")
+		print none
+
 def get_running_pid():
 	"""
 	@throws: IOError, ValueError, RuntimeError

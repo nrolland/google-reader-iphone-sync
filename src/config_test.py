@@ -9,16 +9,16 @@ class ConfigTest(TestCase):
 	def setUp(self):
 		self.yaml_file = '/tmp/gris_config.yml'
 		self.plist_file = '/tmp/gris_config.plist'
-		self.__options = app_globals.OPTIONS
+		self.__options = app_globals.OPTIONS.copy()
 	
 	def rm(self, f):
-		app_globals.OPTIONS = self.__options
 		try: os.remove(f)
 		except OSError: pass
 		
 	def tearDown(self):
 		self.rm(self.yaml_file)
 		self.rm(self.plist_file)
+		app_globals.OPTIONS = self.__options
 		
 	def test_should_not_fail_setting_any_options(self):
 		for opt in config.all_options[1]:

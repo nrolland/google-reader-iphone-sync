@@ -199,6 +199,9 @@ def main():
 	Main program entry point - loads config, parses otions and kicks off the sync process
 	"""
 	setup()
+	if app_globals.OPTIONS['report_pid']:
+		proctl.report_pid()
+		exit(0)
 	execute()
 	puts("Sync complete. cleaning up")
 	cleanup()

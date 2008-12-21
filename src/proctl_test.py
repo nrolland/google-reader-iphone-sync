@@ -12,7 +12,11 @@ import proctl
 class GetPidTest(unittest.TestCase):
 	def setUp(self):
 		self.filename = "%s/sync.pid" % (app_globals.OPTIONS['output_path'],)
-		
+		self._backup_getpid = proctl.get_running_pid
+	
+	def tearDown(self):
+		proctl.get_running_pid = self._backup_getpid
+
 	def _mock_command(self, response):
 		commands.getstatusoutput = Mock()
 		commands.getstatusoutput.return_value = response
@@ -20,7 +24,19 @@ class GetPidTest(unittest.TestCase):
 	def mock_pid_file(self, file_pid = '1234', command_response = (0,'1234')):
 		write_file(self.filename, file_pid)
 		self._mock_command(command_response)
-	
+
+	def mock_pid_process(self, aggressive=False, pid=1234, file_pid = None, command_response = (0,'')):
+		app_globals.OPTIONS['aggressive'] = aggressive
+		proctl.get_running_pid = Mock()
+		proctl.get_running_pid.return_value = pid
+
+		if file_pid is None:
+			file_pid = str(pid)
+		
+		write_file(self.filename, file_pid)
+		self._mock_command(command_response)
+		os.kill = Mock()
+
 	def fail(self):
 		raise RuntimeError
 		
@@ -60,26 +76,33 @@ class GetPidTest(unittest.TestCase):
 		self.mock_pid_file(file_pid=str(os.getpid()))
 		self.assertEqual(None, proctl.get_running_pid())
 
-class SingularProcessTest(GetPidTest):
+class ReportProcessTest(GetPidTest):
 	def setUp(self):
-		super(SingularProcessTest, self).setUp()
-		self._backup_getpid = proctl.get_running_pid
+		super(self.__class__, self).setUp()
+		self._stdout = sys.stdout
+		sys.stdout = Mock()
 	
 	def tearDown(self):
-		proctl.get_running_pid = self._backup_getpid
-	
-	def mock_pid_process(self, aggressive=False, pid=1234, file_pid = None, command_response = (0,'')):
-		app_globals.OPTIONS['aggressive'] = aggressive
-		proctl.get_running_pid = Mock()
-		proctl.get_running_pid.return_value = pid
+		sys.stdout = self._stdout
+		super(self.__class__, self).tearDown()
 
-		if file_pid is None:
-			file_pid = str(pid)
+	def test_should_report_pid_if_there_is_a_running_process(self):
+		self.mock_pid_process(pid=1234)
+		proctl.report_pid()
+		self.assertEqual(sys.stdout.write.call_args_list, [(('1234',), {}), (('\n',), {})])
 		
-		write_file(self.filename, file_pid)
-		self._mock_command(command_response)
-		os.kill = Mock()
+	def test_should_print__none__if_there_is_no_pid_running(self):
+		self.mock_pid_process(pid=None)
+		proctl.report_pid()
+		self.assertEqual(sys.stdout.write.call_args_list, [(('None',), {}), (('\n',), {})])
+		
+	def test_should_print__none__if_there_is_an_error(self):
+		proctl.get_running_pid = self.fail
+		proctl.report_pid()
+		self.assertEqual(sys.stdout.write.call_args_list, [(('None',), {}), (('\n',), {})])
 
+class SingularProcessTest(GetPidTest):
+	
 	# aggressive ensure_singleton_process
 	def test_aggressive_singular_process_should_continue_when_kill_works(self):
 		self.mock_pid_process(aggressive = True, pid=1234, file_pid = '1234')
