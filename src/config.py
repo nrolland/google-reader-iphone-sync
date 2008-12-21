@@ -29,7 +29,7 @@ main_options = ("n:Co:dth", [
 		'password=',
 		'tag=',
 		'output-path=',
-		'only-tags',
+		'tag-list-only',
 		'newest-first',
 		'flush-output',
 		])
@@ -52,6 +52,9 @@ def bootstrap(argv = None):
 		elif key == '--show-status' or key == '-s':
 			set_opt('show_status', True)
 
+def defaults(*args):
+	return tuple(["(default: %s)" % app_globals.OPTIONS[pythonise_option_key(key)] for key in args])
+
 def parse_options(argv = None):
 	"""
 Usage:
@@ -63,7 +66,7 @@ Usage:
   -t, --test             run in test mode (don't notify google reader of anything)
   -c, --cautious         cautious mode - prompt before performing destructive actions
   -o, --output-path=[p]  set the base output path (where items and resources are saved)
-  --only-tags            just get the current list of tags and exit
+  --tag-list-only        just get the current list of tags and exit
   --newest-first         get newest items first instead of oldest
   --user=[username]      set the username
   --password=[pass]      set password
@@ -83,7 +86,6 @@ Usage:
 		
 		elif key == '-C' or key == '--cautious':
 			set_opt('cautious', True)
-			set_opt('verbose', True)
 			info("Cautious mode enabled...")
 		elif key == '-n' or key == '--num-items':
 			set_opt('num_items', int(val))
@@ -98,7 +100,7 @@ Usage:
 			sys.exit(1)
 		elif key == '--flush-output':
 			set_opt('flush_output', True)
-		elif key == '--only-tags':
+		elif key == '--tag-list-only':
 			set_opt('tag_list_only', True)
 		elif key == '--aggressive':
 			set_opt('aggressive', True)
@@ -117,7 +119,7 @@ Usage:
 			set_opt('newest_first', True)
 		else:
 			print "unknown option: %s" % (key,)
-			print parse_options.__doc__
+			print parse_options.__doc__ 
 			sys.exit(1)
 
 	if len(argv) > 0:

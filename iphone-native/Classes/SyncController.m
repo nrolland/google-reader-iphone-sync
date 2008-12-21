@@ -39,7 +39,7 @@ NSString * escape_single_quotes(NSString * str) {
 	NSMutableString * extra_opts = [NSMutableString string];
 	switch(syncType) {
 		case FeedList:
-			[extra_opts appendString: @" --only-tags"];
+			[extra_opts appendString: @" --tag-list-only"];
 			break;
 		case Status:
 			[extra_opts appendString: @" --no-download"];

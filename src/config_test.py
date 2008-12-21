@@ -20,6 +20,23 @@ class ConfigTest(TestCase):
 		self.rm(self.yaml_file)
 		self.rm(self.plist_file)
 		
+	def test_should_not_fail_setting_any_options(self):
+		for opt in config.all_options[1]:
+			opt = '--' + opt
+			args = [opt]
+			if opt.endswith('='):
+				args = [opt[:-1], '123']
+
+			if opt == '--help':
+				try: config.bootstrap([opt])
+				except SystemExit: pass
+				continue
+				
+			print "bootstrapping with %s" % args
+			config.bootstrap(args)
+			print "configging with %s" % args
+			config.parse_options(args)
+		
 	def test_should_load_plist(self):
 		write_file(self.plist_file, """<?xml version="1.0" encoding="UTF-8"?>
 			<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
