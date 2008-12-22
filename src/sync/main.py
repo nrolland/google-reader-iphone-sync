@@ -93,12 +93,10 @@ def retry_failed_items():
 		item.save()
 
 def download_feed(feed, feed_tag):
-	item_number = 0
-	status("SUBTASK_TOTAL", len(feed))
+	new_subtask(len(feed) * 2)
 	item_thread_pool = ThreadPool()
 	for entry in feed.get_entries():
-		item_number += 1
-		status("SUBTASK_PROGRESS", item_number)
+		increment_subtask()
 	
 		app_globals.STATS['items'] += 1
 
@@ -140,6 +138,7 @@ def process_item(item, item_thread_pool = None):
 	if already_seen:
 		# we've already downloaded it
 		app_globals.DATABASE.update_feed_for_item(item)
+		increment_subtask()
 	else:
 		try:
 			puts("NEW: " + item.title)
@@ -148,8 +147,12 @@ def process_item(item, item_thread_pool = None):
 			if item_thread_pool is None:
 				item.process()
 				item.save()
+				increment_subtask
 			else:
-				item_thread_pool.spawn(item.process, on_success = item.save, on_error = error_reporter_for_item(item))
+				def success_func():
+					increment_subtask()
+					item.save
+				item_thread_pool.spawn(item.process, on_success = success_func, on_error = error_reporter_for_item(item))
 
 		except StandardError,e:
 			error_reporter_for_item(item)(e)

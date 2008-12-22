@@ -26,9 +26,8 @@ def report_pid():
 
 def get_pids_matching(pattern):
 	status, output = commands.getstatusoutput("ps ux | grep -v grep | grep '%s' | awk '{print $2}'" % pattern) # classy!
+	running_pids = []
 	if output.endswith("Operation not permitted"):
-		(_,uname) = puts(commands.getstatusoutput("uname -a"))
-		
 		if(os.uname()[-1] == 'i386'):
 			status, output = (0, '') # lets just pretend it worked, and everything is fine
 		else:

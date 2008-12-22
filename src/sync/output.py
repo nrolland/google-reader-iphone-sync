@@ -51,6 +51,19 @@ def status(*s):
 	"""output a machine-readable status message"""
 	if app_globals.OPTIONS['show_status']:
 		puts("STAT:%s" % ":".join([utf8(x) for x in s]))
+	
+
+subtask_progress = 0
+def new_subtask(length):
+	global subtask_progress
+	subtask_progress = 0
+	status("SUBTASK_TOTAL", length)
+	status("SUBTASK_PROGRESS", 0)
+	
+def increment_subtask():
+	global subtask_progress
+	subtask_progress += 1
+	status("SUBTASK_PROGRESS", subtask_progress)
 
 # level is actually an output function, i.e. one of the above
 def line(level = info):
