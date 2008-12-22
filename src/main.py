@@ -209,4 +209,10 @@ def main():
 	return 0
 
 if __name__ == '__main__':
-	sys.exit(main())
+	exitstatus = 1
+	try:
+		exitstatus = main()
+	except StandardError, e:
+		log_error('unhandled error in main()', e)
+		raise
+	sys.exit(exitstatus)

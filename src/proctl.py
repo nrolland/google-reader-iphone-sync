@@ -20,7 +20,7 @@ def report_pid():
 		else:
 			print pid
 	except Exception, e:
-		log_error(e, "Error getting running pid")
+		log_error("Error getting running pid", e)
 		print none
 
 def get_running_pid():
@@ -72,7 +72,7 @@ def ensure_singleton_process():
 	try:
 		pid = get_running_pid()
 	except RuntimeError, e:
-		log_error(e, "Error fetching current PID")
+		log_error("Error fetching current PID", e)
 		if not aggressive:
 			sys.exit(2)
 	
