@@ -29,7 +29,7 @@
 		freopen([logPath fileSystemRepresentation], "w", stderr);
 	#endif
 	dbg(@"Loaded...");
-
+	[syncController ensureSingleton];
 	[window setBackgroundColor: [UIColor groupTableViewBackgroundColor]];
 	
 	loading = YES;

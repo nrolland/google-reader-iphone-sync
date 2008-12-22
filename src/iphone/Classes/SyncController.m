@@ -21,7 +21,7 @@
 	#define DEBUG
 #endif
 
-typedef enum { Default, FeedList, Status } SyncType;
+typedef enum { Default, FeedList, Status, Singleton } SyncType;
 
 @implementation SyncController
 
@@ -29,12 +29,7 @@ NSString * escape_single_quotes(NSString * str) {
 	return [str stringByReplacingOccurrencesOfString:@"'" withString:@"'\"'\"'"];
 }
 
-- (void) syncWithType:(SyncType) syncType {
-	if(syncThread && ![syncThread isFinished]) {
-		dbg(@"thread is still running!");
-		return;
-	}
-	
+- (NSString *) syncCommandString:(SyncType) syncType {
 	id settings = [[[UIApplication sharedApplication] delegate] settings];
 	NSMutableString * extra_opts = [NSMutableString string];
 	switch(syncType) {
@@ -44,6 +39,10 @@ NSString * escape_single_quotes(NSString * str) {
 		case Status:
 			[extra_opts appendString: @" --no-download"];
 			break;
+		case Singleton:
+			[extra_opts appendString: @" --report-pid --quiet"];
+			break;
+		
 	}
 	
 	if( [[self globalAppSettings] sortNewestItemsFirst] ) {
@@ -70,6 +69,16 @@ NSString * escape_single_quotes(NSString * str) {
 		shellString = [NSString stringWithFormat:@"export http_proxy='%@';export https_proxy='%@';%@", escape_single_quotes(proxy), escape_single_quotes(proxy), shellString];
 	}
 	dbg_s(@"shell command: %@", shellString);
+	return shellString;
+}
+
+- (void) syncWithType:(SyncType) syncType {
+	if(syncThread && ![syncThread isFinished]) {
+		dbg(@"thread is still running!");
+		return;
+	}
+
+	NSString * shellString = [self syncCommandString:syncType];
 	syncThread = [[BackgroundShell alloc] initWithShellCommand: shellString];
 	[syncThread setDelegate: self];
 
@@ -110,6 +119,63 @@ NSString * escape_single_quotes(NSString * str) {
 
 - (IBAction) syncStatusOnly: (id) sender {
 	[self syncWithType: Status];
+}
+
+- (void) ensureSingletonWorkerAction:(id)obj {
+	// setup GC pool
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	
+	NSString * cmd = [self syncCommandString:Singleton];
+	dbg(@"Running command: %@", cmd);
+	FILE * output = popen([cmd cStringUsingEncoding: NSUTF8StringEncoding], "r");
+	char cline[500];
+	NSString * line;
+	int pid = 0;
+	while(fgets(cline, sizeof(cline) / sizeof(char), output) != NULL) {
+		line = [NSString stringWithCString: cline encoding: NSUTF8StringEncoding];
+		dbg(@"pid got line: %@", line);
+		line = [line stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+		if([line length] > 0) {
+			if([line isEqualToString: @"None"]) {
+				pid = 0;
+				break;
+			}
+			pid = [line intValue];
+		}
+	}
+	pclose(output);
+	[self performSelector: @selector(dealWithRunningSync:)
+		onThread:[NSThread mainThread]
+		withObject:[NSNumber numberWithInt: pid]
+		waitUntilDone: YES];
+	[pool release];
+}
+
+- (void) dealWithRunningSync:(NSNumber *) pid_ {
+	int pid = [pid_ intValue];
+	dbg(@"pid = %d", pid);
+	if(pid > 0) {
+		sync_pid = pid;
+		[[[[UIAlertView alloc]
+			initWithTitle:@"GRiS Sync" message: @"There is already a sync running. It is either stuck, or a scheduled sync.\nStop it?"
+			delegate:self cancelButtonTitle:@"Cancel (quit)" otherButtonTitles:@"Stop sync", nil]
+				autorelease] show];
+	}
+}
+
+- (void) ensureSingleton {
+	dbg(@"spawning singleton check thread");
+	[[[[NSThread alloc] initWithTarget:self selector: @selector(ensureSingletonWorkerAction:) object:nil] autorelease] start];
+}
+
+- (void) alertView:(id)view clickedButtonAtIndex: (int) index {
+	dbg(@"alert view clicked item at index: %d", index);
+	if(index == 1) { // kill it
+		kill(sync_pid, SIGKILL);
+	} else {
+		dbg(@"exiting");
+		[[UIApplication sharedApplication] terminate];
+	}
 }
 
 - (IBAction) cancelSync: (id) sender {

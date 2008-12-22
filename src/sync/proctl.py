@@ -1,6 +1,7 @@
 # process control
 import commands
 import signal
+import os
 
 import app_globals
 from misc import *
@@ -23,6 +24,27 @@ def report_pid():
 		log_error("Error getting running pid", e)
 		print none
 
+def get_pids_matching(pattern):
+	status, output = commands.getstatusoutput("ps ux | grep -v grep | grep '%s' | awk '{print $2}'" % pattern) # classy!
+	if output.endswith("Operation not permitted"):
+		(_,uname) = puts(commands.getstatusoutput("uname -a"))
+		
+		if(os.uname()[-1] == 'i386'):
+			status, output = (0, '') # lets just pretend it worked, and everything is fine
+		else:
+			puts("Error fetching running pids: %s" % (output,))
+			puts(" - This is known to happen on the iphone simulator.")
+			puts(" - if you see it on a real device, please file a bug report")
+	if status != 0:
+		raise RuntimeError("could not execute pid-checking command. got status of %s, output:\n%s" % (status, output))
+	
+	running_pids = output.split()
+	try:
+		running_pids = [int(x) for x in running_pids if len(x) > 0]
+	except ValueError, e:
+		raise RuntimeError("one or more pids could not be converted to an integer: %r" % (running_pids,))
+	return running_pids
+
 def get_running_pid():
 	"""
 	@throws: IOError, ValueError, RuntimeError
@@ -38,24 +60,7 @@ def get_running_pid():
 		# it's me! it must have been stale, and happened to be reused. we don't want to kill it
 		return None
 	
-	status, output = commands.getstatusoutput("ps ux | grep -v grep | grep 'python.*GRiS' | awk '{print $2}'") # classy!
-	if output.endswith("Operation not permitted"):
-		puts(commands.getstatusoutput("uname -a"))
-		# this is hopefully just on the simulator
-		puts("Error fetching running pids: %s" % (output,))
-		puts(" - This is known to happen on the iphone simulator.")
-		puts(" - if you see it on a real device, please file a bug report")
-		status, output = (0, '') # lets just pretend it worked, and everything is fine
-		#TODO: clean
-		raise RuntimeError("Error fetching running pids: %s" % (output,))
-	if status != 0:
-		raise RuntimeError("could not execute pid-checking command. got status of %s, output:\n%s" % (status, output))
-	
-	running_pids = output.split()
-	try:
-		running_pids = [int(x) for x in running_pids if len(x) > 0]
-	except ValueError, e:
-		raise RuntimeError("one or more pids could not be converted to an integer: %r" % (running_pids,))
+	running_pids = get_pids_matching('python.*GRiS')
 	
 	if pid in running_pids:
 		return pid
@@ -75,6 +80,12 @@ def ensure_singleton_process():
 		log_error("Error fetching current PID", e)
 		if not aggressive:
 			sys.exit(2)
+	
+	if not aggressive:
+		# check for gris.app as well
+		native_pids = get_pids_matching('Applications/GRiS\.app/GRiS')
+		if len(native_pids) > 0:
+			pid = native_pids[0]
 	
 	if pid is not None:
 		if not aggressive:

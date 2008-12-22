@@ -13,6 +13,7 @@
 	
 	BackgroundShell * syncThread;
 	BOOL syncRunning;
+	int sync_pid;
 	IBOutlet id window;
 	
 	IBOutlet id itemsController;
