@@ -59,7 +59,7 @@ NSString * escape_single_quotes(NSString * str) {
 	#endif
 	
 	NSString * shellString = [NSString stringWithFormat:@"python '%@' --show-status --aggressive --flush-output --config='%@' --output-path='%@' %@ 2>&1",
-		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"src/main.py"]),
+		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"sync/main.py"]),
 		escape_single_quotes([[settings docsPath] stringByAppendingPathComponent:@"config.plist"]),
 		escape_single_quotes([settings docsPath]),
 		extra_opts];

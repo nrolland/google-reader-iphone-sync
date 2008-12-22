@@ -5,9 +5,9 @@ config.plist
 *.app
 *.sqlite
 GRiS.pkg-build
-iphone-native/GRiS.xcodeproj/*.mode1v3
-iphone-native/GRiS.xcodeproj/*.pbxuser
-iphone-native/GRiS.xcodeproj/*.tm_build_errors
-iphone-native/GRiS.tmproj
-iphone-native/build/
-iphone-native/Icon.png
+src/iphone/GRiS.xcodeproj/*.mode1v3
+src/iphone/GRiS.xcodeproj/*.pbxuser
+src/iphone/GRiS.xcodeproj/*.tm_build_errors
+src/iphone/GRiS.tmproj
+src/iphone/build/
+src/iphone/Icon.png

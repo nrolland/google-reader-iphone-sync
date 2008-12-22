@@ -14,7 +14,7 @@ from reader import Reader, CONST
 class GoogleReaderLiveTest(unittest.TestCase):
 
 	def setUp(self):
-		yaml_file = os.path.join(os.path.dirname(__file__), '..', 'config.yml')
+		yaml_file = os.path.join(os.path.dirname(__file__), '..', '..', 'config.yml')
 		config.load(yaml_file)
 		config.bootstrap(['-vv'])
 		# make sure we're not mocking out google reader

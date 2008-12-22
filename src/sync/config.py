@@ -8,6 +8,7 @@ load_config()
 from getopt import getopt
 import sys
 import re
+import lib
 
 # local imports
 from misc import *

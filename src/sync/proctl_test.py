@@ -4,6 +4,7 @@ import signal
 
 from lib.mock import Mock
 import app_globals
+import output
 from misc import *
 import test_helper
 
@@ -79,6 +80,8 @@ class GetPidTest(unittest.TestCase):
 class ReportProcessTest(GetPidTest):
 	def setUp(self):
 		super(self.__class__, self).setUp()
+		print dir(output)
+		app_globals.OPTIONS['verbosity'] = output.lvl_quiet
 		self._stdout = sys.stdout
 		sys.stdout = Mock()
 	

@@ -48,10 +48,10 @@ task :nose do
 	if ENV['file']
 		where = ENV['file']
 	else
-		puts " (add file=src/<module>.py to test a single module)"
-		where = '--where=src'
+		puts " (add file=src/sync/<module>.py to test a single module)"
+		where = '--where=src/sync'
 	end
-	packages = Dir['src/*.py'].collect {|p| p.gsub(/\.py$/i, '').gsub('/','.') }
+	packages = Dir['src/sync/*.py'].collect {|p| p.gsub(/\.py$/i, '').gsub('/','.') }
 	packages.reject! {|p| p =~ /__init__/ }
 	
 	puts "nosetests -c nose.cfg #{where} --cover-package='#{packages.join(',')}' #{args}"
@@ -74,8 +74,8 @@ desc "build the native iPhone app"
 task :build do
 	icon_suffix = 'test'
 	icon_suffix = 'release' if $deploy_branches.include? $branch
-	system("cp iphone-native/Icon_#{icon_suffix}.png iphone-native/Icon.png") or puts "Couldn't copy Icon_#{icon_suffix}.png\n" + "-" * 80
-	local "xcodebuild -project iphone-native/GRiS.xcodeproj -configuration #{ENV['build'] || "Release"}"
+	system("cp src/iphone/Icon_#{icon_suffix}.png src/iphone/Icon.png") or puts "Couldn't copy Icon_#{icon_suffix}.png\n" + "-" * 80
+	local "xcodebuild -project src/iphone/GRiS.xcodeproj -configuration #{ENV['build'] || "Release"}"
 end
 
 namespace :package do
@@ -115,10 +115,10 @@ namespace :package do
 	task :code_sign do
 		# sign the code
 		# (man, this is hacky...)
-		local "rsync #{$rsync_opts} iphone-native/build/Release-iphoneos/GRiS.app/GRiS #{$ipod_user}@#{$ipod_server}:/tmp"
+		local "rsync #{$rsync_opts} src/iphone/build/Release-iphoneos/GRiS.app/GRiS #{$ipod_user}@#{$ipod_server}:/tmp"
 		run "ldid -S /tmp/GRiS"
-		local "rsync #{$rsync_opts} #{$ipod_user}@#{$ipod_server}:/tmp/GRiS iphone-native/build/Release-iphoneos/GRiS.app/"
-		local "chmod +x iphone-native/build/Release-iphoneos/GRiS.app/GRiS"
+		local "rsync #{$rsync_opts} #{$ipod_user}@#{$ipod_server}:/tmp/GRiS src/iphone/build/Release-iphoneos/GRiS.app/"
+		local "chmod +x src/iphone/build/Release-iphoneos/GRiS.app/GRiS"
 		run "rm /tmp/GRiS"
 	end
 
@@ -132,9 +132,9 @@ namespace :package do
 		code_sign
 
 		# file heirarchy
-		local "cp -r iphone-native/build/Release-iphoneos/GRiS.app #{app_dir}/Applications/"
+		local "cp -r src/iphone/build/Release-iphoneos/GRiS.app #{app_dir}/Applications/"
 		local "cp -r template #{app_dir}/var/mobile/GRiS/"
-		local "cp -r src #{app_dir}/var/mobile/GRiS/"
+		local "cp -r src/sync #{app_dir}/var/mobile/GRiS/"
 		
 		version = `grep -i '^Version' cydia/control`.chomp.split[-1].split('-')[0]
 		puts "version: #{version}"
