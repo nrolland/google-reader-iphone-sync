@@ -1,3 +1,17 @@
+0.5.0:
+	- added ability to load config from plist files
+	- more care is taken to avoid database locking:
+		- the UI will force you to either stop the sync
+		  or quit the app if it detects a sync is already running at startup.
+		- syncs kicked off from the UI will kill any existing sync processes
+		  (since they are most likely stuck)
+		- command-line syncs refuse to start if there is already a sync
+		  running (or the GRiS app itself is running)
+	- This is all for the grand plan of allowing background syncs via a
+	  launchdaemon configuration. This is included in the src/sync folder,
+	  see CommonIssues on the GRiS wiki for details:
+	    [ http://code.google.com/p/gris/wiki/CommonIssues ]
+
 0.3.16:
 	- fixed bug where "newest items first" was in fact doing the opposite
 	
