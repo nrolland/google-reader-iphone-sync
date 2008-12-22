@@ -7,6 +7,7 @@ import config
 from db import DB
 from item import Item
 import proctl
+import signal
 from misc import *
 from output import *
 from lib.GoogleReader import GoogleReader, CONST
@@ -190,8 +191,11 @@ def setup(opts=None):
 	config.parse_options(opts)
 	ensure_dir_exists(app_globals.OPTIONS['output_path'])
 	log_start()
-	proctl.ensure_singleton_process()
+	if app_globals.OPTIONS['report_pid']:
+		proctl.report_pid()
+		exit(0)
 	config.check()
+	proctl.ensure_singleton_process()
 	init_signals()
 
 def main():
@@ -199,9 +203,6 @@ def main():
 	Main program entry point - loads config, parses otions and kicks off the sync process
 	"""
 	setup()
-	if app_globals.OPTIONS['report_pid']:
-		proctl.report_pid()
-		exit(0)
 	execute()
 	puts("Sync complete. cleaning up")
 	cleanup()

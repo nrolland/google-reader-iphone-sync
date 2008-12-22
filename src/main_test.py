@@ -37,3 +37,15 @@ class MainTest(unittest.TestCase):
 		self.assertTrue(self.db.is_read.called)
 		self.assertTrue(('update_feed_for_item',(item,),{}) in self.db.method_calls)
 
+	def test_setup_should_report_pid(self):
+		main.proctl = Mock()
+		app_globals.OPTIONS['report_pid'] = True
+		self.assertRaises(SystemExit, lambda: main.setup([]))
+		self.assertTrue(main.proctl.report_pid.called)
+
+	def test_setup_should_ensure_singleton(self):
+		main.proctl = Mock()
+		app_globals.OPTIONS['report_pid'] = False
+		main.setup(['--user=a','--password=b'])
+		self.assertTrue(main.proctl.ensure_singleton_process.called)
+		

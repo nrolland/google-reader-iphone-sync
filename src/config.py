@@ -17,7 +17,7 @@ import app_globals
 
 required_keys = ['user','password']
 
-bootstrap_options = ('qvc:s', ['verbose','quiet','config=','show-status'])
+bootstrap_options = ('qvc:so', ['verbose','quiet','config=','show-status','output-path='])
 main_options = ("n:Co:dth", [
 		'num-items=',
 		'cautious',
@@ -28,7 +28,6 @@ main_options = ("n:Co:dth", [
 		'user=',
 		'password=',
 		'tag=',
-		'output-path=',
 		'tag-list-only',
 		'newest-first',
 		'report-pid',
@@ -52,6 +51,9 @@ def bootstrap(argv = None):
 			set_opt('user_config_file', val)
 		elif key == '--show-status' or key == '-s':
 			set_opt('show_status', True)
+		elif key == '-o' or key == '--output-path':
+			set_opt('output_path', val)
+
 
 def defaults(*args):
 	return tuple(["(default: %s)" % app_globals.OPTIONS[pythonise_option_key(key)] for key in args])
@@ -100,35 +102,27 @@ Usage:
 		elif key == '-h' or key == '--help':
 			print parse_options.__doc__
 			sys.exit(1)
-		elif key == '--flush-output':
-			set_opt('flush_output', True)
-		elif key == '--tag-list-only':
-			set_opt('tag_list_only', True)
-		elif key == '--aggressive':
-			set_opt('aggressive', True)
-
-		# settings that are usually put in yaml...
-		elif key == '--user':
-			set_opt('user', val);
 		elif key == '--password':
 			set_opt('password',val, disguise = True);
-		elif key == '--output-path' or key == '-o':
-			set_opt('output_path', val)
-		elif key == '--report-pid':
-			set_opt('report_pid', val)
 		elif key == '--tag':
 			tag_list.append(val)
 			set_opt('tag_list', tag_list)
-		elif key == '--newest-first':
-			set_opt('newest_first', True)
+
 		else:
-			print "unknown option: %s" % (key,)
-			print parse_options.__doc__ 
-			sys.exit(1)
+			if key.startswith('--') and key[2:] in main_options[1]:
+				# it's a flag
+				val = True
+			success = set_opt(key, val)
+			if not success:
+				print "unknown option: %s" % (key,)
+				print parse_options.__doc__ 
+				sys.exit(1)
 
 	if len(argv) > 0:
 		set_opt('num_items', int(argv[0]))
 		info("Number of items set to %s" % app_globals.OPTIONS['num_items'])
+
+	
 
 def pythonise_option_key(key):
 	"""
@@ -150,15 +144,21 @@ def pythonise_option_key(key):
 	key = key.lower()
 	return key
 
+path_keys = ['output_path','user_config_file']
 def set_opt(key, val, disguise = False):
+	if key.startswith('--'):
+		key = key[2:]
 	key = pythonise_option_key(key)
 	if key.startswith("pass"):
 		disguise = True
+	if key in path_keys:
+		val = os.path.expanduser(val)
 	debug("set option %s = %s" % (key, val if disguise is False else "*****"))
 	if key not in app_globals.OPTIONS:
 		debug("Ignoring key: %s" % (key,))
-		return
+		return False
 	app_globals.OPTIONS[key] = val
+	return True
 
 def load(filename = None):
 	"""
