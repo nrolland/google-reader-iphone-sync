@@ -11,8 +11,8 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		222C79FC0EFF9C9900870274 /* TCViewExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 222C79FB0EFF9C9900870274 /* TCViewExtensions.m */; };
 		222CA6C60E568C0300146D8E /* StripedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6C50E568C0300146D8E /* StripedView.m */; };
-		222CA7150E56B0A900146D8E /* TCViewExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 222CA7140E56B0A900146D8E /* TCViewExtensions.m */; };
 		22425F350E43F02D00252E7A /* ItemListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22425F340E43F02D00252E7A /* ItemListController.m */; };
 		22425F990E44098700252E7A /* emblem_starred.png in Resources */ = {isa = PBXBuildFile; fileRef = 22425F960E44098700252E7A /* emblem_starred.png */; };
 		225324490E49BA4100328DE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 225324480E49BA4100328DE7 /* Icon.png */; };
@@ -87,10 +87,10 @@
 		1D3623250D0F684500981E51 /* GRiSAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GRiSAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* GRiS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GRiS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		222C79FA0EFF9C9900870274 /* TCViewExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCViewExtensions.h; sourceTree = "<group>"; };
+		222C79FB0EFF9C9900870274 /* TCViewExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCViewExtensions.m; sourceTree = "<group>"; };
 		222CA6C40E568C0300146D8E /* StripedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StripedView.h; sourceTree = "<group>"; };
 		222CA6C50E568C0300146D8E /* StripedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StripedView.m; sourceTree = "<group>"; };
-		222CA7130E56B0A900146D8E /* TCViewExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCViewExtensions.h; path = ../TCViewExtensions.h; sourceTree = "<group>"; };
-		222CA7140E56B0A900146D8E /* TCViewExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCViewExtensions.m; path = ../TCViewExtensions.m; sourceTree = "<group>"; };
 		22425F330E43F02D00252E7A /* ItemListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemListController.h; sourceTree = "<group>"; };
 		22425F340E43F02D00252E7A /* ItemListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemListController.m; sourceTree = "<group>"; };
 		22425F960E44098700252E7A /* emblem_starred.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emblem_starred.png; path = button_images/emblem_starred.png; sourceTree = "<group>"; };
@@ -284,12 +284,12 @@
 		22F065940E7B50370021E97A /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				222C79FA0EFF9C9900870274 /* TCViewExtensions.h */,
+				222C79FB0EFF9C9900870274 /* TCViewExtensions.m */,
 				22A120650E84D394000647C2 /* TCObjectExtensions.h */,
 				22A120660E84D394000647C2 /* TCObjectExtensions.m */,
 				22F0658C0E7B4FE20021E97A /* TCHelpers.h */,
 				22F0658D0E7B4FE20021E97A /* TCHelpers.m */,
-				222CA7130E56B0A900146D8E /* TCViewExtensions.h */,
-				222CA7140E56B0A900146D8E /* TCViewExtensions.m */,
 				22DB0D480E45C8BE008CD8C7 /* BackgroundShell.h */,
 				22DB0D490E45C8BE008CD8C7 /* BackgroundShell.m */,
 			);
@@ -461,7 +461,6 @@
 				22DB0D4A0E45C8BE008CD8C7 /* ApplicationSettings.m in Sources */,
 				22DB0D4B0E45C8BE008CD8C7 /* BackgroundShell.m in Sources */,
 				222CA6C60E568C0300146D8E /* StripedView.m in Sources */,
-				222CA7150E56B0A900146D8E /* TCViewExtensions.m in Sources */,
 				226C545D0E7AAF950083D8FD /* ItemSet.m in Sources */,
 				22F0658E0E7B4FE20021E97A /* FeedItem.m in Sources */,
 				22F0658F0E7B4FE20021E97A /* ItemDB.m in Sources */,
@@ -471,6 +470,7 @@
 				22F065DD0E7B53790021E97A /* TagItem.m in Sources */,
 				22A120640E84D2A3000647C2 /* ItemViewDelegate.m in Sources */,
 				22A120670E84D394000647C2 /* TCObjectExtensions.m in Sources */,
+				222C79FC0EFF9C9900870274 /* TCViewExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
