@@ -37,15 +37,10 @@ def debug_verbose(*s):
 	puts_array([' >>> '] + list(s), level=lvl_debug)
 	
 def log_error(description, exception):
-	try:
-		if exception.logged:
-			return
-	except AttributeError: pass
 	debug("-" * 50)
 	debug("EXCEPTION LOG:", description)
 	traceback.print_exc(file=logfile)
 	debug("-" * 50, "\n\n")
-	exception.logged = True
 	
 def status(*s):
 	"""output a machine-readable status message"""

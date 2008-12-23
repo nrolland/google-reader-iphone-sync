@@ -20,7 +20,7 @@ def report_pid():
 			print none
 		else:
 			print pid
-	except Exception, e:
+	except StandardError, e:
 		log_error("Error getting running pid", e)
 		print none
 
@@ -52,7 +52,7 @@ def get_running_pid():
 	try:
 		pid = int(read_file(filename).strip())
 	except (IOError, ValueError), e:
-		e.message = ("Couldn't load PID file at %s: %s" % (filename, e.message))
+		log_error("Couldn't load PID file at %s" % (filename,), e)
 		raise
 	
 	if pid == os.getpid():
@@ -75,11 +75,9 @@ def ensure_singleton_process():
 	pid = None
 	try:
 		pid = get_running_pid()
-	except RuntimeError, e:
-		log_error("Error fetching current PID", e)
-		if not aggressive:
-			sys.exit(2)
-	
+	except StandardError, e:
+		pass
+
 	if not aggressive:
 		# check for gris.app as well
 		native_pids = get_pids_matching('Applications/GRiS\.app/GRiS')
