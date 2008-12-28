@@ -1,5 +1,7 @@
-from lib.BeautifulSoup import BeautifulSoup, Tag
+import threading
 import urllib2, re, os
+
+from lib.BeautifulSoup import BeautifulSoup, Tag
 from misc import *
 from output import *
 
@@ -151,6 +153,12 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 		except StandardError, e:
 			info("Image %s failed to download: %s" % (img['src'], e))
 			success = False
+		
+		# since this is a long running process; let the thread know we're still alive
+		try:
+			threading.currentThread().ping()
+		except AttributeError:
+			log_error("threading: ping() not defined for thread" % (threading.currentThread(),))
 	
 	return success
 

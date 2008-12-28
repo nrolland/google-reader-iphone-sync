@@ -22,9 +22,13 @@ class ThreadAction(threading.Thread):
 		self.name = name
 		self._killed = False
 		self._lock = thread.allocate_lock()
+		self.start_time = time.time()
 
 	def kill(self):
 		self._killed = True
+	
+	def ping(self):
+		self.start_time = time.time()
 	
 	def run(self):
 		if self._killed: return
@@ -37,6 +41,7 @@ class ThreadAction(threading.Thread):
 			if self._killed: return
 			if self.on_error is not None:
 				self.on_error(e)
+				raise
 			else:
 				raise
 			
@@ -63,10 +68,55 @@ class ThreadPool:
 		time.sleep(seconds)
 		self._lock.acquire()
 	
+	def _wait_for_any_thread_to_finish(self):
+		initial_count = self._count
+		global_count = self._global_count
+		silence_threshold = 30
+		sleeps = 0
+		
+		print "WAITING..."
+		initial_threads = list(self._threads) # take a copy
+		
+		if self._count == 0:
+			print "no threads running!"
+			return
+
+		def threads_unchanged():
+			if self._count != initial_count:
+				return False
+			return all(a is b for a,b in zip(self._threads, initial_threads))
+		
+		def partition_threads():
+			now = time.time()
+			old = []
+			new = []
+			for th in self._threads:
+				if th.start_time + silence_threshold > now:
+					print "thread %s has been running for %s seconds" % (th.name, int(now - th.start_time))
+					new.append(th)
+				else:
+					old.append(th)
+			return (old, new)
+		
+		while threads_unchanged():
+			print "cycle.."
+			old_threads, new_threads = partition_threads()
+			if len(old_threads) > 0:
+				debug("%s threads have been running over %s seconds" % (len(old_threads), silence_threshold))
+				for thread_ in old_threads:
+					thread_.kill()
+				debug("%s threads killed" % (len(old_threads),))
+				self._threads = new_threads
+				break
+
+			self._sleep(1)
+			sleeps += 1
+
+	
 	@locking
 	def spawn(self, function, on_success = None, on_error = None, *args, **kwargs):
 		while self._count >= self._max_count:
-			self._sleep()
+			self._wait_for_any_thread_to_finish()
 
 		debug("there are currently %s threads running" % self._count)
 		self._global_count += 1
@@ -82,7 +132,7 @@ class ThreadPool:
 		action.start()
 	
 	@locking
-	def _thread_error(self, e, trace):
+	def _thread_error(self, e):
 		self._count -= 1
 		log_error("thread raised an exception and ended", e)
 		
@@ -98,25 +148,9 @@ class ThreadPool:
 	
 	@locking
 	def collect_all(self):
-		silence_threshold = 20
 		debug("waiting for %s threads to finish" % self._count)
-		sleeps = 0
-		last_count = self._count
 		while self._count > 0:
-			self._sleep(1)
-			
-			if last_count == self._count:
-				sleeps += 1
-				if sleeps > silence_threshold:
-					debug("no threads have completed in the past %s seconds. killing them" % (silence_threshold,))
-					for thread_ in self._threads:
-						thread_.kill()
-					debug("%s threads forcibly killed - onwards!" % (last_count,))
-					self._threads = []
-					break
-			else:
-				sleeps = 0
-			last_count = self._count
+			self._wait_for_any_thread_to_finish()
 			
 		self._collect()
 
