@@ -113,11 +113,13 @@ def download_feed(feed, feed_tag):
 	item_thread_pool.collect_all()
 
 def error_reporter_for_item(item):
-	def error_report(exception):
+	def error_report(exception, tb = None):
+		if tb is None:
+			tb = sys.exc_info()[2]
 		puts(" ** FAILED **: " + str(exception))
 		log_error("Failed processing item: %s" % repr(item), exception)
 		if in_debug_mode():
-			raise exception
+			raise exception, None, tb
 		app_globals.STATS['failed'] += 1
 	return error_report
 
@@ -147,11 +149,11 @@ def process_item(item, item_thread_pool = None):
 			if item_thread_pool is None:
 				item.process()
 				item.save()
-				increment_subtask
+				increment_subtask()
 			else:
 				def success_func():
 					increment_subtask()
-					item.save
+					item.save()
 				item_thread_pool.spawn(item.process, on_success = success_func, on_error = error_reporter_for_item(item))
 
 		except StandardError,e:
