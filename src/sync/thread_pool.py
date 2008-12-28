@@ -74,7 +74,7 @@ class ThreadPool:
 		silence_threshold = 30
 		sleeps = 0
 		
-		print "WAITING..."
+		# print "WAITING..."
 		initial_threads = list(self._threads) # take a copy
 		
 		if self._count == 0:
@@ -92,14 +92,14 @@ class ThreadPool:
 			new = []
 			for th in self._threads:
 				if th.start_time + silence_threshold > now:
-					print "thread %s has been running for %s seconds" % (th.name, int(now - th.start_time))
+					# print "thread %s has been running for %s seconds" % (th.name, int(now - th.start_time))
 					new.append(th)
 				else:
 					old.append(th)
 			return (old, new)
 		
 		while threads_unchanged():
-			print "cycle.."
+			# print "cycle.."
 			old_threads, new_threads = partition_threads()
 			if len(old_threads) > 0:
 				debug("%s threads have been running over %s seconds" % (len(old_threads), silence_threshold))
