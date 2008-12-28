@@ -1,4 +1,5 @@
 import app_globals
+import time, threading
 import sys, os, time, traceback
 
 lvl_default = 2
@@ -14,9 +15,16 @@ logfile = None
 def ascii(s): return s.encode('ascii','ignore') if isinstance(s, unicode) else str(s)
 def utf8(s):  return s.encode('utf-8','ignore') if isinstance(s, unicode) else str(s)
 
+def whereami_str():
+	time_str = time.strftime('%H:%M:%S')
+	thread_str = threading.currentThread().getName()
+	return "[%s %s] " % (thread_str, time_str)
+
 def puts_array(s, level=lvl_quiet):
 	global logfile
 	output_str = " ".join(map(ascii, s))
+	if level >= lvl_verbose:
+		output_str = whereami_str() + output_str
 	if logfile is not None and (level < lvl_debug):
 		print >> logfile, output_str
 	if app_globals.OPTIONS.get('verbosity', lvl_debug) < level: return

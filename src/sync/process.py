@@ -137,7 +137,10 @@ def download_images(soup, dest_folder, href_prefix, base_href = None):
 	
 	if len(images) > 0:
 		ensure_dir_exists(dest_folder)
+	img_num = 0
 	for img in images:
+		debug("processing image %s of %s" % (img_num, len(images)))
+		img_num += 1
 		href = absolute_url(img['src'], base_href)
 		
 		filename = get_filename(img['src'])
@@ -235,15 +238,17 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 	# timeout in seconds
 	socket.setdefaulttimeout(20)
 
+	debug("peeking at url: %s" % (url,))
 	dl = urllib2.urlopen(url)
 	headers = dl.headers
-
-	filetype = None
 
 	try:
 		if headers.getmaintype().lower() == 'image':
 			filetype = headers.subtype
-	except StandardError: pass
+		else:
+			filetype = None
+	except StandardError:
+		filetype = None
 	
 	try:
 		if int(headers['Content-Length']) < MIN_IMAGE_BYTES:
@@ -268,6 +273,7 @@ def download_file(url, output_filename=None, base_path='', allow_overwrite=False
 
 	debug("downloading file: " + url)
 	contents = dl.read()
+	debug("downloaded file " + url)
 	dl.close()
 
 	if output_filename is not None:

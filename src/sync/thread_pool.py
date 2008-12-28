@@ -1,4 +1,4 @@
-import thread, time
+import thread, time, threading
 from output import *
 
 # threaded decorator
@@ -14,6 +14,7 @@ def locking(process):
 class ThreadPool:
 	_max_count = 10
 	_count = 0
+	_global_count = 0
 	_action_buffer = []
 	
 	def __init__(self):
@@ -29,8 +30,11 @@ class ThreadPool:
 		while self._count >= self._max_count:
 			self._sleep()
 		self._count += 1
+		self._global_count += 1
 		debug("there are currently %s threads running" % self._count)
+		thread_id = "thread_%s" % (self._global_count,)
 		def function_with_callback(fn, args, **kwargs):
+			threading.currentThread().setName(thread_id)
 			try:
 				ret = fn(*args, **kwargs)
 				self._thread_finished(on_success)

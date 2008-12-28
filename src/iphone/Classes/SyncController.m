@@ -173,7 +173,7 @@ NSString * escape_single_quotes(NSString * str) {
 	if(index == 1) { // kill it
 		kill(sync_pid, SIGKILL);
 	} else {
-		dbg(@"exiting");
+		dbg(@"user opted to exit because there is a background sync running");
 		[[UIApplication sharedApplication] terminate];
 	}
 }
