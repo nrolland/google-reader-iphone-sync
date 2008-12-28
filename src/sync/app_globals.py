@@ -1,8 +1,6 @@
 # These are some defaults and other globals.
 # anything in OPTIONS can be overrided / extended by config.py in reaction to command-line or config.yml input
 
-import output
-
 PLACEHOLDER = object()
 
 CONFIG = {
@@ -22,7 +20,7 @@ OPTIONS = {
 	'screen_height': 480,
 	'template_only': False,
 	'flush_output':  False,
-	'verbosity':     output.lvl_default,
+	'verbosity':     2,     # should be output.lvl_default, but that makes for circular dependencies
 	'tag_list_only': False,
 	'report_pid':    False,
 	'newest_first':  False,
