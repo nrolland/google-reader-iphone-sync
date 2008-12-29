@@ -1,3 +1,11 @@
+0.5.3:
+	- sync process will now abandon threads that appear to be stuck, instead
+	  of blocking the whole process. This should make syncing a lot less
+	  prone to lockups.
+
+0.5.2: bug fixes
+0.5.1: bug fixes
+
 0.5.0:
 	- added ability to load config from plist files
 	- more care is taken to avoid database locking:
