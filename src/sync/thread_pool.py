@@ -6,9 +6,12 @@ from output import *
 def locking(process):
 	def fn(self, *args, **kwargs):
 		self._lock.acquire()
-		ret = process(self, *args, **kwargs)
-		self._lock.release()
+		try:
+			ret = process(self, *args, **kwargs)
+		finally:
+			self._lock.release()
 		return ret
+	fn.__name__ = process.__name__
 	return fn
 
 class ThreadAction(threading.Thread):
@@ -38,15 +41,16 @@ class ThreadAction(threading.Thread):
 		try:
 			self.func(*self.args, **self.kwargs)
 		except StandardError, e:
+			print "error! %s " % e
 			if self._killed: return
 			if self.on_error is not None:
 				self.on_error(e)
-				raise
+				return
 			else:
 				raise
 			
 		if self._killed: return
-		if self.on_success() is not None:
+		if self.on_success is not None:
 			self.on_success()
 	
 
@@ -121,25 +125,33 @@ class ThreadPool:
 		debug("there are currently %s threads running" % self._count)
 		self._global_count += 1
 		thread_id = "thread %s" % (self._global_count,)
-
 		action = ThreadAction(
 			function,
-			on_error = self._thread_error,
 			name = thread_id,
 			*args, **kwargs)
+		action.on_error = lambda e: self._thread_error(action, on_error, e)
 		action.on_success = lambda: self._thread_finished(action, on_success)
 		self._threads.append(action)
+		print "starting"
 		action.start()
 	
 	@locking
-	def _thread_error(self, e):
-		self._count -= 1
-		log_error("thread raised an exception and ended", e)
+	def _thread_error(self, thread, callback, e):
+		self._locked_thread_finished(thread)
+		if callback is None:
+			log_error("thread raised an exception and ended", e)
+		else:
+			callback(e)
 		
 	@locking
 	def _thread_finished(self, thread, next_action):
 		self._action_buffer.append(next_action)
-		self._count -= 1
+		self._locked_thread_finished(thread)
+	
+	def _locked_thread_finished(self, thread):
+		backtrace()
+		print "removing %s from %s" % (thread, self._threads)
+		self._threads.remove(thread)
 		debug("thread finished - there remain %s threads" % (self._count,))
 	
 	@locking

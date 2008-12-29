@@ -91,3 +91,7 @@ def log_start():
 
 def in_debug_mode():
 	return app_globals.OPTIONS['verbosity'] >= lvl_debug
+
+def backtrace():
+	import traceback, sys
+	print ''.join(traceback.format_stack(sys._getframe()))
